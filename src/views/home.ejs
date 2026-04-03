@@ -1,21 +1,21 @@
 <div class="w-screen h-screen p-2">
   <div
-    class="w-full h-full p-3 flex flex-col border-2 rounded-md border-mist-700 bg-mist-800"
+    class="w-full h-full p-3 flex flex-col border-2 rounded-md border-mist-700 bg-mist-800 overflow-clip"
   >
     <h1 class="text-2xl font-bold mb-4 text-white">
       Selamat Datang di
       <span class="bg-blue-500 px-2 py-1 rounded"><%= APP_NAME %></span>!
     </h1>
 
-    <div class="flex-1 flex gap-3 overflow-auto">
-      <div class="flex-2 overflow-auto p-2">
-        <p class="text-lg text-gray-300 mb-6">
+    <div class="h-full flex flex-col md:flex-row gap-0">
+      <div class="flex-1 overflow-scroll px-2 md:p-2 w-full md:min-h-0 md:shrink-0 pb-14" style="width: 100%; max-width: 100%;" id="form_container">
+        <p class="text-base md:text-lg text-gray-300 mb-4 md:mb-6">
           Silakan lengkapi formulir di bawah ini untuk membuat RPP.
         </p>
 
         <form
           id="form-rpp"
-          class="grid gap-4 md:grid-cols-2 bg-white/10 p-6 rounded-lg border border-gray-600 text-white"
+          class="grid gap-4 md:grid-cols-2 bg-white/10 px-3 md:p-6 py-4 md:py-6 rounded-lg border border-gray-600 text-white"
         >
           <!-- Document Type Selection -->
           <div class="flex flex-col gap-2 mb-2 md:col-span-2">

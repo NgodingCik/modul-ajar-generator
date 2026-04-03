@@ -30,6 +30,18 @@ export const route = new AppRoute("/generate-rpp", "post", async (req, res) => {
         });
     }
 
+    // Format Hari/Tanggal ke format Indonesia (contoh: Senin, 1 Januari 2011)
+    if (data.hari_tanggal && data.hari_tanggal.includes("-")) {
+      const [yyyy, mm, dd] = data.hari_tanggal.split("-");
+      const dateObj = new Date(yyyy, mm - 1, dd);
+      const namaHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+      const namaBulan = [
+        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+      ];
+      data.hari_tanggal = `${namaHari[dateObj.getDay()]}, ${parseInt(dd, 10)} ${namaBulan[dateObj.getMonth()]} ${yyyy}`;
+    }
+
     let prompt = `Informasi\n Semester/Minggu ke: ${data.semester}\ntahun Ajaran: ${data.tahun_ajaran}\nKelas: ${data.kelas}\nAlokasi Waktu: ${data.alokasi_waktu}\nModel Pembelajaran: ${data.model_pembelajaran}\nTema/Subtema: ${data.tema_subtema}\nTujuan Pembelajaran: ${data.tujuan_pembelajaran}`;
 
     prompt += `Isi key 'materi' dengan materi pembelajaran yang sesuai dengan tema/subtema di atas. Jangan berisi daftar item, cukup buat dalam bentuk paragraf saja.`;

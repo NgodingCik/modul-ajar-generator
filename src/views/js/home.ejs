@@ -2,24 +2,26 @@
   const btnGenerate = document.getElementById("btn_generate");
   const btnDownload = document.getElementById("btn_download");
   const previewContent = document.getElementById("preview_content");
+  const form = document.getElementById("form-rpp");
 
   let currentMarkdown = null;
   let rppObject = null;
 
-  // Load saved form data from localStorage on page load
+  const BTN_CLASSES = {
+    active: "flex-1 py-2 px-4 rounded font-semibold transition-colors bg-blue-500 text-white border border-blue-500 hover:bg-blue-600 focus:outline-none",
+    inactive: "flex-1 py-2 px-4 rounded font-semibold transition-colors bg-gray-700 text-gray-300 border border-gray-600 hover:bg-gray-600 focus:outline-none"
+  };
+
   window.addEventListener("DOMContentLoaded", () => {
     const savedData = localStorage.getItem("rppFormData");
     if (savedData) {
       const formData = JSON.parse(savedData);
       for (const key in formData) {
         const input = document.querySelector(`[name="${key}"]`);
-        if (input) {
-          input.value = formData[key];
-        }
+        if (input) input.value = formData[key];
       }
     }
 
-    // Load saved markdown preview if available
     const savedMarkdown = localStorage.getItem("rppPreviewMarkdown");
     if (savedMarkdown) {
       currentMarkdown = savedMarkdown;
@@ -27,15 +29,12 @@
       btnDownload.classList.remove("hidden");
     }
 
-    // Load saved RPP object
     const savedRppObject = localStorage.getItem("rppPreviewObject");
     if (savedRppObject) {
       rppObject = JSON.parse(savedRppObject);
     }
   });
 
-  // Auto save form data to localStorage
-  const form = document.getElementById("form-rpp");
   form.addEventListener("input", () => {
     const formData = new FormData(form);
     const dataToSave = {};
@@ -45,10 +44,9 @@
     localStorage.setItem("rppFormData", JSON.stringify(dataToSave));
   });
 
-  document.getElementById("form-rpp").addEventListener("submit", async (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    // Clear saved markdown preview on new submission
     localStorage.removeItem("rppPreviewMarkdown");
     localStorage.removeItem("rppPreviewObject");
     currentMarkdown = null;
@@ -81,13 +79,10 @@
       const data = await response.json();
 
       if (data.rpp) {
-        // Parse markdown to HTML
         currentMarkdown = data.rpp;
         rppObject = data.obj;
         previewContent.innerHTML = marked.parse(data.rpp);
-        // Save markdown preview to localStorage
         localStorage.setItem("rppPreviewMarkdown", data.rpp);
-        // Save RPP object to localStorage
         localStorage.setItem("rppPreviewObject", JSON.stringify(data.obj));
         btnDownload.classList.remove("hidden");
       } else {
@@ -108,25 +103,20 @@
   async function downloadRPP() {
     if (!currentMarkdown) return;
 
-    const btnDownload = document.getElementById("btn_download");
-    const originalText = btnDownload.textContent;
-    btnDownload.disabled = true;
-    btnDownload.textContent = "Mengunduh...";
+    const btnDownloadEl = document.getElementById("btn_download");
+    const originalText = btnDownloadEl.textContent;
+    btnDownloadEl.disabled = true;
+    btnDownloadEl.textContent = "Mengunduh...";
 
-    // Ambil data form untuk disisipkan ke template word docx
-    const form = document.getElementById("form-rpp");
     const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
 
-    // Memperbaiki string text opsi kelas
-    let kelasValue = formData.get("kelas");
-    if (kelasValue === "kelompok_a") kelasValue = "Kelompok A (4-5 Tahun)";
-    else if (kelasValue === "kelompok_b") kelasValue = "Kelompok B (5-6 Tahun)";
+    data.kelas = {
+      "kelompok_a": "Kelompok A (4-5 Tahun)",
+      "kelompok_b": "Kelompok B (5-6 Tahun)"
+    }[data.kelas] || data.kelas;
 
-    let data = {};
-    formData.forEach((value, key) => {
-      data[key] = value;
-    });
-    data = { ...data, ...rppObject };
+    const mergedData = { ...data, ...rppObject };
 
     try {
       const response = await fetch("/api/download-rpp", {
@@ -134,39 +124,36 @@
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ rppObject: data, md: currentMarkdown }),
+        body: JSON.stringify({ rppObject: mergedData, md: currentMarkdown }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to download RPP");
-      }
+      if (!response.ok) throw new Error("Failed to download RPP");
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.style.display = "none";
       a.href = url;
       a.download = "RPP.docx";
       document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error downloading RPP:", error);
       alert("Gagal mengunduh RPP. Silakan coba lagi.");
     } finally {
-      btnDownload.disabled = false;
-      btnDownload.textContent = originalText;
+      btnDownloadEl.disabled = false;
+      btnDownloadEl.textContent = originalText;
     }
   }
 
   function requestRecommendation() {
     try {
-      const formData = new FormData(form);
       const button = document.getElementById("btn_recommendation");
       const submitButton = document.getElementById("btn_generate");
       const inputField = document.getElementById("tujuan_pembelajaran");
-      const tujuanPembelajaran = inputField.value;
-      if (!tujuanPembelajaran) {
+
+      if (!inputField.value) {
         alert("Silakan isi tujuan pembelajaran terlebih dahulu!");
         return;
       }
@@ -176,32 +163,25 @@
       inputField.disabled = true;
       submitButton.disabled = true;
 
-      const data = {};
-      formData.forEach((value, key) => {
-        data[key] = value;
-      });
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData);
 
       fetch("/api/recommendation", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ prompt: tujuanPembelajaran, data }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: inputField.value, data }),
       })
         .then((response) => response.json())
-        .then((data) => {
-          console.log("Recommendation received:", data);
-          if (data.recommendation) {
-            inputField.value = data.recommendation;
+        .then((result) => {
+          if (result.recommendation) {
+            inputField.value = result.recommendation;
           } else {
             alert("Rekomendasi tidak tersedia. Silakan coba lagi nanti.");
           }
         })
         .catch((error) => {
           console.error("Error fetching recommendation:", error);
-          alert(
-            "Terjadi kesalahan saat mengambil rekomendasi. Silakan coba lagi.",
-          );
+          alert("Terjadi kesalahan saat mengambil rekomendasi. Silakan coba lagi.");
         })
         .finally(() => {
           button.classList.remove("animate-pulse");
@@ -216,41 +196,29 @@
   }
 
   function pilihTipeRPP(tipe) {
-    // Set value ke hidden input
     document.getElementById("tipe_rpp").value = tipe;
-
     const btnRpph = document.getElementById("btn_rpph");
     const btnRppm = document.getElementById("btn_rppm");
 
-    // Reset styles
-    const activeClasses =
-      "flex-1 py-2 px-4 rounded font-semibold transition-colors bg-blue-500 text-white border border-blue-500 hover:bg-blue-600 focus:outline-none";
-    const inactiveClasses =
-      "flex-1 py-2 px-4 rounded font-semibold transition-colors bg-gray-700 text-gray-300 border border-gray-600 hover:bg-gray-600 focus:outline-none";
-
     if (tipe === "rpph") {
-      // Set RPPH active
-      btnRpph.className = activeClasses;
-      btnRppm.className = inactiveClasses;
+      btnRpph.className = BTN_CLASSES.active;
+      btnRppm.className = BTN_CLASSES.inactive;
     } else {
-      // Set RPPM active
-      btnRppm.className = activeClasses;
-      btnRpph.className = inactiveClasses;
+      btnRppm.className = BTN_CLASSES.active;
+      btnRpph.className = BTN_CLASSES.inactive;
     }
   }
 
   function toggleAdvanceOptions() {
     const container = document.getElementById("advance_options_container");
     const icon = document.getElementById("icon_advance_chevron");
-    const containerIsClosed = container.classList.contains("hidden");
+    const isHidden = container.classList.contains("hidden");
 
-    if (containerIsClosed) {
-      // Expand
+    if (isHidden) {
       container.classList.remove("hidden");
       container.classList.add("flex");
       icon.style.transform = "rotate(-180deg)";
     } else {
-      // Collapse
       container.classList.add("hidden");
       container.classList.remove("flex");
       icon.style.transform = "rotate(0deg)";

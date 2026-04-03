@@ -1,7 +1,6 @@
 <script>
   const btnGenerate = document.getElementById("btn_generate");
   const btnDownload = document.getElementById("btn_download");
-  const btnDownloadMobile = document.getElementById("btn_download_mobile");
   const previewContent = document.getElementById("preview_content");
   const form = document.getElementById("form-rpp");
   const previewContainer = document.getElementById("preview_container");
@@ -146,7 +145,6 @@
     minimizeBtn.setAttribute("onclick", "expandPreview()");
 
     document.getElementById("btn_download").style.display = "none";
-    document.getElementById("btn_download_mobile").style.display = "none";
     localStorage.setItem("previewHeight", "60");
   }
 
@@ -162,7 +160,6 @@
     if (prose) prose.style.display = "block";
     if (currentMarkdown) {
       document.getElementById("btn_download").style.display = "inline-block";
-      document.getElementById("btn_download_mobile").style.display = "inline-block";
     }
 
     const minimizeBtn = document.getElementById("btn_preview_minimize");
@@ -204,7 +201,6 @@
       currentMarkdown = savedMarkdown;
       previewContent.innerHTML = marked.parse(savedMarkdown);
       btnDownload.classList.remove("hidden");
-      btnDownloadMobile.style.display = "inline-block";
       showPreview();
       expandPreview();
     }
@@ -238,7 +234,6 @@
     previewContent.innerHTML =
       '<p class="text-blue-400 animate-pulse">Sedang menghasilkan RPP, harap tunggu sebentar...</p>';
     btnDownload.classList.add("hidden");
-    btnDownloadMobile.style.display = "none";
     showPreview();
     expandPreview();
 
@@ -272,7 +267,6 @@
         localStorage.setItem("rppPreviewMarkdown", data.rpp);
         localStorage.setItem("rppPreviewObject", JSON.stringify(data.obj));
         btnDownload.classList.remove("hidden");
-        btnDownloadMobile.style.display = "inline-block";
       } else {
         previewContent.innerHTML =
           '<p class="text-red-500">Gagal menghasilkan RPP.</p>';

@@ -15,10 +15,10 @@
 
         <form
           id="form-rpp"
-          class="flex flex-col gap-5 bg-white/10 p-6 rounded-lg border border-gray-600 text-white"
+          class="grid gap-4 md:grid-cols-2 bg-white/10 p-6 rounded-lg border border-gray-600 text-white"
         >
           <!-- Document Type Selection -->
-          <div class="flex flex-col gap-2 mb-2">
+          <div class="flex flex-col gap-2 mb-2 md:col-span-2">
             <label class="font-medium text-gray-200">Jenis Dokumen RPP</label>
             <div class="flex gap-4">
               <button
@@ -204,7 +204,7 @@
             />
           </div>
 
-          <div class="flex flex-col gap-1">
+          <div class="flex flex-col gap-1 md:col-span-2">
             <label for="tujuan_pembelajaran" class="font-medium text-gray-200"
               >Tujuan Pembelajaran</label
             >
@@ -241,7 +241,7 @@
             </div>
           </div>
 
-          <div class="flex flex-col gap-2 mt-2">
+          <div class="flex flex-col gap-2 mt-2 md:col-span-2">
             <button
               type="button"
               id="btn_toggle_advance"
@@ -288,7 +288,7 @@
           <button
             type="submit"
             id="btn_generate"
-            class="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition duration-200"
+            class="mt-4 md:col-span-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition duration-200"
           >
             Buat RPP
           </button>

@@ -1,7 +1,7 @@
 <!-- {RPP_TYPE} adalah tipe RPP bisa berisi `HARIAN` atau `MINGGUAN`. -->
 <!-- {INITIAL_TYPE} merupakan inisial dari tipe RPP bisa berisi `H` atau `M`. -->
 <!-- {ACADEMIC_YEAR} adalah tahun ajaran, misalnya 2023/2024`. -->
-# RENCANA PELAKSANAAN PEMBELAJARAN {RPP_TYPE} (RPP{INITIAL_TYPE})<br>TAHUN AJARAN {ACADEMIC_YEAR}
+# RENCANA PELAKSANAAN PEMBELAJARAN {RPP_TYPE} (RPP{INITIAL_TYPE})<br>TAHUN AJARAN {ACADEMIC_YEAR}<br>
 
 <!-- {SCHOOL_NAME} adalah nama sekolah -->
 Satuan Pendidikan : {SCHOOL_NAME}<br>

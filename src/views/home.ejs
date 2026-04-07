@@ -27,7 +27,7 @@
                 onclick="pilihTipeRPP('rpph')"
                 class="flex-1 py-2 px-4 rounded font-semibold transition-colors bg-blue-500 text-white border border-blue-500 hover:bg-blue-600 focus:outline-none"
               >
-                Pilih RPPH
+                RPPH
               </button>
               <button
                 type="button"
@@ -36,38 +36,96 @@
                 class="flex-1 py-2 px-4 rounded font-semibold transition-colors bg-gray-700 text-gray-300 border border-gray-600 hover:bg-gray-600 focus:outline-none hover:cursor-not-allowed"
                 disabled
               >
-                Pilih RPPM
+                RPPM
               </button>
             </div>
-            <input type="hidden" id="tipe_rpp" name="tipe_rpp" value="rpph" />
+            <input type="hidden" id="rpp_type" name="RPP_TYPE" value="HARIAN" />
+            <input type="hidden" id="initial_type" name="INITIAL_TYPE" value="H" />
           </div>
 
-          <div class="flex flex-col gap-1">
-            <label for="nama_pengajar" class="font-medium text-gray-200"
-              >Nama Pengajar</label
-            >
-            <input
-              type="text"
-              id="nama_pengajar"
-              name="nama_pengajar"
-              placeholder="Masukkan nama pengajar"
-              class="p-2 rounded bg-black/20 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
+          <!-- Satuan Pendidikan -->
           <div class="flex flex-col gap-1">
             <label for="nama_sekolah" class="font-medium text-gray-200"
-              >Nama Sekolah</label
+              >Satuan Pendidikan</label
             >
             <input
               type="text"
               id="nama_sekolah"
-              name="nama_sekolah"
+              name="SCHOOL_NAME"
               placeholder="Masukkan nama sekolah"
               class="p-2 rounded bg-black/20 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
+          <!-- Tema/Sub-Tema -->
+          <div class="flex flex-col gap-1">
+            <label for="tema_subtema" class="font-medium text-gray-200"
+              >Tema/Sub-Tema</label
+            >
+            <input
+              type="text"
+              id="tema_subtema"
+              name="THEME_SUBTHEME"
+              placeholder="Misal: Diriku / Tubuhku"
+              class="p-2 rounded bg-black/20 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          <!-- Fase -->
+          <div class="flex flex-col gap-1">
+            <label for="fase" class="font-medium text-gray-200">Fase</label>
+            <div class="flex gap-2">
+              <select
+                id="fase"
+                name="PHASE"
+                class="flex-1 p-2 rounded bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                onchange="handlePhaseChange()"
+              >
+                <option value="">-- Pilih Fase --</option>
+                <option value="Fondasi">Fase Fondasi (PAUD)</option>
+                <option value="A">Fase A (Kelas I-II SD/MI)</option>
+                <option value="B">Fase B (Kelas III-IV SD/MI)</option>
+                <option value="C">Fase C (Kelas V-VI SD/MI)</option>
+                <option value="D">Fase D (Kelas VII-IX SMP/MTs)</option>
+                <option value="E">Fase E (Kelas X SMA/MA)</option>
+                <option value="F">Fase F (Kelas XI-XII SMA/MA)</option>
+                <option value="__custom__">+ Tambah Custom</option>
+              </select>
+              <button
+                type="button"
+                id="btn_add_custom_phase"
+                onclick="showAddCustomPhase()"
+                class="px-4 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white font-semibold transition-colors focus:outline-none hidden"
+                title="Tambah fase custom"
+              >
+                +
+              </button>
+            </div>
+            <div id="custom_phase_container" class="hidden flex gap-2">
+              <input
+                type="text"
+                id="custom_phase_input"
+                placeholder="Masukkan nama fase (mis: Fase G)"
+                class="flex-1 p-2 text-sm rounded bg-black/20 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <button
+                type="button"
+                onclick="saveCustomPhase()"
+                class="px-3 py-2 text-sm rounded bg-green-500 hover:bg-green-600 text-white font-semibold transition-colors focus:outline-none"
+              >
+                Simpan
+              </button>
+              <button
+                type="button"
+                onclick="cancelCustomPhase()"
+                class="px-3 py-2 text-sm rounded bg-gray-600 hover:bg-gray-700 text-white font-semibold transition-colors focus:outline-none"
+              >
+                Batal
+              </button>
+            </div>
+          </div>
+
+          <!-- Hari/Tanggal -->
           <div class="flex flex-col gap-1">
             <label for="hari_tanggal" class="font-medium text-gray-200"
               >Hari/Tanggal</label
@@ -75,11 +133,12 @@
             <input
               type="date"
               id="hari_tanggal"
-              name="hari_tanggal"
+              name="DAY_DATE"
               class="p-2 rounded bg-black/20 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white [color-scheme:dark]"
             />
           </div>
 
+          <!-- Semester/Minggu Ke -->
           <div class="flex flex-col gap-1">
             <label for="semester" class="font-medium text-gray-200"
               >Semester/Minggu Ke</label
@@ -87,12 +146,13 @@
             <input
               type="text"
               id="semester"
-              name="semester"
+              name="SEMESTER_WEEK"
               placeholder="Misal: 1 / Minggu ke-2"
               class="p-2 rounded bg-black/20 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
+          <!-- Tahun Ajaran -->
           <div class="flex flex-col gap-1">
             <label for="tahun_ajaran" class="font-medium text-gray-200"
               >Tahun Ajaran</label
@@ -100,19 +160,20 @@
             <input
               type="text"
               id="tahun_ajaran"
-              name="tahun_ajaran"
+              name="ACADEMIC_YEAR"
               placeholder="Contoh: 2026/2027"
               class="p-2 rounded bg-black/20 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
+          <!-- Kelas/Kelompok Usia -->
           <div class="flex flex-col gap-1">
             <label for="kelas" class="font-medium text-gray-200"
               >Kelas/Kelompok Usia</label
             >
             <select
               id="kelas"
-              name="kelas"
+              name="GROUP_AGE"
               class="p-2 rounded bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">-- Pilih Kelas/Kelompok Usia --</option>
@@ -125,6 +186,7 @@
             </select>
           </div>
 
+          <!-- Alokasi Waktu -->
           <div class="flex flex-col gap-1">
             <label for="alokasi_waktu" class="font-medium text-gray-200"
               >Alokasi Waktu</label
@@ -132,18 +194,19 @@
             <input
               type="text"
               id="alokasi_waktu"
-              name="alokasi_waktu"
+              name="TIME_ALLOCATION"
               placeholder="Misal: 40 menit"
               class="p-2 rounded bg-black/20 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
+          <!-- Model Pembelajaran -->
           <div class="flex flex-col gap-1">
             <label for="model_pembelajaran" class="font-medium text-gray-200">Model Pembelajaran</label>
             <div class="flex gap-2">
               <select
                 id="model_pembelajaran"
-                name="model_pembelajaran"
+                name="LEARNING_MODEL"
                 class="flex-1 p-2 rounded bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 onchange="handleModelChange()"
               >
@@ -191,19 +254,7 @@
             </div>
           </div>
 
-          <div class="flex flex-col gap-1">
-            <label for="tema_subtema" class="font-medium text-gray-200"
-              >Tema/Sub-Tema</label
-            >
-            <input
-              type="text"
-              id="tema_subtema"
-              name="tema_subtema"
-              placeholder="Misal: Diriku / Tubuhku"
-              class="p-2 rounded bg-black/20 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
+          <!-- Tujuan Pembelajaran -->
           <div class="flex flex-col gap-1 md:col-span-2">
             <label for="tujuan_pembelajaran" class="font-medium text-gray-200"
               >Tujuan Pembelajaran</label
@@ -211,7 +262,7 @@
             <div class="relative w-full">
               <textarea
                 id="tujuan_pembelajaran"
-                name="tujuan_pembelajaran"
+                name="LEARNING_OBJECTIVES"
                 rows="4"
                 placeholder="Tuliskan tujuan pembelajaran di sini..."
                 class="w-full p-2 pr-10 rounded bg-black/20 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"

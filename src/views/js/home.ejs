@@ -26,6 +26,16 @@
     { label: "Cooperative Learning (Jigsaw, TPS)", value: "Cooperative Learning (Jigsaw, TPS)" }
   ];
 
+  const DEFAULT_PHASES = [
+    { label: "Fase Fondasi (PAUD)", value: "Fondasi" },
+    { label: "Fase A (Kelas I-II SD/MI)", value: "A" },
+    { label: "Fase B (Kelas III-IV SD/MI)", value: "B" },
+    { label: "Fase C (Kelas V-VI SD/MI)", value: "C" },
+    { label: "Fase D (Kelas VII-IX SMP/MTs)", value: "D" },
+    { label: "Fase E (Kelas X SMA/MA)", value: "E" },
+    { label: "Fase F (Kelas XI-XII SMA/MA)", value: "F" }
+  ];
+
   function getCustomModels() {
     const stored = localStorage.getItem("customModels");
     return stored ? JSON.parse(stored) : [];
@@ -45,6 +55,30 @@
         const option = document.createElement("option");
         option.value = model;
         option.textContent = model;
+        select.insertBefore(option, select.querySelector('option[value="__custom__"]'));
+      }
+    });
+  }
+
+  function getCustomPhases() {
+    const stored = localStorage.getItem("customPhases");
+    return stored ? JSON.parse(stored) : [];
+  }
+
+  function saveCustomPhasesToStorage(phases) {
+    localStorage.setItem("customPhases", JSON.stringify(phases));
+  }
+
+  function loadCustomPhasesToDropdown() {
+    const select = document.getElementById("fase");
+    const customPhases = getCustomPhases();
+
+    customPhases.forEach(phase => {
+      const optionExists = Array.from(select.options).some(opt => opt.value === phase);
+      if (!optionExists) {
+        const option = document.createElement("option");
+        option.value = phase;
+        option.textContent = phase;
         select.insertBefore(option, select.querySelector('option[value="__custom__"]'));
       }
     });
@@ -176,6 +210,7 @@
 
   window.addEventListener("DOMContentLoaded", () => {
     loadCustomModelsToDropdown();
+    loadCustomPhasesToDropdown();
     initResizablePreview();
 
     const savedVisible = localStorage.getItem("previewVisible");
@@ -297,10 +332,10 @@
     const formData = new FormData(form);
     const data = Object.fromEntries(formData);
 
-    data.kelas = {
+    data.GROUP_AGE = {
       "kelompok_a": "Kelompok A (4-5 Tahun)",
       "kelompok_b": "Kelompok B (5-6 Tahun)"
-    }[data.kelas] || data.kelas;
+    }[data.GROUP_AGE] || data.GROUP_AGE;
 
     const mergedData = { ...data, ...rppObject };
 
@@ -441,11 +476,14 @@
   }
 
   function pilihTipeRPP(tipe) {
-    document.getElementById("tipe_rpp").value = tipe;
+    const isRpph = tipe === "rpph";
+    document.getElementById("rpp_type").value = isRpph ? "HARIAN" : "MINGGUAN";
+    document.getElementById("initial_type").value = isRpph ? "H" : "M";
+
     const btnRpph = document.getElementById("btn_rpph");
     const btnRppm = document.getElementById("btn_rppm");
 
-    if (tipe === "rpph") {
+    if (isRpph) {
       btnRpph.className = BTN_CLASSES.active;
       btnRppm.className = BTN_CLASSES.inactive;
     } else {
@@ -468,5 +506,64 @@
       container.classList.remove("flex");
       icon.style.transform = "rotate(0deg)";
     }
+  }
+
+  function handlePhaseChange() {
+    const select = document.getElementById("fase");
+    const container = document.getElementById("custom_phase_container");
+    const btn = document.getElementById("btn_add_custom_phase");
+
+    if (select.value === "__custom__") {
+      showAddCustomPhase();
+    } else {
+      container.classList.add("hidden");
+      btn.classList.add("hidden");
+      select.value = select.options[select.selectedIndex].value;
+    }
+  }
+
+  function showAddCustomPhase() {
+    const container = document.getElementById("custom_phase_container");
+    const input = document.getElementById("custom_phase_input");
+    const select = document.getElementById("fase");
+
+    select.value = "__custom__";
+    container.classList.remove("hidden");
+    input.focus();
+  }
+
+  function saveCustomPhase() {
+    const input = document.getElementById("custom_phase_input");
+    const select = document.getElementById("fase");
+    const phaseName = input.value.trim();
+
+    if (!phaseName) {
+      alert("Silakan masukkan nama fase!");
+      return;
+    }
+
+    const customPhases = getCustomPhases();
+    if (!customPhases.includes(phaseName)) {
+      customPhases.push(phaseName);
+      saveCustomPhasesToStorage(customPhases);
+
+      const option = document.createElement("option");
+      option.value = phaseName;
+      option.textContent = phaseName;
+      select.insertBefore(option, select.querySelector('option[value="__custom__"]'));
+    }
+
+    select.value = phaseName;
+    cancelCustomPhase();
+  }
+
+  function cancelCustomPhase() {
+    const container = document.getElementById("custom_phase_container");
+    const input = document.getElementById("custom_phase_input");
+    const select = document.getElementById("fase");
+
+    container.classList.add("hidden");
+    input.value = "";
+    select.value = "";
   }
 </script>

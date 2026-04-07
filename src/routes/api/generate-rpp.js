@@ -1,138 +1,107 @@
 import { AppRoute } from "../index.js";
 import G4F from "../../lib/g4f.js";
-import { parseMarkdownToObject } from "../../utils/utils.js";
+import { parseMarkdownToObject, getKeysDescriptionFromMarkdown, removeCommentsFromMarkdown } from "../../utils/utils.js";
+import format from "string-template";
+import fs from "node:fs";
+import path from "node:path";
+
+const __dirname = import.meta.dirname;
 
 const g4f = new G4F(process.env.G4F_API_KEY, "default");
+const MAX_REGENERATION_ATTEMPTS = 3;
+
+const templateMd = fs.readFileSync(path.join(__dirname, "../../template.md"), "utf-8");
 
 export const route = new AppRoute("/generate-rpp", "post", async (req, res) => {
   try {
     const { data } = req.body;
-    console.log("Received data for RPP generation:", data);
 
     // Validation
     const requiredFields = [
-      "semester",
-      "tahun_ajaran",
-      "kelas",
-      "alokasi_waktu",
-      "model_pembelajaran",
-      "tema_subtema",
-      "tujuan_pembelajaran",
-      "hari_tanggal",
-      "tipe_rpp",
+      "RPP_TYPE",
+      "INITIAL_TYPE",
+      "SCHOOL_NAME",
+      "THEME_SUBTHEME",
+      "PHASE",
+      "DAY_DATE",
+      "SEMESTER_WEEK",
+      "ACADEMIC_YEAR",
+      "GROUP_AGE",
+      "TIME_ALLOCATION",
+      "LEARNING_MODEL",
     ];
+
+    const keysWithDescriptions = getKeysDescriptionFromMarkdown(templateMd);
+    const formattedTemplate = format(templateMd, data);
+    console.log("Formatted template:", formattedTemplate);
+    console.log("Keys description:", getKeysDescriptionFromMarkdown(templateMd));
+
     const missingFields = requiredFields.filter((field) => !data[field]);
     if (missingFields.length > 0) {
-      return res
-        .status(400)
-        .json({
-          error: `Missing required fields: ${missingFields.join(", ")}`,
-        });
+      return res.status(400).json({
+        error: `Missing required fields: ${missingFields.join(", ")}`,
+      });
     }
 
-    // Format Hari/Tanggal ke format Indonesia (contoh: Senin, 1 Januari 2011)
-    if (data.hari_tanggal && data.hari_tanggal.includes("-")) {
-      const [yyyy, mm, dd] = data.hari_tanggal.split("-");
+    // Format date to Indonesian format (e.g., Senin, 1 Januari 2011)
+    if (data.DAY_DATE && data.DAY_DATE.includes("-")) {
+      const [yyyy, mm, dd] = data.DAY_DATE.split("-");
       const dateObj = new Date(yyyy, mm - 1, dd);
       const namaHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
       const namaBulan = [
         "Januari", "Februari", "Maret", "April", "Mei", "Juni",
         "Juli", "Agustus", "September", "Oktober", "November", "Desember"
       ];
-      data.hari_tanggal = `${namaHari[dateObj.getDay()]}, ${parseInt(dd, 10)} ${namaBulan[dateObj.getMonth()]} ${yyyy}`;
+      data.DAY_DATE = `${namaHari[dateObj.getDay()]}, ${parseInt(dd, 10)} ${namaBulan[dateObj.getMonth()]} ${yyyy}`;
     }
 
-    let prompt = `Informasi\n Semester/Minggu ke: ${data.semester}\ntahun Ajaran: ${data.tahun_ajaran}\nKelas: ${data.kelas}\nAlokasi Waktu: ${data.alokasi_waktu}\nModel Pembelajaran: ${data.model_pembelajaran}\nTema/Subtema: ${data.tema_subtema}\nTujuan Pembelajaran: ${data.tujuan_pembelajaran}`;
+    // Build prompt for AI
+    const buildPromptFromTemplate = (data, keysDesc) => {
+      const promptParts = [
+        `Informasi:\nSemester/Minggu ke: ${data.SEMESTER_WEEK}\nTahun Ajaran: ${data.ACADEMIC_YEAR}\nKelompok Usia: ${data.GROUP_AGE}\nAlokasi Waktu: ${data.TIME_ALLOCATION}\nModel Pembelajaran: ${data.LEARNING_MODEL}\nTema/Subtema: ${data.THEME_SUBTHEME}\nFase: ${data.PHASE}`,
+        `\n\nAnda adalah seorang AI yang ahli dalam membuat Rencana Pelaksanaan Pembelajaran (RPP). Anda akan mengisi template RPP dengan konten yang sesuai.`,
+      ];
 
-    prompt += `Isi key 'materi' dengan materi pembelajaran yang sesuai dengan tema/subtema di atas. Jangan berisi daftar item, cukup buat dalam bentuk paragraf saja.`;
-    prompt += `Isi key 'KD' yang sesuai dengan tujuan pembelajaran contoh '1.1, 1.2, 3.1, 4.1, 3.2 4.2, 3.4, 4.4, 2.1, 2.4 3.3, 4.3, 2.5 2.9, 2.2, 3.6, 
-4.6, 3.10 4.10, 3.11, 4.11, 3.12 4.12.'`;
-    prompt += `Isi key 'indikator_capaian_pembelajaran' dengan beberapa indikator capaian pembelajaran pada kegiatan pembelajaran.`;
-    prompt += `Isi key 'media_belajar' dengan media pembelajaran yang akan digunakan.`;
-    prompt += `Isi key 'kegiatan' dengan kegiatan pembelajaran yang sesuai dengan model pembelajaran yang dipilih. Terdapat juga waktu untuk setiap kegiatan, dibuat dalam bentuk table dengan 3 kolom yaitu Kegiatan, Deskripsi Kegiatan, dan Waktu. KEgiatan harus diawali dengan kegiata pendahuluan seperti doa, absensi, apersepsi, kesepakatan, kemudian diikuti dengan kegiatan inti dan diakhiri dengan kegiatan penutup. Isi kolom Deskripsi Kegiatan dapat berupa list item yang menjelaskan langkah-langkah kegiatan.`;
-    prompt += `Isi key 'indikator_penilaian' dengan penilaian yang sesuai dengan kegiatan pembelajaran. Harus dalam bentuk table dengan 3 kolom yaitu Program Pengembangan, KD, dan Indikator.`;
-    prompt += `Isi key 'teknik_penilaian' dengan teknik penilaian yang sesuai dengan kegiatan pembelajaran. Harus dalam bentuk table dengan 2 kolom yaitu Teknik dan Deskripsi. Teknik penilaian bisa berupa catatan hasil karya, anekdot, dan lain sebagainya.`;
-    prompt += `Opsional (jika benar-benar dibutuhkan): Isi key 'konten_tambahan' dengan konten tambahan yang sesuai dengan tema/subtema di atas (wajib memiliki title markdown contoh: #konten_tambahan\n## Kisah\ncontent).`;
+      // Add instructions for each key in template
+      for (const [key, description] of Object.entries(keysDesc)) {
+        // Skip keys yang sudah diisi dari form
+        if (["RPP_TYPE", "INITIAL_TYPE", "SCHOOL_NAME", "THEME_SUBTHEME", "DAY_DATE", "SEMESTER_WEEK", "ACADEMIC_YEAR", "GROUP_AGE", "TIME_ALLOCATION", "LEARNING_MODEL", "PHASE"].includes(key)) {
+          continue;
+        }
+
+        promptParts.push(`\nIsi key '${key}': ${description}`);
+      }
+
+      return promptParts.join("\n");
+    };
+
+    const prompt = buildPromptFromTemplate(data, keysWithDescriptions);
 
     let rpp = await g4f.chat(prompt);
     let rppObject = parseMarkdownToObject(rpp);
 
-    // Validate that all required keys are present in the generated RPP object
-    const requiredKeys = [
-      "materi",
-      "KD",
-      "indikator_capaian_pembelajaran",
-      "media_belajar",
-      "kegiatan",
-      "indikator_penilaian",
-      "teknik_penilaian",
-    ];
+    // Validate and regenerate if missing required keys
+    const requiredKeys = [...Object.keys(keysWithDescriptions)].filter((key) => !["RPP_TYPE", "INITIAL_TYPE", "SCHOOL_NAME", "THEME_SUBTHEME", "DAY_DATE", "SEMESTER_WEEK", "ACADEMIC_YEAR", "GROUP_AGE", "TIME_ALLOCATION", "LEARNING_MODEL", "PHASE"].includes(key));
+
     let missingKeys = requiredKeys.filter((key) => !rppObject[key]);
     let attemptCount = 0;
-    while (missingKeys.length > 0 || rpp.match(":konten_tambahan\n")) {
+
+    while (missingKeys.length > 0) {
       attemptCount++;
-      if (attemptCount > 3) {
-        console.warn(
-          "Maximum regeneration attempts reached. Proceeding with incomplete RPP.",
-        );
+      if (attemptCount > MAX_REGENERATION_ATTEMPTS) {
+        console.warn("Maximum regeneration attempts reached. Proceeding with incomplete RPP.");
         break;
       }
 
-      console.warn(
-        `Generated RPP is missing required keys: ${missingKeys.join(", ")}. Regenerating...`,
-      );
+      console.warn(`Missing keys: ${missingKeys.join(", ")}. Regenerating...`);
       rpp = await g4f.chat(prompt);
       rppObject = parseMarkdownToObject(rpp);
       missingKeys = requiredKeys.filter((key) => !rppObject[key]);
     }
 
-    const result = `# RENCANA PEMBELAJARAN ${data.tipe_rpp === "rpph" ? "HARIAN" : "MINGGUAN"} (${data.tipe_rpp.toUpperCase()})<br>TAHUN AJARAN ${data.tahun_ajaran}
-
-**Kelompok/Usia**\t: ${data.kelas}<br>
-**Semester/Minggu ke**\t: ${data.semester}<br>
-**Alokasi Waktu**\t: ${data.alokasi_waktu}<br>
-**Hari/Tanggal**\t\t: ${data.hari_tanggal}<br>
-**Tema/Subtema**\t: ${data.tema_subtema}<br>
-**Model Pembelajaran**\t: ${data.model_pembelajaran}<br>
-
-## A. Materi dan Kopetensi Dasar
-
-Materi: ${rppObject.materi}
-
-KD: ${rppObject.KD}
-
-## B. Indikator Capaian Pembelajaran
-
-Beberapa indikator capaian pembelajaran pada kegiatan ini antara lain :
-
-${rppObject.indikator_capaian_pembelajaran}
-
-## C. Media / Sumber Belajar
-
-Beberapa media pembelajaran yang akan digunakan antara lain:
-
-${rppObject.media_belajar}
-
-## D. Kegiatan
-
-${rppObject.kegiatan}
-
-## E. Penilaian
-
-### 1. Indikator Penilaian
-
-${rppObject.indikator_penilaian}
-
-### 2. Teknik Penilaian
-
-${rppObject.teknik_penilaian}
-
-${rppObject.konten_tambahan ? "<breakPage/>\n" + rppObject.konten_tambahan : ""}
-`;
-
-    console.log("Generated RPP raw markdown:", rpp);
-    console.log("Generated RPP:", JSON.stringify(rppObject, null, 2));
-    console.log("Generated RPP (formatted):", result);
+    // Format final RPP output
+    const result = format(removeCommentsFromMarkdown(templateMd), { ...data, ...rppObject });
+    console.log("Final RPP output:", result);
 
     res.json({ rpp: result, obj: rppObject });
   } catch (error) {

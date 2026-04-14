@@ -8,7 +8,8 @@
     "start": "node src/index.js",
     "tailwindcss": "npx @tailwindcss/cli -i ./src/main.css -o ./public/css/main.css --watch",
     "poc:vm-executor": "node poc/vm-executor.js",
-    "poc:vm-docx": "node poc/vm-docx.js"
+    "poc:vm-docx": "node poc/vm-docx.js",
+    "poc:vm-generate-docx": "node poc/vm-generate-docx.js"
   },
   "keywords": [],
   "author": "",

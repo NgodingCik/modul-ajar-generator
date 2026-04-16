@@ -44,3 +44,16 @@ export function removeCommentsFromMarkdown(markdown) {
     .replace(/\n\s*\n+/g, '\n')           // Hapus baris kosong berlebih
     .trim();
 }
+
+export function removeImportRequire(content) {
+  return content
+    // Single-line: import ... ; or require(...);
+    .replace(/^\s*(import|require)(\s+|\s*\()([^\n]*?);?\s*$/gm, '')
+    // Multi-line dynamic import(...) or require(...)
+    .replace(/^\s*(import|require)\s*\([\s\S]*?\)\s*;?\s*$/gm, '')
+    // Multi-line static import ... from '...' (no semicolon, spread across lines)
+    .replace(/^\s*import\s[\s\S]*?from\s+['"][^'"]+['"]\s*;?\s*$/gm, '')
+    // Remove excess blank lines
+    .replace(/\n\s*\n+/g, '\n')
+    .trim();
+}

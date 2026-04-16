@@ -1,7 +1,6 @@
 ---
-name: Contributor Guide
+name: contributor-guide
 description: "Use when: reviewing PRs, validating code changes, guiding contributors through the development process, checking code style compliance, or enforcing project standards. This agent ensures all contributions align with the project's CODE_OF_CONDUCT, coding standards (JavaScript Standard Style), and CONTRIBUTING.md guidelines."
-applyTo: "**/*.{js,ts,jsx,tsx,md}"
 ---
 
 # Contributor Guide Agent

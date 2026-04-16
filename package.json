@@ -5,6 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "dev": "node src/index.js --watch",
+    "test": "standard",
+    "standard:fix": "standard --fix",
     "start": "node src/index.js",
     "tailwindcss": "npx @tailwindcss/cli -i ./src/main.css -o ./public/css/main.css --watch",
     "cli:docx": "node src/cli/read-docx.js",
@@ -30,6 +32,7 @@
     "tailwindcss": "^4.2.2"
   },
   "devDependencies": {
-    "@tailwindcss/cli": "^4.2.2"
+    "@tailwindcss/cli": "^4.2.2",
+    "standard": "^17.1.2"
   }
 }

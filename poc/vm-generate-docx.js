@@ -2,18 +2,20 @@ import fs from "fs";
 import path from "path";
 import vm from "vm";
 import * as docx from "docx";
+import { removeImportRequire } from "../src/utils/utils.js";
 
 const __dirname = import.meta.dirname;
 const __filename = import.meta.filename;
 
 const tempCode = fs.readFileSync(path.join(__dirname, "scripts/example-docx.js"), "utf-8");
+const cleanedCode = removeImportRequire(tempCode);
 
 const shared = {
   buffer: null,
 };
 
 const code = `
-${tempCode}
+${cleanedCode}
 `;
 
 const contect = {

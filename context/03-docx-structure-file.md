@@ -1,11 +1,8 @@
 # DOCX Structure
 
-> **CRITICAL INSTRUCTION FOR AI:**
-> You **MUST** follow the structure of `example-modul-ajar.docx` and preserve its main keys and order. You **MUST NOT** remove, rename, or reorder the core keys below.
-> If `example-modul-ajar.docx` is not provided, you **MUST** use this file as the canonical fallback template.
-> This structure is intended for **Modul Ajar PAUD/TK** and must keep PAUD/TK context in the content values.
+Dokumen ini menjelaskan struktur dan isi dari setiap bagian dalam file `.docx`. Pada file `.docx`, harus mengikuti struktur yang telah ditentukan, dengan key utama yang wajib ada dan tidak boleh diubah. Setiap key memiliki fungsi dan isi yang spesifik sesuai dengan kebutuhan dokumen pembelajaran anak usia dini (PAUD/TK).
 
-This document defines the required structure reference extracted from `example-modul-ajar.docx` using `npm run cli:docx -- example-modul-ajar.docx --structure` plus content extraction from `word/document.xml`.
+---
 
 ## 1) DOCX Package Keys (Must Be Preserved)
 
@@ -14,21 +11,21 @@ Use this OOXML package skeleton as the baseline:
 ```text
 [Content_Types].xml
 _rels/
-	.rels
+  .rels
 docProps/
-	app.xml
-	core.xml
-	custom.xml
+  app.xml
+  core.xml
+  custom.xml
 word/
-	_rels/
-		document.xml.rels
-	document.xml
-	fontTable.xml
-	numbering.xml
-	settings.xml
-	styles.xml
-	theme/
-		theme1.xml
+  _rels/
+    document.xml.rels
+  document.xml
+  fontTable.xml
+  numbering.xml
+  settings.xml
+  styles.xml
+  theme/
+    theme1.xml
 ```
 
 Rules:
@@ -36,77 +33,168 @@ Rules:
 - Keep required document files in `word/`: `document.xml`, `styles.xml`, `numbering.xml`, and `settings.xml`.
 - Keep `word/_rels/document.xml.rels` and `word/theme/theme1.xml`.
 
-## 2) Main Content Keys in `word/document.xml` (Must Be Preserved)
+---
 
-The AI output should keep this core heading flow and key labels:
+## 2) Main Content Keys in `word/document.xml`
 
-1. `MODUL AJAR DEEP LEARNING`
-2. `MATA PELAJARAN : ...` (for PAUD/TK value, use `Mata Kegiatan / Bidang Perkembangan`)
-3. `BAB 1 : ...` (for PAUD/TK value, use `Tema / Subtema`)
-4. `A. IDENTITAS MODUL`
-5. `B. IDENTIFIKASI KESIAPAN PESERTA DIDIK`
-6. `C. KARAKTERISTIK MATERI PELAJARAN`
-7. `D. DIMENSI PROFIL LULUSAN`
-8. `DESAIN PEMBELAJARAN`
-9. `A. CAPAIAN PEMBELAJARAN (CP)`
-10. `B. LINTAS DISIPLIN ILMU`
-11. `C. TUJUAN PEMBELAJARAN`
-12. `D. TOPIK PEMBELAJARAN KONTEKSTUAL`
-13. `E. KERANGKA PEMBELAJARAN`
-14. `F. LANGKAH-LANGKAH PEMBELAJARAN BERDIFERENSIASI`
-15. `G. ASESMEN PEMBELAJARAN`
+### 1. MODUL AJAR FASE FONDASI
+Judul utama dokumen. Jangan diubah untuk memastikan kategori jenjang PAUD/TK.
 
-PAUD/TK adaptation note:
-- Keep the same heading keys and order, but use PAUD/TK-specific values in each section.
-- Use `Fase Fondasi` and age-group context where relevant.
+---
 
-## 3) Required Sub-Keys
+### 2. TOPIK/SUB-TOPIK : ...
+Isi dengan tema besar dan fokus bahasan yang menarik bagi anak.
+Contoh: 
+- Topik: Aku Sayang Bumi
+- Sub-topik: Mengelola Sampah di Sekolah
 
-### A. IDENTITAS MODUL
-- `Jenjang : PAUD/TK`
-- `Nama Sekolah`
-- `Nama Penyusun`
-- `Tema/Sub Tema`
-- `Kel. / Fase / Semester` (PAUD/TK format example: `Kelompok A/B / Fase Fondasi / Semester ...`)
-- `Alokasi Waktu`
-- `Tahun Pelajaran`
+---
 
-### E. KERANGKA PEMBELAJARAN
-- `PRAKTIK PEDAGOGIK`
-- `KEMITRAAN PEMBELAJARAN`
-- `LINGKUNGAN BELAJAR`
-- `PEMANFAATAN DIGITAL`
+### 3. MINGGU KE : ...
+Isi dengan urutan minggu pelaksanaan dalam satu semester.
 
-### F. LANGKAH-LANGKAH PEMBELAJARAN BERDIFERENSIASI
-- `PERTEMUAN 1` to `PERTEMUAN 6`
-- Each meeting should keep three blocks:
-	- `KEGIATAN PENDAHULUAN`
-	- `KEGIATAN INTI`
-	- `KEGIATAN PENUTUP`
+---
 
-### G. ASESMEN PEMBELAJARAN
-- `ASESMEN DIAGNOSTIK`
-- `ASESMEN FORMATIF`
-- `ASESMEN SUMATIF`
-- `Contoh Tes Tertulis`
-	- `A. Pilihan Ganda`
-	- `B. Esai`
+### 4. A. IDENTITAS MODUL
 
-## 4) AI Generation Rules
+Berisi data umum administrasi sekolah:
 
-- Preserve section sequence exactly.
-- Preserve lettered section keys (`A.`, `B.`, `C.`, etc.) in each major block.
-- Preserve mandatory sub-keys even when content is brief.
-- Content can be adapted, but key headings and structural anchors must remain.
-- If uncertain, prefer keeping the original key labels from the template.
-- Keep content tone and examples appropriate for PAUD/TK learners (play-based, concrete, age-appropriate).
-- Avoid high-school-style subject framing in values unless explicitly requested by the user.
+- Nama Sekolah → Nama instansi PAUD/TK
+- Nama Penyusun → Guru kelas atau pembuat modul
+- NIP → Opsional (untuk guru ASN)
+- Fase / Kelompok / Semester → Fase Fondasi / Kelompok A (4-5 thn) atau B (5-6 thn) / Semester berjalan
+- Alokasi Waktu → Durasi pelaksanaan (misal: 1 Minggu / 5-6 Pertemuan)
+- Tahun Pelajaran → Tahun ajaran berjalan
 
-## 5) Fallback Rules If Template DOCX Is Not Provided
+---
 
-- Do not block generation when `example-modul-ajar.docx` is missing.
-- Use this file as the primary structure source.
-- Keep all main keys, section order, and required sub-keys exactly as defined above.
-- Fill unknown values with placeholders (for example: `................................................`) instead of changing structure.
-- If user only provides topic/title, update content values only and keep the full structure intact.
+### 5. B. IDENTIFIKASI KESIAPAN PESERTA DIDIK
 
+Isi dengan pemetaan awal kondisi anak:
+
+- Pengetahuan Awal → Apa yang sudah diketahui anak tentang topik terkait
+- Minat → Hal spesifik yang disukai anak (misal: suka menggambar, suka bermain air)
+- Latar Belakang → Kondisi lingkungan atau kebiasaan di rumah
+- Kebutuhan Belajar → Fokus perkembangan (Motorik, Sensorik, atau Sosial-Emosional)
+
+---
+
+### 6. C. KARAKTERISTIK KEGIATAN BERMAIN
+
+Isi dengan deskripsi teknis kegiatan:
+
+- Peta Konsep → Gambaran hubungan antar ide dalam topik pembelajaran
+- Relevansi Kontekstual → Mengapa topik ini penting bagi kehidupan sehari-hari anak
+- Nilai Karakter → Pembiasaan profil pelajar yang ingin dibentuk (misal: kemandirian)
+- Tingkat Stimulasi → Fokus perkembangan (Bahasa, Kognitif, Fisik)
+
+---
+
+### 7. D. DIMENSI PROFIL PELAJAR PANCASILA
+
+Pilih elemen kompetensi yang ingin dicapai melalui kegiatan bermain:
+
+- Beriman, Bertakwa kepada Tuhan YME, dan Berakhlak Mulia
+- Mandiri
+- Gotong Royong
+- Kreatif
+- Bernalar Kritis
+- Kebinekaan Global
+
+---
+
+## DESAIN PEMBELAJARAN
+
+---
+
+### 8. A. CAPAIAN PEMBELAJARAN (CP)
+
+Isi dengan elemen CP Fase Fondasi yang disasar:
+
+- Nilai Agama dan Budi Pekerti
+- Jati Diri
+- Dasar-dasar Literasi, Matematika, Sains, Teknologi, Rekayasa, dan Seni (STEAM)
+
+---
+
+### 9. B. PERTANYAAN PEMANTIK
+
+Isi dengan kalimat tanya terbuka untuk memicu rasa ingin tahu anak.
+Contoh: "Bagaimana ya kalau di dunia ini tidak ada air?"
+
+---
+
+### 10. C. TUJUAN PEMBELAJARAN
+
+Isi dengan target perkembangan yang ingin dicapai setiap hari/minggu:
+
+- Apa yang diharapkan dapat dilakukan atau dipahami anak
+- Disusun berdasarkan elemen CP
+
+---
+
+### 11. D. SARANA DAN PRASARANA
+
+Isi dengan alat dan bahan yang dibutuhkan:
+
+- Alat main (Loose parts, bahan alam, alat tulis)
+- Media (Buku cerita, video, gambar)
+
+---
+
+### 12. E. KERANGKA PEMBELAJARAN
+
+#### PRAKTIK PEDAGOGIK
+Isi dengan:
+- Model Pembelajaran (Sentra, Kelompok, Area, atau Proyek)
+- Metode (Eksplorasi, Tanya Jawab, Demonstrasi)
+
+#### KEMITRAAN PEMBELAJARAN
+Isi dengan:
+- Pihak terlibat (Orang tua sebagai narasumber, kunjungan ke lingkungan sekitar)
+
+#### LINGKUNGAN BELAJAR
+Isi dengan:
+- Penataan lingkungan main (Lingkungan aman, nyaman, dan kaya literasi)
+
+#### PEMANFAATAN DIGITAL
+Isi dengan:
+- Penggunaan alat digital sederhana (Tablet untuk melihat gambar, Speaker untuk musik)
+
+---
+
+### 13. F. LANGKAH-LANGKAH KEGIATAN BERMAIN (BERDIFERENSIASI)
+
+Wajib disusun per pertemuan (misal Hari 1 s.d Hari 6):
+
+- KEGIATAN PEMBUKA → Lingkaran pagi, bernyanyi, diskusi pemantik
+- KEGIATAN INTI → Pilihan kegiatan main (Invitasi) yang bisa dipilih anak
+- KEGIATAN PENUTUP → Recalling (diskusi perasaan), penguatan, doa
+
+---
+
+### 14. G. ASESMEN PEMBELAJARAN
+
+*(Catatan: PAUD tidak menggunakan tes tertulis/angka)*
+
+#### CEKLIS
+Untuk memantau perkembangan rutin harian
+
+#### CATATAN ANEKDOT
+Untuk mencatat peristiwa unik atau signifikan pada anak
+
+#### HASIL KARYA
+Analisis terhadap produk yang dihasilkan anak (gambar, bangunan, dll)
+
+#### FOTO BERSERI
+Dokumentasi proses aktivitas anak dari awal hingga akhir
+
+---
+
+## 3) Aturan Penting
+
+- Struktur dan urutan **tidak boleh diubah**.
+- Semua key **wajib ada** untuk menjaga konsistensi data.
+- Isi materi harus menggunakan bahasa yang mudah dipahami guru PAUD.
+- Jika data belum tersedia, gunakan placeholder **(.....)**.
+```

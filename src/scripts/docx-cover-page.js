@@ -13,7 +13,7 @@ const coverPage = {
         children: [
           new ImageRun({
             data: fs.readFileSync(
-              path.join(__dirname, "../assets/tut-wuri-handayani.png"),
+              path.join(__dirname, "../../assets/tut-wuri-handayani.png"),
             ),
             transformation: {
               width: 200,

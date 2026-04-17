@@ -323,3 +323,16 @@ Pada output terdapat simbol atau emoji seperti '—', '•', atau '📚' yang di
 ```
 
 Tidak ada penggunaan `createParagraph(" ")` untuk membuat jarak antar elemen, gunakan `createParagraph('')` untuk membuat efek spacing atau jarak antar elemen, atau lebih baik lagi gunakan fitur spacing yang sudah disediakan oleh docx.js untuk mengatur jarak antar elemen secara konsisten.
+
+---
+
+```
+createHeading('MODUL AJAR FASE FONDASI', 'Title'),
+createParagraph('TOPIK/SUB-TOPIK : Keluarga / Anggota Keluarga', 'Normal'),
+createParagraph('MINGGU KE : 1', 'Normal'),
+```
+
+Implementasi diatas salah, seharusnya cukup seperti ini
+```
+createHeading('MODUL AJAR DEEP LEARNING\nTEMA/SUBTEMA: Diriku/Tubuhku\nBAB I: MENGENAL BAGIAN TUBUH', 1, true),
+```

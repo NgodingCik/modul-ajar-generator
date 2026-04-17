@@ -1,6 +1,6 @@
 # API Documentation
 
-This document describes the utility functions available in `docx-api.js` for building structured Word (`.docx`) documents using the `docx` library. It also provides a comprehensive usage example.
+This document describes the utility functions for easily building structured Word (`.docx`) documents using the `docx` library. It also provides a comprehensive usage example.
 
 ## Functions
 

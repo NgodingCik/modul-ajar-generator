@@ -1,13 +1,10 @@
 # Default DOCX Configuration
 
-> **CRITICAL INSTRUCTION FOR AI:** 
-> You **MUST NOT** create or reinvent your own configuration objects for page sizes, margins, typography, or spacing. You **MUST** directly use the predefined variable names (`properties`, `spacing`, and `paragraphStyles`) from `docx-config.js`. Do not inline or hardcode these values anywhere else.
-
-This document instructs developers and AI agents on how to apply the default document configurations defined in `docx-config.js`. Using these predefined variables ensures that all generated `.docx` files share a consistent styling, page sizing, and typography.
+This document instructs on how to apply the default document configurations. Using these predefined variables ensures that all generated `.docx` files share a consistent styling, page sizing, and typography.
 
 ## Predefined Configuration Variables
 
-The `docx-config.js` file exports three fundamental configuration objects:
+Three fundamental configuration objects or variables are defined to standardize the document creation process:
 
 ### 1. `properties`
 Defines the default page layout and margins. 

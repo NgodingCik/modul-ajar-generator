@@ -1,42 +1,21 @@
 import fs from 'fs'
 import path from 'path'
-import vm from 'vm'
-import * as docx from 'docx'
-import { removeImportRequire } from '../src/utils/utils.js'
+import { removeImportRequire, extractCodeFromMarkdownFence } from '../src/utils/utils.js'
+import generateDocxInVM from '../src/lib/vm-generate-docx.js'
 
 const __dirname = import.meta.dirname
-const __filename = import.meta.filename
 
-const tempCode = fs.readFileSync(path.join(__dirname, 'scripts/example-docx.js'), 'utf-8')
-const cleanedCode = removeImportRequire(tempCode)
-
-const shared = {
-  buffer: null
-}
-
-const code = `
-${cleanedCode}
-`
-
-const contect = {
-  console,
-  fs,
-  path,
-  __dirname,
-  __filename,
-  shared,
-  ...docx
-}
+const tempCode = fs.readFileSync(path.join(__dirname, '../ai_response.txt'), 'utf-8')
+console.log('Original AI Response:\n', tempCode)
+const cleanedCode = removeImportRequire(extractCodeFromMarkdownFence(tempCode))
+console.log('Cleaned Code to Execute:\n', cleanedCode)
 
 try {
-  const result = vm.runInNewContext(code, contect)
+  const result = generateDocxInVM(cleanedCode)
   if (result && typeof result.then === 'function') {
     result
       .then(() => {
-        console.log(
-          'Buffer in shared object after VM execution:',
-          shared.buffer ? 'Buffer exists' : 'No buffer'
-        )
+        console.log('VM code executed successfully.')
       })
       .catch((err) => {
         console.error('Error in async code within VM:', err)

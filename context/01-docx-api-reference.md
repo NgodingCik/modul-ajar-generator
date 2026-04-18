@@ -138,6 +138,15 @@ Enhanced table builder with Row objects and advanced table styling.
   - **Parameters:** `label1` (String), `value1` (String), `label2` (String), `value2` (String)
   - **Returns:** `TableWrapper` (for chaining)
 
+- **`setAutoWidth(auto)`**: Enables or disables automatic table width based on content. When enabled, the table layout is set to `autofit` so Word adjusts column widths to content.
+  - **Parameters:** `auto` (Boolean)
+  - **Returns:** `TableWrapper` (for chaining)
+  - **Parameters:** `auto` (Boolean)
+  - **Returns:** `TableWrapper` (for chaining)
+
+- **`setFitContent()`**: Convenience alias for `setAutoWidth(true)`.
+  - **Returns:** `TableWrapper` (for chaining)
+
 - **`addRowObject(row)`**: Adds a pre-built `Row` object to the table.
   - **Parameters:** `row` (Row)
   - **Returns:** `TableWrapper` (for chaining)

@@ -7,10 +7,9 @@ import {
   BorderStyle,
   ShadingType,
   AlignmentType,
+  TableLayoutType,
   TextRun
 } from 'docx'
-
-// API ----------------------------------------------------------
 
 /**
  * Row class for table rows with styling capabilities
@@ -232,6 +231,8 @@ class TableWrapper {
     this.indent = { size: 0, type: WidthType.AUTO }
     this.borders = null
     this.margins = null
+    this.autoWidth = false
+    this.layout = null
   }
 
   /**
@@ -319,6 +320,28 @@ class TableWrapper {
   }
 
   /**
+   * Set table to fit its content automatically
+   * @param {boolean} auto - Enable or disable auto width
+   * @returns {TableWrapper} - For chaining
+   */
+  setAutoWidth (auto = true) {
+    this.autoWidth = auto
+    if (auto) {
+      this.width = { size: 100, type: WidthType.PERCENTAGE }
+      this.layout = TableLayoutType.AUTOFIT
+    }
+    return this
+  }
+
+  /**
+   * Alias for setAutoWidth(true)
+   * @returns {TableWrapper} - For chaining
+   */
+  setFitContent () {
+    return this.setAutoWidth(true)
+  }
+
+  /**
    * Set table borders
    * @param {Object} borders - Border configuration
    * @returns {TableWrapper} - For chaining
@@ -362,8 +385,15 @@ class TableWrapper {
 
     const tableOptions = {
       rows: tableRows,
-      width: this.width,
       indent: this.indent
+    }
+
+    if (this.width) {
+      tableOptions.width = this.width
+    }
+
+    if (this.layout) {
+      tableOptions.layout = this.layout
     }
 
     if (this.borders) {
@@ -711,7 +741,15 @@ const formField = (label) => [ // eslint-disable-line no-unused-vars
   })
 ]
 
-// Export the classes
-export { TableWrapper, Row }
-
-// --------------------------------------------------------------
+export {
+  Row,
+  TableWrapper,
+  parseHtmlTags,
+  createParagraph,
+  createTitle,
+  createHeading,
+  createHeadingWithChildren,
+  bulletPoint,
+  titleCell,
+  formField
+}

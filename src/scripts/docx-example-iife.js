@@ -27,8 +27,69 @@ import path from 'path'
       {
         properties,
         children: [
-          createHeading('MODUL AJAR DEEP LEARNING\nTEMA/SUBTEMA: Keluarga / Anggota Keluarga\nBAB I: MENGENAL ANGGOTA KELUARGA', 1, true),
+          new Table({
+            rows: [
+              new TableRow({
+                children: [ titleCell('MODUL AJAR PENDIDIKAN ANAK USIA DINI  KURIKULUM MERDEKA PERENCANAAN PEMBELAJARAN MENDALAM') ]
+              })
+            ],
+            width: {
+              size: 100,
+              type: WidthType.PERCENTAGE
+            },
+            indent: {
+              size: 0,
+              type: WidthType.AUTO
+            }
+          }),
           createParagraph(''),
+          new Table({
+            rows: [
+              new TableRow({
+                children: formField("Penyusun"),
+              }),
+              new TableRow({
+                children: formField("Satuan Pendidikan"),
+              }),
+              new TableRow({
+                children: formField("Fase"),
+              }),
+              new TableRow({
+                children: formField("Jenjang/Kelas"),
+              }),
+              new TableRow({
+                children: formField("Model Pembelajaran"),
+              }),
+              new TableRow({
+                children: formField("Semester"),
+              }),
+              new TableRow({
+                children: formField("Minggu Ke-"),
+              }),
+              new TableRow({
+                children: formField("Bulan"),
+              }),
+              new TableRow({
+                children: formField("Alokasi Waktu"),
+              }),
+              new TableRow({
+                children: formField("Jumlah Anak"),
+              }),
+              new TableRow({
+                children: formField("Tema/Subtema"),
+              })
+            ],
+            width: {
+              size: 100,
+              type: WidthType.PERCENTAGE
+            },
+            indent: {
+              size: 0,
+              type: WidthType.AUTO
+            }
+          }),
+          createHeading(`MODUL AJAR DEEP LEARNING\nTEMA/SUBTEMA: ${temaSubtema.toUpperCase()}\nSEMESTER ${convertNumToRoman(semester)} MINGGU KE: ${mingguKe}`, 1),
+          createParagraph(''), createParagraph(''), // Untuk memberi jarak setelah judul utama
           
           ...createHeadingWithChildren(
             'A. IDENTITAS MODUL',

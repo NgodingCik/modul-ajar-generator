@@ -336,3 +336,33 @@ Implementasi diatas salah, seharusnya cukup seperti ini
 ```
 createHeading('MODUL AJAR DEEP LEARNING\nTEMA/SUBTEMA: Diriku/Tubuhku\nBAB I: MENGENAL BAGIAN TUBUH', 1, true),
 ```
+
+---
+
+```
+createParagraph(''),
+
+createHeading('DESIGN PEMBELAJARAN', 2, false),
+createParagraph(''),
+```
+
+Diatas memang seperti tidak ada yang salah, cuman lebih bagus lagi jika kamu menambahkan space enter lagi untuk heading besar dengan level 1-2, hasilnya seperti ini:
+
+```
+createParagraph(''),
+
+createHeading('DESIGN PEMBELAJARAN', 2, false),
+createParagraph(''),
+createParagraph(''),
+```
+
+Dan seharusnya Heading2 text alignya itu center, bukan left, karena itu adalah heading besar yang memisahkan antara bagian pertama dengan bagian kedua, jadi lebih baik jika heading tersebut dibuat center agar terlihat lebih menonjol sebagai pembuka bagian kedua.
+
+Contoh yang benar seperti ini:
+```
+createParagraph(''),
+
+createHeading('DESIGN PEMBELAJARAN', 2, true),
+createParagraph(''),
+createParagraph(''),
+```

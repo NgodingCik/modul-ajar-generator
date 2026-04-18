@@ -1,6 +1,7 @@
 import OpenAIWrapper from '../../src/lib/openai.js'
 import fs from 'fs'
 import generateDocxInVM from '../../src/lib/vm-generate-docx.js'
+import { extractCodeFromMarkdownFence } from '../../src/utils/utils.js'
 
 async function main () {
   try {
@@ -44,8 +45,11 @@ async function main () {
     console.log('AI Response:\n', response)
     fs.writeFileSync('ai_response.txt', response)
 
+    // Remove code blocks from the response
+    const cleanResponse = extractCodeFromMarkdownFence(response)
+
     // Execute the code
-    const docxBuffer = await generateDocxInVM(response)
+    const docxBuffer = await generateDocxInVM(cleanResponse)
     if (docxBuffer) {
       fs.writeFileSync('generated_document.docx', docxBuffer)
       console.log('Document generated successfully: generated_document.docx')

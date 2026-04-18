@@ -5,13 +5,14 @@ import generateDocxInVM from '../src/lib/vm-generate-docx.js'
 
 const __dirname = import.meta.dirname
 
+const predefinedVar = fs.readFileSync(path.join(__dirname, '../src/scripts/docx-predefined-var.js'), 'utf-8')
 const tempCode = fs.readFileSync(path.join(__dirname, '../src/scripts/docx-example-iife.js'), 'utf-8')
 console.log('Original AI Response:\n', tempCode)
 const cleanedCode = removeImportRequire(extractCodeFromMarkdownFence(tempCode))
 console.log('Cleaned Code to Execute:\n', cleanedCode)
 
 try {
-  const result = generateDocxInVM(cleanedCode)
+  const result = generateDocxInVM(cleanedCode, predefinedVar)
   if (result && typeof result.then === 'function') {
     result
       .then(() => {

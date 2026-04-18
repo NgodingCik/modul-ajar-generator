@@ -66,6 +66,16 @@ Generates an array of two `TableCell` objects designed for a single `TableRow` t
   - `label` (String): The label for the form field.
 - **Returns:** `[TableCell, TableCell]`
 
+## Helper Functions
+
+### `convertNumToRoman(num)`
+Converts an integer to its Roman numeral representation.
+- **Parameters:**
+  - `num` (Number): The integer to convert.
+- **Returns:** `String` (Roman numeral)
+
+Example: `convertNumToRoman(1)` returns `"I"`.
+
 ---
 
 ## Example Usage

@@ -6,6 +6,7 @@ node_modules/
 *.env.test
 *.env.production
 *.log
+*.dbg
 package-lock.json
 yarn.lock
 bun.lock

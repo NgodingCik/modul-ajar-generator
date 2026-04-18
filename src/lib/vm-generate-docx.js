@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import vm from 'vm'
 import * as docx from 'docx'
-import { removeImportRequire } from '../utils/utils.js'
+import { removeImportRequire, convertNumToRoman } from '../utils/utils.js'
 
 const __dirname = import.meta.dirname
 const __filename = import.meta.filename
@@ -31,7 +31,7 @@ export default function generateDocxInVM (templateCode, predefinedVars = '') {
   const code = `
   ${removeImportRequire(configCode)}
   ${removeImportRequire(apiCode)}
-  ${typeof coverPageCode === 'string' ? removeImportRequire(coverPageCode) : ''}
+  ${typeof predefinedVars === 'string' ? removeImportRequire(predefinedVars) : ''}
   ${removeImportRequire(coverPageCode)}
   ${cleanedCode}
   `
@@ -44,6 +44,7 @@ export default function generateDocxInVM (templateCode, predefinedVars = '') {
     path,
     __dirname,
     __filename,
+    convertNumToRoman,
     shared,
     ...docx
   }

@@ -145,7 +145,7 @@ const createParagraph = (content, customSpacing = {}) => {
   })
 }
 
-const createTitle = (text, center = false, customSpacing = {}) => {
+const createTitle = (text, center = false, customSpacing = {}) => { // eslint-disable-line no-unused-vars
   const runs = text.includes('<') ? parseHtmlTags(text) : [new TextRun({ text })]
   return createParagraph(
     {
@@ -298,11 +298,10 @@ const bulletPoint = (label, textOrChildren = '', children = []) => { // eslint-d
 const titleCell = (text) => // eslint-disable-line no-unused-vars
   new TableCell({
     children: text.split('\n').map((line) =>
-      createTitle(line, true, {
-        ...spacing, // eslint-disable-line no-undef
-        line: 240,
-        before: 200,
-        after: 200
+      createParagraph({
+        text: line,
+        alignment: AlignmentType.CENTER,
+        style: 'Heading3'
       })
     ),
     shading: {

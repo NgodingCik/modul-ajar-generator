@@ -9,7 +9,9 @@ import {
   AlignmentType,
   TableLayoutType,
   TextRun,
-  LevelFormat
+  LevelFormat,
+  createIndent,
+  createTableWidthElement
 } from 'docx'
 
 /**
@@ -740,26 +742,143 @@ const createHeading = (text, level = 1, center = false, customSpacing = {}, inde
   )
 }
 
+const hasXmlChild = (xmlComponent, rootKey) =>
+  Boolean(
+    xmlComponent &&
+    Array.isArray(xmlComponent.root) &&
+    xmlComponent.root.some((item) => item && item.rootKey === rootKey)
+  )
+
+const getXmlChildIndex = (xmlComponent, rootKey) => {
+  if (!xmlComponent || !Array.isArray(xmlComponent.root)) {
+    return -1
+  }
+
+  return xmlComponent.root.findIndex((item) => item && item.rootKey === rootKey)
+}
+
+const CHILD_PARAGRAPH_INDENT_KEY = '__headingChildrenParagraphIndent'
+const CHILD_TABLE_INDENT_KEY = '__headingChildrenTableIndent'
+
+const setParagraphIndent = (paragraphProperties, indentSize) => {
+  const indentElement = createIndent({ left: indentSize, hanging: 0 })
+  const indentIndex = getXmlChildIndex(paragraphProperties, 'w:ind')
+
+  if (indentIndex >= 0) {
+    paragraphProperties.root[indentIndex] = indentElement
+    return
+  }
+
+  paragraphProperties.push(indentElement)
+}
+
+const setTableIndent = (tableProperties, indentSize) => {
+  const indentElement = createTableWidthElement('w:tblInd', {
+    size: indentSize,
+    type: WidthType.DXA
+  })
+  const indentIndex = getXmlChildIndex(tableProperties, 'w:tblInd')
+
+  if (indentIndex >= 0) {
+    tableProperties.root[indentIndex] = indentElement
+    return
+  }
+
+  tableProperties.root.push(indentElement)
+}
+
+const applyIndentToParagraph = (paragraph, indentSize) => {
+  const paragraphProperties = paragraph && paragraph.properties
+  const trackedIndent = paragraph && paragraph[CHILD_PARAGRAPH_INDENT_KEY]
+
+  if (
+    !paragraphProperties ||
+    typeof paragraphProperties.push !== 'function' ||
+    !Array.isArray(paragraphProperties.root)
+  ) {
+    return paragraph
+  }
+
+  if (typeof trackedIndent === 'number' && Number.isFinite(trackedIndent)) {
+    const nextIndent = trackedIndent + indentSize
+    setParagraphIndent(paragraphProperties, nextIndent)
+    paragraph[CHILD_PARAGRAPH_INDENT_KEY] = nextIndent
+    return paragraph
+  }
+
+  if (hasXmlChild(paragraphProperties, 'w:ind')) {
+    return paragraph
+  }
+
+  setParagraphIndent(paragraphProperties, indentSize)
+  paragraph[CHILD_PARAGRAPH_INDENT_KEY] = indentSize
+
+  return paragraph
+}
+
+const applyIndentToTable = (table, indentSize) => {
+  const trackedIndent = table && table[CHILD_TABLE_INDENT_KEY]
+
+  if (!table || !Array.isArray(table.root) || table.root.length === 0) {
+    return table
+  }
+
+  const tableProperties = table.root[0]
+  if (!tableProperties || !Array.isArray(tableProperties.root)) {
+    return table
+  }
+
+  if (typeof trackedIndent === 'number' && Number.isFinite(trackedIndent)) {
+    const nextIndent = trackedIndent + indentSize
+    setTableIndent(tableProperties, nextIndent)
+    table[CHILD_TABLE_INDENT_KEY] = nextIndent
+    return table
+  }
+
+  if (hasXmlChild(tableProperties, 'w:tblInd')) {
+    return table
+  }
+
+  setTableIndent(tableProperties, indentSize)
+  table[CHILD_TABLE_INDENT_KEY] = indentSize
+
+  return table
+}
+
 const createHeadingWithChildren = (headingText, level = 1, children = [], indentSize = 720, headingIndent = 0) => { // eslint-disable-line no-unused-vars
   const headingParagraph = createHeading(headingText, level, false, {}, headingIndent)
 
   // Flatten children to handle nested arrays from nested createHeadingWithChildren calls
-  const flatChildren = Array.isArray(children) ? children.flat(Infinity) : [children]
+  const flatChildren = (Array.isArray(children) ? children.flat(Infinity) : [children])
+    .filter((child) => child !== undefined && child !== null)
 
   const childParagraphs = flatChildren.map((child) => {
+    const constructorName = child && child.constructor && child.constructor.name
+
+    const isParagraphObject =
+      child instanceof Paragraph ||
+      constructorName === 'Paragraph'
+
+    const isTableObject =
+      child instanceof Table ||
+      constructorName === 'Table'
+
     // If child is already a Paragraph or Table object, return it as-is
     // Use duck-typing because instanceof may fail in VM environments
-    if (
-      child instanceof Paragraph ||
-      child instanceof Table ||
-      (child && child.constructor && ['Paragraph', 'Table'].includes(child.constructor.name)) ||
-      (child && typeof child === 'object' && child.root)
-    ) {
+    if (isParagraphObject) {
+      return applyIndentToParagraph(child, indentSize)
+    }
+
+    if (isTableObject) {
+      return applyIndentToTable(child, indentSize)
+    }
+
+    if (child && typeof child === 'object' && child.root) {
       return child
     }
 
     const isString = typeof child === 'string'
-    return createParagraph(
+    const paragraph = createParagraph(
       {
         text: isString ? child : child.text,
         indent: {
@@ -769,6 +888,9 @@ const createHeadingWithChildren = (headingText, level = 1, children = [], indent
       },
       child.customSpacing || {}
     )
+
+    paragraph[CHILD_PARAGRAPH_INDENT_KEY] = indentSize
+    return paragraph
   })
 
   return [headingParagraph, ...childParagraphs]

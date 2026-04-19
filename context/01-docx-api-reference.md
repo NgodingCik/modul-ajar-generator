@@ -61,7 +61,7 @@ Parses HTML `<ul>`, `<ol>`, `<li>` tags into paragraphs.
   - Level 0: `1.`, `2.`, `3.` (`DECIMAL`)
   - Level 1: `a)`, `b)`, `c)` (`LOWER_LETTER`)
   - Level 2: `i)`, `ii)`, `iii)` (`LOWER_ROMAN`)
-  - Marker gap is effectively doubled at this point (marker text includes one trailing space plus `LevelSuffix.SPACE`)
+  - Marker gap is approximately 1.5x at this point (marker text includes a thin space `\u2009` plus `LevelSuffix.SPACE`)
   - Requires `getNumberingConfig()` to be added to Document configuration
 - **Nested Lists:** Nested `<ol>` / `<ul>` inside `<li>` are preserved and mapped to deeper list levels.
 - **Example:**
@@ -85,9 +85,9 @@ Creates numbering configuration for Document to support HTML lists and section h
   - `html-unordered-list`
   - `section-heading-numbering`
 - **HTML ordered list levels (`html-ordered-list`):**
-  - Level 0: `%1. ` (`DECIMAL`) + `LevelSuffix.SPACE`
-  - Level 1: `%2) ` (`LOWER_LETTER`) + `LevelSuffix.SPACE`
-  - Level 2: `%3) ` (`LOWER_ROMAN`) + `LevelSuffix.SPACE`
+  - Level 0: `%1.\u2009` (`DECIMAL`) + `LevelSuffix.SPACE`
+  - Level 1: `%2)\u2009` (`LOWER_LETTER`) + `LevelSuffix.SPACE`
+  - Level 2: `%3)\u2009` (`LOWER_ROMAN`) + `LevelSuffix.SPACE`
 - **HTML unordered list levels (`html-unordered-list`):**
   - Level 0: `•`
   - Level 1: `◦`

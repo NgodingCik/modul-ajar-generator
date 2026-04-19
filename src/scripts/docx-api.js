@@ -10,6 +10,7 @@ import {
   TableLayoutType,
   TextRun,
   LevelFormat,
+  LevelSuffix,
   createIndent,
   createTableWidthElement
 } from 'docx'
@@ -437,7 +438,7 @@ const parseHtmlLists = (text) => {
   }
 
   // Check for HTML list tags
-  if (/<(ul|ol|li)>/.test(text)) {
+  if (/<\/?(ul|ol|li)\b/i.test(text)) {
     return parseHtmlListTags(text)
   }
 
@@ -456,64 +457,196 @@ const parseHtmlLists = (text) => {
  */
 const parseHtmlListTags = (text) => {
   const paragraphs = []
-
-  // Match <ul> or <ol> blocks
-  const listRegex = /<(ul|ol)(.*?)>([\s\S]*?)<\/\1>/g
+  const rootNode = { type: 'root', children: [] }
+  const nodeStack = [rootNode]
+  const tagRegex = /<\/?(ul|ol|li)\b[^>]*>/gi
+  let orderedListInstance = 1
   let lastIndex = 0
-  let match
 
-  while ((match = listRegex.exec(text)) !== null) {
-    const [fullMatch, listType, , content] = match
+  const currentNode = () => nodeStack[nodeStack.length - 1]
 
-    // Add any text before this list
-    if (match.index > lastIndex) {
-      const before = text.slice(lastIndex, match.index).trim()
-      if (before) {
-        paragraphs.push(new Paragraph({
-          children: parseHtmlTags(before)
-        }))
-      }
+  const attachNode = (node) => {
+    const activeNode = currentNode()
+
+    if (!activeNode) {
+      return
     }
 
-    // Parse list items
-    const itemRegex = /<li>([\s\S]*?)<\/li>/g
-    let itemMatch
-
-    while ((itemMatch = itemRegex.exec(content)) !== null) {
-      const itemText = itemMatch[1].trim()
-
-      if (listType === 'ul') {
-        // Unordered list - use bullets
-        paragraphs.push(new Paragraph({
-          bullet: { level: 0 },
-          children: parseHtmlTags(itemText)
-        }))
-      } else {
-        // Ordered list - use proper numbering property
-        // Reference: "html-ordered-list" must be configured in Document numbering config
-        paragraphs.push(new Paragraph({
-          numbering: {
-            reference: 'html-ordered-list',
-            level: 0,
-            instance: match.index // Use match index to group lists together
-          },
-          children: parseHtmlTags(itemText)
-        }))
-      }
+    if (activeNode.type === 'item') {
+      activeNode.parts.push(node)
+      return
     }
 
-    lastIndex = match.index + fullMatch.length
+    if (activeNode.type === 'root') {
+      activeNode.children.push(node)
+      return
+    }
+
+    // If stray nested list/text appears directly under a list, keep order at root level.
+    if (activeNode.type === 'list') {
+      rootNode.children.push(node)
+    }
   }
 
-  // Add remaining text
-  if (lastIndex < text.length) {
-    const after = text.slice(lastIndex).trim()
-    if (after) {
+  const appendText = (rawText) => {
+    if (!rawText || !rawText.trim()) {
+      return
+    }
+
+    attachNode({
+      type: 'text',
+      text: rawText.trim()
+    })
+  }
+
+  const closeNode = (type, listType = null) => {
+    while (nodeStack.length > 1) {
+      const popped = nodeStack.pop()
+      if (popped.type !== type) {
+        continue
+      }
+
+      if (type !== 'list' || popped.listType === listType) {
+        break
+      }
+    }
+  }
+
+  let tagMatch
+
+  while ((tagMatch = tagRegex.exec(text)) !== null) {
+    appendText(text.slice(lastIndex, tagMatch.index))
+
+    const token = tagMatch[0]
+    const tag = tagMatch[1].toLowerCase()
+    const isClosingTag = token.startsWith('</')
+
+    if (!isClosingTag && (tag === 'ul' || tag === 'ol')) {
+      const listNode = {
+        type: 'list',
+        listType: tag,
+        items: []
+      }
+      attachNode(listNode)
+      nodeStack.push(listNode)
+    } else if (isClosingTag && (tag === 'ul' || tag === 'ol')) {
+      closeNode('list', tag)
+    } else if (!isClosingTag && tag === 'li') {
+      let activeList = null
+
+      for (let i = nodeStack.length - 1; i >= 0; i--) {
+        if (nodeStack[i].type === 'list') {
+          activeList = nodeStack[i]
+          break
+        }
+      }
+
+      if (!activeList) {
+        activeList = {
+          type: 'list',
+          listType: 'ul',
+          items: []
+        }
+        attachNode(activeList)
+        nodeStack.push(activeList)
+      }
+
+      const itemNode = {
+        type: 'item',
+        parts: []
+      }
+
+      activeList.items.push(itemNode)
+      nodeStack.push(itemNode)
+    } else if (isClosingTag && tag === 'li') {
+      closeNode('item')
+    }
+
+    lastIndex = tagRegex.lastIndex
+  }
+
+  appendText(text.slice(lastIndex))
+
+  const pushTextParagraph = (value) => {
+    if (!value || !value.trim()) {
+      return
+    }
+
+    paragraphs.push(new Paragraph({
+      children: parseHtmlTags(value.trim())
+    }))
+  }
+
+  const pushListParagraph = (listType, level, instance, value) => {
+    if (!value || !value.trim()) {
+      return
+    }
+
+    const children = parseHtmlTags(value.trim())
+
+    if (listType === 'ul') {
       paragraphs.push(new Paragraph({
-        children: parseHtmlTags(after)
+        bullet: { level },
+        children
       }))
+      return
     }
+
+    paragraphs.push(new Paragraph({
+      numbering: {
+        reference: 'html-ordered-list',
+        level,
+        instance
+      },
+      children
+    }))
   }
+
+  const renderListNode = (listNode, level = 0, inheritedOrderedInstance = null) => {
+    if (!listNode || !Array.isArray(listNode.items) || listNode.items.length === 0) {
+      return
+    }
+
+    const currentOrderedInstance = listNode.listType === 'ol'
+      ? (typeof inheritedOrderedInstance === 'number' ? inheritedOrderedInstance : orderedListInstance++)
+      : inheritedOrderedInstance
+
+    listNode.items.forEach((itemNode) => {
+      if (!itemNode || !Array.isArray(itemNode.parts)) {
+        return
+      }
+
+      itemNode.parts.forEach((partNode) => {
+        if (!partNode) {
+          return
+        }
+
+        if (partNode.type === 'text') {
+          pushListParagraph(listNode.listType, level, currentOrderedInstance, partNode.text)
+          return
+        }
+
+        if (partNode.type === 'list') {
+          renderListNode(partNode, level + 1, currentOrderedInstance)
+        }
+      })
+    })
+  }
+
+  rootNode.children.forEach((childNode) => {
+    if (!childNode) {
+      return
+    }
+
+    if (childNode.type === 'text') {
+      pushTextParagraph(childNode.text)
+      return
+    }
+
+    if (childNode.type === 'list') {
+      renderListNode(childNode)
+    }
+  })
 
   return paragraphs.length > 0 ? paragraphs : null
 }
@@ -829,6 +962,81 @@ const setTableIndent = (tableProperties, indentSize) => {
   tableProperties.root.push(indentElement)
 }
 
+const getXmlAttributeValue = (xmlComponent, attributeName = 'val') => {
+  if (!xmlComponent || !Array.isArray(xmlComponent.root)) {
+    return null
+  }
+
+  const attrNode = xmlComponent.root.find((item) => item && item.rootKey === '_attr')
+
+  if (!attrNode || !attrNode.root) {
+    return null
+  }
+
+  const rawValue = attrNode.root[attributeName]
+
+  if (rawValue === null || rawValue === undefined) {
+    return null
+  }
+
+  if (typeof rawValue === 'string' || typeof rawValue === 'number') {
+    return rawValue
+  }
+
+  if (typeof rawValue === 'object' && rawValue !== null && Object.prototype.hasOwnProperty.call(rawValue, 'value')) {
+    return rawValue.value
+  }
+
+  return null
+}
+
+const getParagraphStyleId = (paragraphProperties) => {
+  const styleIndex = getXmlChildIndex(paragraphProperties, 'w:pStyle')
+  if (styleIndex < 0) {
+    return null
+  }
+
+  return getXmlAttributeValue(paragraphProperties.root[styleIndex], 'val')
+}
+
+const getParagraphNumberingLevel = (paragraphProperties) => {
+  const numberingIndex = getXmlChildIndex(paragraphProperties, 'w:numPr')
+  if (numberingIndex < 0) {
+    return null
+  }
+
+  const numberingNode = paragraphProperties.root[numberingIndex]
+  if (!numberingNode || !Array.isArray(numberingNode.root)) {
+    return 0
+  }
+
+  const levelNode = numberingNode.root.find((item) => item && item.rootKey === 'w:ilvl')
+  if (!levelNode) {
+    return 0
+  }
+
+  const levelValue = getXmlAttributeValue(levelNode, 'val')
+  const parsedLevel = Number.parseInt(String(levelValue), 10)
+
+  if (Number.isNaN(parsedLevel)) {
+    return 0
+  }
+
+  return parsedLevel
+}
+
+const getInitialParagraphIndent = (paragraphProperties, indentSize) => {
+  const paragraphStyle = getParagraphStyleId(paragraphProperties)
+  const numberingLevel = getParagraphNumberingLevel(paragraphProperties)
+
+  // Preserve nested list hierarchy when heading-child indent is injected.
+  if (paragraphStyle === 'ListParagraph' && typeof numberingLevel === 'number' && numberingLevel > 0) {
+    return indentSize + (indentSize * numberingLevel)
+  }
+
+  return indentSize
+}
+
 const applyIndentToParagraph = (paragraph, indentSize) => {
   const paragraphProperties = paragraph && paragraph.properties
   const trackedIndent = paragraph && paragraph[CHILD_PARAGRAPH_INDENT_KEY]
@@ -841,6 +1049,8 @@ const applyIndentToParagraph = (paragraph, indentSize) => {
     return paragraph
   }
 
+  const initialIndent = getInitialParagraphIndent(paragraphProperties, indentSize)
+
   if (typeof trackedIndent === 'number' && Number.isFinite(trackedIndent)) {
     const nextIndent = trackedIndent + indentSize
     setParagraphIndent(paragraphProperties, nextIndent)
@@ -852,8 +1062,8 @@ const applyIndentToParagraph = (paragraph, indentSize) => {
     return paragraph
   }
 
-  setParagraphIndent(paragraphProperties, indentSize)
-  paragraph[CHILD_PARAGRAPH_INDENT_KEY] = indentSize
+  setParagraphIndent(paragraphProperties, initialIndent)
+  paragraph[CHILD_PARAGRAPH_INDENT_KEY] = initialIndent
 
   return paragraph
 }
@@ -1090,11 +1300,36 @@ const getNumberingConfig = () => [
       {
         level: 0,
         format: LevelFormat.DECIMAL,
-        text: '%1.',
+        text: '%1. ',
+        suffix: LevelSuffix.SPACE,
         alignment: AlignmentType.LEFT,
         style: {
           paragraph: {
             indent: { left: 720, hanging: 360 } // Number hangs left, text wraps properly
+          }
+        }
+      },
+      {
+        level: 1,
+        format: LevelFormat.LOWER_LETTER,
+        text: '%2) ',
+        suffix: LevelSuffix.SPACE,
+        alignment: AlignmentType.LEFT,
+        style: {
+          paragraph: {
+            indent: { left: 1440, hanging: 360 }
+          }
+        }
+      },
+      {
+        level: 2,
+        format: LevelFormat.LOWER_ROMAN,
+        text: '%3) ',
+        suffix: LevelSuffix.SPACE,
+        alignment: AlignmentType.LEFT,
+        style: {
+          paragraph: {
+            indent: { left: 2160, hanging: 360 }
           }
         }
       }
@@ -1111,6 +1346,28 @@ const getNumberingConfig = () => [
         style: {
           paragraph: {
             indent: { left: 720, hanging: 360 } // Bullet hangs left, text wraps properly
+          }
+        }
+      },
+      {
+        level: 1,
+        format: LevelFormat.BULLET,
+        text: '◦',
+        alignment: AlignmentType.LEFT,
+        style: {
+          paragraph: {
+            indent: { left: 1440, hanging: 360 }
+          }
+        }
+      },
+      {
+        level: 2,
+        format: LevelFormat.BULLET,
+        text: '▪',
+        alignment: AlignmentType.LEFT,
+        style: {
+          paragraph: {
+            indent: { left: 2160, hanging: 360 }
           }
         }
       }

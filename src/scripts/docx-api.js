@@ -742,6 +742,48 @@ const createHeading = (text, level = 1, center = false, customSpacing = {}, inde
   )
 }
 
+const createNumberedHeading = (
+  text,
+  level = 1,
+  numberingLevel = level > 0 ? level - 1 : 0,
+  numberingInstance = 1,
+  center = false,
+  customSpacing = {},
+  indentSize = 0,
+  numberingReference = 'section-heading-numbering'
+) => {
+  const styleId = `Heading${level}`
+  const lines = text.split('\n')
+
+  const children = lines.flatMap((line, index) => {
+    const runs = line.includes('<') ? parseHtmlTags(line) : [new TextRun({ text: line })]
+    if (index < lines.length - 1) {
+      runs.push(new TextRun({ break: 1 }))
+    }
+    return runs
+  })
+
+  return createParagraph(
+    {
+      children,
+      alignment: center ? AlignmentType.CENTER : AlignmentType.LEFT,
+      style: styleId,
+      numbering: {
+        reference: numberingReference,
+        level: numberingLevel,
+        instance: numberingInstance
+      },
+      ...(indentSize > 0 && {
+        indent: {
+          left: indentSize,
+          hanging: 0
+        }
+      })
+    },
+    customSpacing
+  )
+}
+
 const hasXmlChild = (xmlComponent, rootKey) =>
   Boolean(
     xmlComponent &&
@@ -845,8 +887,25 @@ const applyIndentToTable = (table, indentSize) => {
   return table
 }
 
-const createHeadingWithChildren = (headingText, level = 1, children = [], indentSize = 720, headingIndent = 0) => { // eslint-disable-line no-unused-vars
-  const headingParagraph = createHeading(headingText, level, false, {}, headingIndent)
+const createHeadingWithChildren = (headingText, level = 1, children = [], indentSize = 720, headingIndent = 0, headingOptions = {}) => { // eslint-disable-line no-unused-vars
+  const {
+    center = false,
+    customSpacing = {},
+    numbering = null
+  } = headingOptions || {}
+
+  const headingParagraph = numbering
+    ? createNumberedHeading(
+      headingText,
+      level,
+      typeof numbering.level === 'number' ? numbering.level : (level > 0 ? level - 1 : 0),
+      typeof numbering.instance === 'number' ? numbering.instance : 1,
+      center,
+      customSpacing,
+      headingIndent,
+      numbering.reference || 'section-heading-numbering'
+    )
+    : createHeading(headingText, level, center, customSpacing, headingIndent)
 
   // Flatten children to handle nested arrays from nested createHeadingWithChildren calls
   const flatChildren = (Array.isArray(children) ? children.flat(Infinity) : [children])
@@ -1056,6 +1115,44 @@ const getNumberingConfig = () => [
         }
       }
     ]
+  },
+  {
+    reference: 'section-heading-numbering',
+    levels: [
+      {
+        level: 0,
+        format: LevelFormat.UPPER_LETTER,
+        text: '%1.',
+        alignment: AlignmentType.LEFT,
+        style: {
+          paragraph: {
+            indent: { left: 0, hanging: 0 }
+          }
+        }
+      },
+      {
+        level: 1,
+        format: LevelFormat.DECIMAL,
+        text: '%1.%2.',
+        alignment: AlignmentType.LEFT,
+        style: {
+          paragraph: {
+            indent: { left: 720, hanging: 0 }
+          }
+        }
+      },
+      {
+        level: 2,
+        format: LevelFormat.DECIMAL,
+        text: '%1.%2.%3.',
+        alignment: AlignmentType.LEFT,
+        style: {
+          paragraph: {
+            indent: { left: 1440, hanging: 0 }
+          }
+        }
+      }
+    ]
   }
 ]
 
@@ -1071,6 +1168,7 @@ export {
   createParagraph,
   createTitle,
   createHeading,
+  createNumberedHeading,
   createHeadingWithChildren,
   bulletPoint,
   titleCell,

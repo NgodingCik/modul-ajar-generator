@@ -4,7 +4,7 @@ import {
   Packer,
   WidthType
 } from 'docx'
-import { TableWrapper, Row, createParagraph, createHeading, getNumberingConfig, createHeadingWithChildren } from './docx-api.js'
+import { TableWrapper, Row, createParagraph, createNumberedHeading, getNumberingConfig, createHeadingWithChildren } from './docx-api.js'
 import { properties, spacing, paragraphStyles } from './docx-config.js'
 import { coverPage } from './docx-cover-page.js'
 import { convertNumToRoman } from './utils.js'
@@ -33,24 +33,24 @@ import { namaPenulis, semester, asalSekolah, mingguKe, fase, bulan, jenjangKelas
           createParagraph(''),
           new TableWrapper()
             .setFitContent()
-            .addLabelValueRow('Penulis', namaPenulis, 'Semester', convertNumToRoman(semester))
-            .addLabelValueRow('Asal Sekolah', asalSekolah, 'Minggu Ke-', mingguKe.toString())
-            .addLabelValueRow('Fase', fase, 'Bulan', bulan)
-            .addLabelValueRow('Jenjang/Kelas', jenjangKelas, 'Alokasi Waktu', alokasiWaktu)
-            .addLabelValueRow('Model Pembelajaran', modelPembelajaran, 'Jumlah Anak', jumlahAnak.toString())
+            .addLabelValueRow('<b>Penulis</b>', namaPenulis, '<b>Semester</b>', convertNumToRoman(semester))
+            .addLabelValueRow('<b>Asal Sekolah</b>', asalSekolah, '<b>Minggu Ke-</b>', mingguKe.toString())
+            .addLabelValueRow('<b>Fase</b>', fase, '<b>Bulan</b>', bulan)
+            .addLabelValueRow('<b>Jenjang/Kelas</b>', jenjangKelas, '<b>Alokasi Waktu</b>', alokasiWaktu)
+            .addLabelValueRow('<b>Model Pembelajaran</b>', modelPembelajaran, '<b>Jumlah Anak</b>', jumlahAnak.toString())
             .addRowObject(
               new Row()
-                .addTextCell('Topik / Sub Topik', { bold: true })
+                .addTextCell('<b>Topik / Sub Topik</b>', { bold: true })
                 .addTextCell(topikSubtopik, { columnSpan: 3 })
             )
             .build(),
           createParagraph(''),
-          createHeading('A. IDENTIFIKASI', 1),
+          createNumberedHeading('IDENTIFIKASI', 1),
           new TableWrapper()
             .setFitContent()
             .addRowObject(
               new Row()
-                .addTextCell('Peserta Didik', {
+                .addTextCell('<b>Peserta Didik</b>', {
                   bold: true,
                   width: { size: 1800, type: WidthType.DXA }
                 })
@@ -60,7 +60,7 @@ import { namaPenulis, semester, asalSekolah, mingguKe, fase, bulan, jenjangKelas
             )
             .addRowObject(
               new Row()
-                .addTextCell('Materi Pelajaran', {
+                .addTextCell('<b>Materi Pelajaran</b>', {
                   bold: true,
                   width: { size: 1800, type: WidthType.DXA }
                 })
@@ -70,7 +70,7 @@ import { namaPenulis, semester, asalSekolah, mingguKe, fase, bulan, jenjangKelas
             )
             .addRowObject(
               new Row()
-                .addTextCell('Dimensi Profil Lulusan', {
+                .addTextCell('<b>Dimensi Profil Lulusan</b>', {
                   bold: true,
                   rowSpan: 2,
                   width: { size: 1800, type: WidthType.DXA }
@@ -92,30 +92,30 @@ import { namaPenulis, semester, asalSekolah, mingguKe, fase, bulan, jenjangKelas
           createParagraph(''),
           createParagraph(''),
           createParagraph(''),
-          createHeading('B. DESAIN PEMBELAJARAN', 1),
+          createNumberedHeading('DESAIN PEMBELAJARAN', 1),
           new TableWrapper()
             .setFitContent()
-            .addLabelValuePairRow('Capaian Pembelajaran', '<ul><li><b>Elemen Jati Diri:</b> Sub Elemen Anak memahami identitas dirinya yang terbentuk oleh ragam minat, kebutuhan, karakteristik gender, agama, dan sosial budaya</li><li><b>Elemen Jati Diri:</b> Sub Elemen Anak menggunakan fungsi gerak (motorik kasar, halus, dan taktil) untuk mengeksplorasi dan memanipulasi berbagai objek dan lingkungan sekitar sebagai bentuk pengembangan diri</li></ul>')
-            .addLabelValuePairRow('Lintas Disiplin Ilmu', 'Nilai agama dan moral (mengenal keberadaan Tuhan melalui syukur atas identitas diri), nilai Pancasila (menghargai keberagaman nama dan karakteristik teman), fisik motorik (gerakan menunjuk dan melambai), kognitif (mengingat dan menyebut nama sendiri), bahasa (mengucapkan nama dengan jelas), sosial emosional (membangun kepercayaan diri dan interaksi dengan teman)')
-            .addLabelValuePairRow('Tujuan Pembelajaran', '<ul><li>Anak mampu mengenal identitas dirinya sebagai bagian dari keluarga dan menyebutkan namanya sendiri sambil melakukan gerakan sederhana seperti melambai atau bertepuk tangan.</li></ul>')
-            .addLabelValuePairRow('Topik Pembelajaran', 'Aku Istimewa: Ayo Kita Berkenalan')
-            .addLabelValuePairRow('Praktik Pedagogis', 'Pembelajaran berbasis bermain dengan pendekatan eksplorasi langsung menggunakan metode bercerita interaktif, bernyanyi sambil bergerak, dan permainan cermin. Pendekatan ini mendukung prinsip berkesadaran melalui fokus pada diri sendiri, bermakna karena relevan dengan kehidupan sehari-hari, dan menggembirakan melalui aktivitas yang menyenangkan dan tidak menakutkan.')
-            .addLabelValuePairRow('Kemitraan Pembelajaran', '<ul><li>Lingkungan pembelajaran mengintegrasikan ruang kelas yang nyaman dengan cermin besar, area bermain terbuka untuk aktivitas motorik, dan sudut tenang untuk kegiatan refleksi, menciptakan suasana aman yang mendorong eksplorasi identitas diri.</li></ul>')
-            .addLabelValuePairRow('Lingkungan Pembelajaran', '<ul><li>Melibatkan guru kelas sebagai fasilitator utama, orang tua sebagai sumber informasi tentang anak di rumah, serta kakak kelas sebagai model positif dalam pengenalan diri dan interaksi sosial.</li></ul>')
-            .addLabelValuePairRow('Pemanfaatan Digital', '<ul><li>Perencanaan: Persiapan video cerita dan lagu digital, aplikasi dokumentasi pembelajaran</li><li>Pelaksanaan: Video interaktif "Ayo Berkenalan", musik latar untuk aktivitas, dokumentasi foto dan video proses belajar anak</li><li>Asesmen: Portofolio digital karya anak, rekaman video presentasi sederhana anak</li><li>Dukungan media ajar digital tersedia melalui https://drive.paud.id/download/ayo-berkenalan/</li></ul>')
+            .addLabelValuePairRow('<b>Capaian Pembelajaran</b>', '<ul><li><b>Elemen Jati Diri:</b> Sub Elemen Anak memahami identitas dirinya yang terbentuk oleh ragam minat, kebutuhan, karakteristik gender, agama, dan sosial budaya</li><li><b>Elemen Jati Diri:</b> Sub Elemen Anak menggunakan fungsi gerak (motorik kasar, halus, dan taktil) untuk mengeksplorasi dan memanipulasi berbagai objek dan lingkungan sekitar sebagai bentuk pengembangan diri</li></ul>')
+            .addLabelValuePairRow('<b>Lintas Disiplin Ilmu</b>', 'Nilai agama dan moral (mengenal keberadaan Tuhan melalui syukur atas identitas diri), nilai Pancasila (menghargai keberagaman nama dan karakteristik teman), fisik motorik (gerakan menunjuk dan melambai), kognitif (mengingat dan menyebut nama sendiri), bahasa (mengucapkan nama dengan jelas), sosial emosional (membangun kepercayaan diri dan interaksi dengan teman)')
+            .addLabelValuePairRow('<b>Tujuan Pembelajaran</b>', '<ul><li>Anak mampu mengenal identitas dirinya sebagai bagian dari keluarga dan menyebutkan namanya sendiri sambil melakukan gerakan sederhana seperti melambai atau bertepuk tangan.</li></ul>')
+            .addLabelValuePairRow('<b>Topik Pembelajaran</b>', 'Aku Istimewa: Ayo Kita Berkenalan')
+            .addLabelValuePairRow('<b>Praktik Pedagogis</b>', 'Pembelajaran berbasis bermain dengan pendekatan eksplorasi langsung menggunakan metode bercerita interaktif, bernyanyi sambil bergerak, dan permainan cermin. Pendekatan ini mendukung prinsip berkesadaran melalui fokus pada diri sendiri, bermakna karena relevan dengan kehidupan sehari-hari, dan menggembirakan melalui aktivitas yang menyenangkan dan tidak menakutkan.')
+            .addLabelValuePairRow('<b>Kemitraan Pembelajaran</b>', '<ul><li>Lingkungan pembelajaran mengintegrasikan ruang kelas yang nyaman dengan cermin besar, area bermain terbuka untuk aktivitas motorik, dan sudut tenang untuk kegiatan refleksi, menciptakan suasana aman yang mendorong eksplorasi identitas diri.</li></ul>')
+            .addLabelValuePairRow('<b>Lingkungan Pembelajaran</b>', '<ul><li>Melibatkan guru kelas sebagai fasilitator utama, orang tua sebagai sumber informasi tentang anak di rumah, serta kakak kelas sebagai model positif dalam pengenalan diri dan interaksi sosial.</li></ul>')
+            .addLabelValuePairRow('<b>Pemanfaatan Digital</b>', '<ul><li>Perencanaan: Persiapan video cerita dan lagu digital, aplikasi dokumentasi pembelajaran</li><li>Pelaksanaan: Video interaktif "Ayo Berkenalan", musik latar untuk aktivitas, dokumentasi foto dan video proses belajar anak</li><li>Asesmen: Portofolio digital karya anak, rekaman video presentasi sederhana anak</li><li>Dukungan media ajar digital tersedia melalui https://drive.paud.id/download/ayo-berkenalan/</li></ul>')
             .build(),
           createParagraph(''),
-          ...createHeadingWithChildren('C. RENCANA PELAKSANAAN PEMBELAJARAN', 1, [
-            ...createHeadingWithChildren('C.1. Pendahuluan', 2, [
+          ...createHeadingWithChildren('RENCANA PELAKSANAAN PEMBELAJARAN', 1, [
+            ...createHeadingWithChildren('Pendahuluan', 2, [
               createParagraph('Pendahuluan tentang pengalaman belajar.')
-            ]),
-            ...createHeadingWithChildren('C.2. Inti', 2, [
+            ], 720, 0, { numbering: { level: 1 } }),
+            ...createHeadingWithChildren('Inti', 2, [
               createParagraph('Inti dari pengalaman belajar.')
-            ]),
-            ...createHeadingWithChildren('C.3. Penutup', 2, [
+            ], 720, 0, { numbering: { level: 1 } }),
+            ...createHeadingWithChildren('Penutup', 2, [
               createParagraph('Penutup dari pengalaman belajar.')
-            ])
-          ])
+            ], 720, 0, { numbering: { level: 1 } })
+          ], 720, 0, { numbering: { level: 0 } })
         ]
       }
     ]

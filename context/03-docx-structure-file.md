@@ -4,6 +4,20 @@ Dokumen ini menjelaskan struktur dan isi dari setiap bagian dalam file `.docx`. 
 
 ---
 
+## JUDUL UTAMA
+
+Judul utama selalu berisi "MODUL AJAR PENDIDIKAN ANAK USIA DINI  KURIKULUM MERDEKA PERENCANAAN PEMBELAJARAN MENDALAM" yang dibungkus dengan sebuah table.
+
+Kamu dapat memanfaatkan `TableWrapper` class tersedia pada API, contoh:
+
+```js
+new TableWrapper()
+  .addTitleRow('MODUL AJAR PENDIDIKAN ANAK USIA DINI  KURIKULUM MERDEKA PERENCANAAN PEMBELAJARAN MENDALAM')
+  .build(),
+```
+
+---
+
 ## 1) DOCX Package Keys (Must Be Preserved)
 
 Use this OOXML package skeleton as the baseline:

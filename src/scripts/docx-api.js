@@ -8,7 +8,8 @@ import {
   ShadingType,
   AlignmentType,
   TableLayoutType,
-  TextRun
+  TextRun,
+  LevelFormat
 } from 'docx'
 
 /**
@@ -486,9 +487,14 @@ const parseHtmlListTags = (text) => {
           children: parseHtmlTags(itemText)
         }))
       } else {
-        // Ordered list - use numbering
+        // Ordered list - use proper numbering property
+        // Reference: "html-ordered-list" must be configured in Document numbering config
         paragraphs.push(new Paragraph({
-          numbering: { level: 0 },
+          numbering: {
+            reference: 'html-ordered-list',
+            level: 0,
+            instance: match.index // Use match index to group lists together
+          },
           children: parseHtmlTags(itemText)
         }))
       }
@@ -892,6 +898,45 @@ const formField = (label) => [ // eslint-disable-line no-unused-vars
   })
 ]
 
+/**
+ * Create numbering configuration for Document
+ * Returns config for both unordered lists (bullets) and ordered lists (decimals)
+ */
+const getNumberingConfig = () => [
+  {
+    reference: 'html-ordered-list',
+    levels: [
+      {
+        level: 0,
+        format: LevelFormat.DECIMAL,
+        text: '%1.',
+        alignment: AlignmentType.LEFT,
+        style: {
+          paragraph: {
+            indent: { left: 360, hanging: 0 }
+          }
+        }
+      }
+    ]
+  },
+  {
+    reference: 'html-unordered-list',
+    levels: [
+      {
+        level: 0,
+        format: LevelFormat.BULLET,
+        text: '•',
+        alignment: AlignmentType.LEFT,
+        style: {
+          paragraph: {
+            indent: { left: 360, hanging: 0 }
+          }
+        }
+      }
+    ]
+  }
+]
+
 export {
   Row,
   TableWrapper,
@@ -900,6 +945,7 @@ export {
   parseHtmlListTags,
   parseMarkdownLists,
   parseContentAsParagraphs,
+  getNumberingConfig,
   createParagraph,
   createTitle,
   createHeading,

@@ -24,12 +24,27 @@ Parses HTML `<ul>`, `<ol>`, `<li>` tags into paragraphs.
   - `text` (String): The input string containing HTML list tags.
 - **Returns:** `Paragraph[]` or `null`
 - **Unordered Lists:** `<ul><li>item</li></ul>` → bullet points (•)
-- **Ordered Lists:** `<ol><li>item</li></ol>` → numbered points (1, 2, 3, etc.)
+- **Ordered Lists:** `<ol><li>item</li></ol>` → numbered list (1., 2., 3., etc.) using docx numbering system
+  - Requires `getNumberingConfig()` to be added to Document configuration
 - **Example:**
   ```html
   <ul><li>First item</li><li>Second item</li></ul>
   <ol><li>First step</li><li>Second step</li></ol>
   ```
+
+### `getNumberingConfig()`
+Creates numbering configuration for Document to support HTML lists.
+- **Returns:** `Array` - Numbering config object for both ordered and unordered lists
+- **Usage:** Add to Document during initialization:
+  ```javascript
+  const doc = new Document({
+    numbering: {
+      config: getNumberingConfig()
+    },
+    // ... rest of config
+  })
+  ```
+- **Note:** Must be called when creating the Document to enable `<ol>` and `<ul>` rendering with proper numbering
 
 ### `parseMarkdownLists(lines)`
 Parses markdown-style lists (lines starting with `-`) into bullet paragraphs.

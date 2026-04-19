@@ -4,7 +4,7 @@ import {
   Packer,
   WidthType
 } from 'docx'
-import { TableWrapper, Row, createParagraph, createHeading } from './docx-api.js'
+import { TableWrapper, Row, createParagraph, createHeading, getNumberingConfig } from './docx-api.js'
 import { properties, spacing, paragraphStyles } from './docx-config.js'
 import { coverPage } from './docx-cover-page.js'
 import { convertNumToRoman } from './utils.js'
@@ -13,6 +13,9 @@ import { namaPenulis, semester, asalSekolah, mingguKe, fase, bulan, jenjangKelas
 
 (async () => {
   const doc = new Document({
+    numbering: {
+      config: getNumberingConfig()
+    },
     styles: {
       default: new DocumentDefaults({
         paragraph: { spacing }

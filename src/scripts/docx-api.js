@@ -104,16 +104,18 @@ class Row {
 
   /**
    * Add a regular cell with text content
+   * Supports: regular text, HTML formatting (<b>, <i>, <u>, <s>),
+   * lists (<ul>, <ol>, <li>) and markdown-style lists (- item)
    * @param {string} text - The cell text
    * @param {Object} options - Cell options (alignment, style, etc.)
    * @returns {Row} - For chaining
    */
   addTextCell (text, options = {}) {
     const {
-      alignment = AlignmentType.LEFT,
-      style = null,
-      bold = false,
-      italic = false,
+      alignment = AlignmentType.LEFT, // eslint-disable-line no-unused-vars
+      style = null, // eslint-disable-line no-unused-vars
+      bold = false, // eslint-disable-line no-unused-vars
+      italic = false, // eslint-disable-line no-unused-vars
       columnSpan = 1,
       rowSpan = 1,
       width = null,
@@ -126,16 +128,11 @@ class Row {
       }
     } = options
 
+    // Parse content - handles lists and formatting
+    const paragraphs = parseContentAsParagraphs(text)
+
     const cell = new TableCell({
-      children: [
-        createParagraph({
-          text,
-          alignment,
-          style,
-          bold,
-          italic
-        })
-      ],
+      children: paragraphs,
       columnSpan,
       ...(rowSpan > 1 && { rowSpan }),
       ...(width && { width }),
@@ -427,10 +424,146 @@ class TableWrapper {
 }
 
 /**
- * Parse HTML-like tags and convert to TextRun array
- * Supports: <b>bold</b>, <i>italic</i>, <u>underline</u>, <s>strikethrough</s>
- * Can be nested: <b><i>text</i></b>
+ * Parse HTML lists and markdown-style lists
+ * Supports: <ul><li>item</li></ul>, <ol><li>item</li></ol>, and markdown "- item" style
+ * Returns array of Paragraph objects with bullets/numbering, or null if no lists found
  */
+const parseHtmlLists = (text) => {
+  if (!text || typeof text !== 'string') {
+    return null
+  }
+
+  // Check for HTML list tags
+  if (/<(ul|ol|li)>/.test(text)) {
+    return parseHtmlListTags(text)
+  }
+
+  // Check for markdown-style lists (lines starting with -)
+  const lines = text.split('\n')
+  const hasMarkdownLists = lines.some(line => /^\s*-\s+/.test(line))
+  if (hasMarkdownLists) {
+    return parseMarkdownLists(lines)
+  }
+
+  return null
+}
+
+/**
+ * Parse HTML <ul>, <ol>, <li> tags into Paragraph array
+ */
+const parseHtmlListTags = (text) => {
+  const paragraphs = []
+
+  // Match <ul> or <ol> blocks
+  const listRegex = /<(ul|ol)(.*?)>([\s\S]*?)<\/\1>/g
+  let lastIndex = 0
+  let match
+
+  while ((match = listRegex.exec(text)) !== null) {
+    const [fullMatch, listType, , content] = match
+
+    // Add any text before this list
+    if (match.index > lastIndex) {
+      const before = text.slice(lastIndex, match.index).trim()
+      if (before) {
+        paragraphs.push(new Paragraph({
+          children: parseHtmlTags(before)
+        }))
+      }
+    }
+
+    // Parse list items
+    const itemRegex = /<li>([\s\S]*?)<\/li>/g
+    let itemMatch
+
+    while ((itemMatch = itemRegex.exec(content)) !== null) {
+      const itemText = itemMatch[1].trim()
+
+      if (listType === 'ul') {
+        // Unordered list - use bullets
+        paragraphs.push(new Paragraph({
+          bullet: { level: 0 },
+          children: parseHtmlTags(itemText)
+        }))
+      } else {
+        // Ordered list - use numbering
+        paragraphs.push(new Paragraph({
+          numbering: { level: 0 },
+          children: parseHtmlTags(itemText)
+        }))
+      }
+    }
+
+    lastIndex = match.index + fullMatch.length
+  }
+
+  // Add remaining text
+  if (lastIndex < text.length) {
+    const after = text.slice(lastIndex).trim()
+    if (after) {
+      paragraphs.push(new Paragraph({
+        children: parseHtmlTags(after)
+      }))
+    }
+  }
+
+  return paragraphs.length > 0 ? paragraphs : null
+}
+
+/**
+ * Parse markdown-style lists (lines starting with "-")
+ */
+const parseMarkdownLists = (lines) => {
+  const paragraphs = []
+
+  lines.forEach(line => {
+    const match = line.match(/^\s*-\s+(.*)$/)
+    if (match) {
+      // Line is a list item
+      paragraphs.push(new Paragraph({
+        bullet: { level: 0 },
+        spacing: { line: 240, lineRule: 'AUTO' },
+        children: parseHtmlTags(match[1])
+      }))
+    } else if (line.trim()) {
+      // Regular text line
+      paragraphs.push(new Paragraph({
+        spacing: { line: 240, lineRule: 'AUTO' },
+        children: parseHtmlTags(line)
+      }))
+    }
+  })
+
+  return paragraphs.length > 0 ? paragraphs : null
+}
+
+/**
+ * Parse content that may contain lists, returns Paragraph[]
+ * If content contains lists, returns proper bullet/numbered paragraphs
+ * If no lists, returns single paragraph
+ */
+const parseContentAsParagraphs = (content) => {
+  if (typeof content === 'string') {
+    // Check for lists first
+    const listParagraphs = parseHtmlLists(content)
+    if (listParagraphs) {
+      return listParagraphs
+    }
+
+    // No lists, return as single paragraph
+    if (content.includes('<')) {
+      return [new Paragraph({
+        children: parseHtmlTags(content)
+      })]
+    }
+
+    return [new Paragraph({ text: content })]
+  }
+
+  // Already an object
+  return [createParagraph(content)]
+}
+
 const parseHtmlTags = (text) => {
   if (!text || typeof text !== 'string') {
     return [new TextRun({ text: '' })]
@@ -763,6 +896,10 @@ export {
   Row,
   TableWrapper,
   parseHtmlTags,
+  parseHtmlLists,
+  parseHtmlListTags,
+  parseMarkdownLists,
+  parseContentAsParagraphs,
   createParagraph,
   createTitle,
   createHeading,

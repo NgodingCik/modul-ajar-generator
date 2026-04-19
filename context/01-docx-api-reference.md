@@ -1,593 +1,668 @@
-# API Reference for DOCX Generation
+# DocWrapper API Reference
 
-This document provides a comprehensive reference for the API functions used to build structured Word documents (`.docx`) using the `docx` library. It includes function descriptions, parameter details, and usage examples.
+A fluent, scalable API for building `.docx` files with consistent style, indentation, and spacing.
+Built on top of the `docx` npm library.
 
-## Breaking Changes (Latest)
+---
 
-The heading API has been updated to support native multilevel numbering and nested indentation behavior.
+## Table of Contents
 
-- `createHeadingWithChildren(...)` now accepts a 6th parameter: `headingOptions`.
-- Nested `createHeadingWithChildren(...)` calls now apply child indentation cumulatively by default.
-- A new helper, `createNumberedHeading(...)`, should be used for section numbering instead of manual text prefixes like `A.`, `B.`, `C.1`, etc.
-- `getNumberingConfig()` now includes `section-heading-numbering` in addition to HTML list numbering references.
-- `parseHtmlListTags(...)` now uses a nested-aware parser, so `<ol>` / `<ul>` inside `<li>` are preserved correctly.
-- `html-ordered-list` levels now render as `1.`, `a)`, and `i)` with a single-space suffix after the marker.
-- `createHeadingWithChildren(...)` now preserves nested `ListParagraph` hierarchy when applying child indentation, so sub-list levels remain visually deeper than parent levels.
+1. [Architecture Overview](#architecture-overview)
+2. [DocWrapper](#docwrapper)
+3. [SectionWrapper](#sectionwrapper)
+4. [TableWrapper](#tablewrapper)
+5. [Row](#row)
+6. [Paragraph & Heading Creators](#paragraph--heading-creators)
+7. [List Helpers](#list-helpers)
+8. [HTML / Markdown Parsing](#html--markdown-parsing)
+9. [Configuration Constants](#configuration-constants)
+10. [Migration Guide](#migration-guide)
+11. [Full Example](#full-example)
 
-### Migration Quick Guide
+---
 
-Old approach (manual prefix in heading text):
+## Architecture Overview
 
-```javascript
-createHeadingWithChildren('A. IDENTIFIKASI', 1, [...])
-createHeadingWithChildren('C.1. Pendahuluan', 2, [...])
+```
+DocWrapper                       ← builds the Document
+  └── addSection(SectionWrapper) ← one section = one "page" (own margins/properties)
+        ├── .heading()           ← heading paragraph
+        ├── .sp(n)               ← n empty spacing paragraphs
+        ├── .para()              ← normal paragraph
+        ├── .table(TableWrapper) ← table
+        └── .section()          ← heading + indented children (nests SectionWrapper)
+              └── SectionWrapper (nested, same API)
+
+TableWrapper                     ← builds a Table
+  └── addRowObject(Row)          ← one row
+        └── .addTextCell()       ← one cell
 ```
 
-New approach (native numbering):
+The main improvement over the previous API:
+
+| Old pattern                                                 | New pattern                                 |
+| ----------------------------------------------------------- | ------------------------------------------- |
+| `...createHeadingWithChildren('X', 1, [...])`               | `.section('X', 1, new SectionWrapper()...)` |
+| `createParagraph('')` × 4                                   | `.sp(4)`                                    |
+| Manual `sections: [...]` in Document                        | `.addSection(sectionWrapper)`               |
+| Boilerplate `new Document({ numbering, styles, sections })` | `new DocWrapper().withDefaultStyles()`      |
+
+---
+
+## DocWrapper
+
+Top-level Document builder. Handles all Document-level boilerplate.
 
 ```javascript
-createHeadingWithChildren('IDENTIFIKASI', 1, [...], 720, 0, {
-  numbering: { level: 0 }
-})
+import { DocWrapper } from "./docx-api.js";
 
-createHeadingWithChildren('Pendahuluan', 2, [...], 720, 0, {
-  numbering: { level: 1 }
+const buffer = await new DocWrapper()
+  .withDefaultStyles() // apply Times New Roman styles from docx-config
+  .addSection(coverPage) // raw section object or SectionWrapper
+  .addSection(contentSection)
+  .toBuffer();
+```
+
+### Methods
+
+#### `withDefaultStyles()` → `DocWrapper`
+
+Applies `DocumentDefaults` paragraph spacing and `paragraphStyles` from `docx-config.js`.
+**Call this on every document** unless you have a custom style override.
+
+#### `withStyles(stylesObj)` → `DocWrapper`
+
+Inject a custom styles object (same shape as `Document` → `styles`).
+
+```javascript
+.withStyles({
+  default: new DocumentDefaults({ paragraph: { spacing } }),
+  paragraphStyles: [...]
 })
 ```
 
-## Functions
+#### `withNumbering(config)` → `DocWrapper`
 
-### `parseHtmlTags(text)`
-Parses a string containing basic HTML tags (`<b>`, `<i>`, `<u>`, `<s>`) and converts them into an array of `TextRun` objects. It supports nested tags.
-- **Parameters:**
-  - `text` (String): The input string to be parsed.
-- **Returns:** `TextRun[]`
-- **Description:** This function enables the insertion of basic text formatting (bold, italic, underline, and strikethrough) directly within an input string, which is then translated into a format compatible with the `docx` library.
+Replace the default numbering config. By default, `getNumberingConfig()` is pre-registered,
+providing `html-ordered-list`, `html-unordered-list`, and `section-heading-numbering`.
 
-### `parseHtmlLists(text)`
-Detects and parses HTML lists (`<ul>`, `<ol>`, `<li>`) or markdown-style lists (`- item`) in text.
-- **Parameters:**
-  - `text` (String): The input string to be parsed.
-- **Returns:** `Paragraph[]` or `null` (if no lists found)
-- **Description:** This function automatically detects both HTML list tags and markdown-style lists (lines starting with `-`), converting them into properly formatted bullet or numbered paragraphs in the Word document.
+#### `addSection(section)` → `DocWrapper`
 
-### `parseHtmlListTags(text)`
-Parses HTML `<ul>`, `<ol>`, `<li>` tags into paragraphs.
-- **Parameters:**
-  - `text` (String): The input string containing HTML list tags.
-- **Returns:** `Paragraph[]` or `null`
-- **Unordered Lists:** `<ul><li>item</li></ul>` → bullet points (•)
-- **Ordered Lists:** `<ol><li>item</li></ol>` → numbered list using configured multilevel numbering
-  - Level 0: `1.`, `2.`, `3.` (`DECIMAL`)
-  - Level 1: `a)`, `b)`, `c)` (`LOWER_LETTER`)
-  - Level 2: `i)`, `ii)`, `iii)` (`LOWER_ROMAN`)
-  - Marker gap is approximately 1.5x at this point (marker text includes a thin space `\u2009` plus `LevelSuffix.SPACE`)
-  - Requires `getNumberingConfig()` to be added to Document configuration
-- **Nested Lists:** Nested `<ol>` / `<ul>` inside `<li>` are preserved and mapped to deeper list levels.
-- **Example:**
-  ```html
-  <ul><li>First item</li><li>Second item</li></ul>
-  <ol>
-    <li>First step</li>
-    <li>Second step
-      <ol>
-        <li>Second step detail A</li>
-        <li>Second step detail B</li>
-      </ol>
-    </li>
-  </ol>
-  ```
+Add a section. Accepts:
 
-### `getNumberingConfig()`
-Creates numbering configuration for Document to support HTML lists and section headings.
-- **Returns:** `Array` - Numbering config array with these references:
-  - `html-ordered-list`
-  - `html-unordered-list`
-  - `section-heading-numbering`
-- **HTML ordered list levels (`html-ordered-list`):**
-  - Level 0: `%1.\u2009` (`DECIMAL`) + `LevelSuffix.SPACE`
-  - Level 1: `%2)\u2009` (`LOWER_LETTER`) + `LevelSuffix.SPACE`
-  - Level 2: `%3)\u2009` (`LOWER_ROMAN`) + `LevelSuffix.SPACE`
-- **HTML unordered list levels (`html-unordered-list`):**
-  - Level 0: `•`
-  - Level 1: `◦`
-  - Level 2: `▪`
-- **Section heading levels (`section-heading-numbering`):**
-  - Level 0: `%1.` (A., B., C. via `UPPER_LETTER`)
-  - Level 1: `%1.%2.`
-  - Level 2: `%1.%2.%3.`
-- **Usage:** Add to Document during initialization:
-  ```javascript
-  const doc = new Document({
-    numbering: {
-      config: getNumberingConfig()
-    },
-    // ... rest of config
-  })
-  ```
-- **Note:** Must be called when creating the Document to enable `<ol>`, `<ul>`, and section heading numbering.
+- A `SectionWrapper` instance (auto-calls `.build()`)
+- A raw section descriptor `{ properties?, children }` (backward compatible)
 
-### `parseMarkdownLists(lines)`
-Parses markdown-style lists (lines starting with `-`) into bullet paragraphs.
-- **Parameters:**
-  - `lines` (String[]): Array of text lines.
-- **Returns:** `Paragraph[]` or `null`
-- **Example:** `['- First item', '- Second item']`
+#### `build()` → `Document`
 
-### `parseContentAsParagraphs(content)`
-Intelligently parses content - detects lists and converts them to structured paragraphs, otherwise treats as regular text with formatting.
-- **Parameters:**
-  - `content` (String | Object): The content to parse.
-- **Returns:** `Paragraph[]`
-- **Description:** Primary function used internally by the API to convert any text content (with or without lists) into proper Word paragraphs.
+Returns the raw `docx` Document object. Use when you need direct access.
 
-### `createParagraph(content, customSpacing)`
-Creates a `Paragraph` with "Normal" styling. It supports HTML tag processing within the `content` and accepts optional spacing configurations.
-- **Parameters:**
-  - `content` (String | Object): The textual content or a paragraph configuration object.
-  - `customSpacing` (Object, optional): Configuration for spacing (e.g., `before`, `after`, `line`). If omitted, default spacing is applied.
-- **Returns:** `Paragraph`
+#### `toBuffer()` → `Promise<Buffer>`
 
-### `createTitle(text, center, customSpacing)`
-Creates a `Paragraph` styled as a **Document Title**.
-- **Parameters:**
-  - `text` (String): The title text (supports HTML tags).
-  - `center` (Boolean, optional): Whether to center-align the text. Default is `false`.
-  - `customSpacing` (Object, optional): Custom spacing overrides.
-- **Returns:** `Paragraph`
-
-### `createHeading(text, level, center, customSpacing, indentSize)`
-Creates a `Paragraph` styled as a **Heading**. Standard line breaks (`\n`) are preserved.
-- **Parameters:**
-  - `text` (String): The heading text.
-  - `level` (Number, optional): The heading level (1-6). Default is `1`.
-  - `center` (Boolean, optional): Whether to center-align the heading. Default is `false`.
-  - `customSpacing` (Object, optional): Custom spacing overrides.
-  - `indentSize` (Number, optional): Left indentation size in twips. Default is `0`.
-- **Returns:** `Paragraph`
-
-### `createNumberedHeading(text, level, numberingLevel, numberingInstance, center, customSpacing, indentSize, numberingReference)`
-Creates a heading paragraph with numbering metadata (`numPr`) attached.
-- **Parameters:**
-  - `text` (String): The heading text.
-  - `level` (Number, optional): Heading style level (`Heading1` to `Heading6`). Default is `1`.
-  - `numberingLevel` (Number, optional): Numbering level (`ilvl`). Default is `level - 1`.
-  - `numberingInstance` (Number, optional): Numbering instance (`numId` binding instance). Default is `1`.
-  - `center` (Boolean, optional): Whether to center-align the heading. Default is `false`.
-  - `customSpacing` (Object, optional): Custom spacing overrides.
-  - `indentSize` (Number, optional): Left indentation size in twips. Default is `0`.
-  - `numberingReference` (String, optional): Numbering reference key. Default is `section-heading-numbering`.
-- **Returns:** `Paragraph`
-- **Note:** Ensure `getNumberingConfig()` is used in `Document` config so the numbering reference exists.
-
-### `createHeadingWithChildren(headingText, level, children, indentSize, headingIndent, headingOptions)`
-Creates a heading paragraph followed by an array of indented child elements (paragraphs, tables, strings, or nested arrays).
-- **Parameters:**
-  - `headingText` (String): The heading text.
-  - `level` (Number, optional): The heading level (1-3). Default is `1`.
-  - `children` (Array, optional): An array of strings, `Paragraph` objects, `Table` objects, or nested arrays from spread helper calls.
-  - `indentSize` (Number, optional): Indentation step (in twips) applied to child elements in this call. Default is `720` (1/2 inch).
-  - `headingIndent` (Number, optional): Left indentation for the heading itself. Default is `0`.
-  - `headingOptions` (Object, optional): Heading paragraph options.
-    - `center` (Boolean, optional): Center align heading text.
-    - `customSpacing` (Object, optional): Custom heading spacing.
-    - `numbering` (Object, optional): Enable numbering on heading.
-      - `level` (Number, optional): Numbering level (`ilvl`).
-      - `instance` (Number, optional): Numbering instance.
-      - `reference` (String, optional): Numbering reference (default: `section-heading-numbering`).
-- **Returns:** `Array` (Contains `[headingParagraph, ...childParagraphs]`)
-- **Behavior Notes:**
-  - Nested `createHeadingWithChildren(...)` outputs are indented cumulatively automatically.
-  - Manual `indentSize` adjustment for the second nested call is no longer required in normal usage.
-  - Numbered list children keep relative hierarchy (`ilvl`) when heading-child indentation is injected (nested alphabet/roman items remain deeper than parent numeric items).
-  - Existing explicitly-indented external `Paragraph`/`Table` objects are preserved.
-- **Nested Example (Auto Cumulative Indent):**
-  ```javascript
-  ...createHeadingWithChildren('PENGALAMAN BELAJAR', 1, [
-    ...createHeadingWithChildren('Pendahuluan', 2, [
-      createParagraph('Pendahuluan tentang pengalaman belajar.')
-    ], 720, 0, {
-      numbering: { level: 1 }
-    }),
-    ...createHeadingWithChildren('Inti', 2, [
-      createParagraph('Inti dari pengalaman belajar.')
-    ], 720, 0, {
-      numbering: { level: 1 }
-    }),
-    ...createHeadingWithChildren('Penutup', 2, [
-      createParagraph('Penutup dari pengalaman belajar.')
-    ], 720, 0, {
-      numbering: { level: 1 }
-    })
-  ], 720, 0, {
-    numbering: { level: 0 }
-  })
-  ```
-
-### `bulletPoint(label, textOrChildren, children)`
-Creates one or more bullet-pointed paragraphs. Supports bold label prefixes and nested sub-bullets.
-- **Parameters:**
-  - `label` (String): The bolded label for the primary bullet point (supports HTML tags).
-  - `textOrChildren` (String | Array, optional): The text following the label, or an array of sub-bullets if no primary text is required.
-  - `children` (Array, optional): An array of sub-bullet objects (e.g., `{ label: '...', text: '...' }`) to nest under the main bullet.
-- **Returns:** `Paragraph[]`
-
-### `titleCell(text)`
-Creates a `TableCell` for table headers. It spans two columns, features a light gray background, and applies Title styling. Supports multiline text (`\n`).
-- **Parameters:**
-  - `text` (String): The cell text.
-- **Returns:** `TableCell`
-
-### `formField(label)`
-Generates an array of two `TableCell` objects designed for a single `TableRow` to function as a form field. The left cell contains a bordered label, while the right cell serves as an empty bordered input area.
-- **Parameters:**
-  - `label` (String): The label for the form field.
-- **Returns:** `[TableCell, TableCell]`
-
-## Removed APIs
-
-### `convertNumToRoman(num)`
-This helper is no longer exported from `docx-api.js`.
-
-- Use `createNumberedHeading(...)` or `createHeadingWithChildren(..., headingOptions.numbering)` for section numbering.
-- Use `getNumberingConfig()` in `Document` initialization to ensure numbering references are available.
-
-## Classes
-
-### `Row`
-A class for creating table rows with extensive styling and cell management capabilities.
-
-#### Methods
-
-- **`addCell(cell)`**: Adds a cell or array of cells to the row.
-  - **Parameters:** `cell` (TableCell|Array<TableCell>)
-  - **Returns:** `Row` (for chaining)
-
-- **`addTitleCell(text, columnSpan)`**: Adds a title cell that spans multiple columns with gray background.
-  - **Parameters:** `text` (String), `columnSpan` (Number, default: 2)
-  - **Returns:** `Row` (for chaining)
-
-- **`addFormField(label)`**: Adds a form field pair (label cell + empty input cell).
-  - **Parameters:** `label` (String)
-  - **Returns:** `Row` (for chaining)
-
-- **`addTextCell(text, options)`**: Adds a regular text cell with customizable styling. Supports HTML formatting, HTML lists, and markdown-style lists.
-  - **Parameters:** `text` (String), `options` (Object: alignment, style, bold, italic, columnSpan, margins, borders)
-  - **Supports:**
-    - HTML formatting: `<b>bold</b>`, `<i>italic</i>`, `<u>underline</u>`, `<s>strikethrough</s>`
-    - HTML lists: `<ul><li>item</li></ul>`, `<ol><li>item</li></ol>`
-    - Markdown lists: Lines starting with `- ` are converted to bullet points
-  - **Returns:** `Row` (for chaining)
-
-- **`addLabelValue(label, value, options)`**: Adds a label/value pair inside the same row.
-  - **Parameters:** `label` (String), `value` (String), `options` (Object: labelOptions, valueOptions)
-  - **Returns:** `Row` (for chaining)
-
-- **`setHeight(height, rule)`**: Sets the row height.
-  - **Parameters:** `height` (Number in twips), `rule` (String: 'auto', 'atLeast', 'exact')
-  - **Returns:** `Row` (for chaining)
-
-- **`setCantSplit(cantSplit)`**: Prevents the row from splitting across pages.
-  - **Parameters:** `cantSplit` (Boolean)
-  - **Returns:** `Row` (for chaining)
-
-- **`setAsHeader(isHeader)`**: Sets the row as a table header that repeats on each page.
-  - **Parameters:** `isHeader` (Boolean)
-  - **Returns:** `Row` (for chaining)
-
-- **`build()`**: Constructs and returns the `TableRow` object.
-  - **Returns:** `TableRow`
-
-### `TableWrapper`
-Enhanced table builder with Row objects and advanced table styling.
-
-#### Methods
-
-- **`addRow()`**: Creates and returns a new `Row` instance for chaining.
-  - **Returns:** `Row`
-
-- **`addTitleRow(text)`**: Convenience method to add a title row (legacy support).
-  - **Parameters:** `text` (String)
-  - **Returns:** `TableWrapper` (for chaining)
-
-- **`addFormFieldRow(label)`**: Convenience method to add a form field row (legacy support).
-  - **Parameters:** `label` (String)
-  - **Returns:** `TableWrapper` (for chaining)
-
-- **`addLabelValuePairRow(label, value)`**: Creates a simple 2-column row with a bold label and value.
-  - **Parameters:** `label` (String), `value` (String)
-  - **Returns:** `TableWrapper` (for chaining)
-
-- **`addLabelValueRow(label1, value1, label2, value2)`**: Creates a row with two label/value pairs across four cells.
-  - **Parameters:** `label1` (String), `value1` (String), `label2` (String), `value2` (String)
-  - **Returns:** `TableWrapper` (for chaining)
-
-- **`setAutoWidth(auto)`**: Enables or disables automatic table width based on content. When enabled, the table layout is set to `autofit` so Word adjusts column widths to content.
-  - **Parameters:** `auto` (Boolean)
-  - **Returns:** `TableWrapper` (for chaining)
-  - **Parameters:** `auto` (Boolean)
-  - **Returns:** `TableWrapper` (for chaining)
-
-- **`setFitContent()`**: Convenience alias for `setAutoWidth(true)`.
-  - **Returns:** `TableWrapper` (for chaining)
-
-- **`addRowObject(row)`**: Adds a pre-built `Row` object to the table.
-  - **Parameters:** `row` (Row)
-  - **Returns:** `TableWrapper` (for chaining)
-
-- **`setWidth(size, type)`**: Sets the table width.
-  - **Parameters:** `size` (Number), `type` (WidthType)
-  - **Returns:** `TableWrapper` (for chaining)
-
-- **`setIndent(size, type)`**: Sets the table indentation.
-  - **Parameters:** `size` (Number), `type` (WidthType)
-  - **Returns:** `TableWrapper` (for chaining)
-
-- **`setBorders(borders)`**: Sets table border styling.
-  - **Parameters:** `borders` (Object)
-  - **Returns:** `TableWrapper` (for chaining)
-
-- **`setMargins(margins)`**: Sets table margins.
-  - **Parameters:** `margins` (Object)
-  - **Returns:** `TableWrapper` (for chaining)
-
-- **`build()`**: Constructs and returns the final `Table` object.
-  - **Returns:** `Table`
-
-#### Advanced Usage Examples
+Builds and returns a `Buffer`.
 
 ```javascript
-import { TableWrapper, Row, AlignmentType, WidthType, BorderStyle } from './docx-api.js';
+const buffer = await docWrapper.toBuffer();
+fs.writeFileSync("output.docx", buffer);
+```
 
-// Example 1: Table with markdown-style lists in cells
-const markdownListTable = new TableWrapper()
-  .setFitContent()
-  .addLabelValuePairRow('Learning Objectives', '- Understand core concepts\n- Apply knowledge to examples\n- Evaluate results')
-  .addLabelValuePairRow('Materials', '- Textbook\n- Reference materials\n- Online resources')
-  .build();
+#### `save(filepath)` → `Promise<Buffer>`
 
-// Example 2: Table with HTML list syntax
-const htmlListTable = new TableWrapper()
-  .setFitContent()
-  .addLabelValuePairRow('Key Points', '<ul><li>First point</li><li>Second point</li><li>Third point</li></ul>')
-  .addLabelValuePairRow('Steps', '<ol><li>Step one</li><li>Step two</li><li>Step three</li></ol>')
-  .build();
-// Note: <ul> renders as bullets, <ol> renders as numbered list
+Builds, writes the file to disk, and returns the `Buffer`.
 
-// Example 3: Table with mixed content and formatting
-const mixedTable = new TableWrapper()
-  .setFitContent()
-  .addLabelValuePairRow('Important Notes', 'Pay attention to:\n- <b>Bold items</b> are critical\n- <i>Italic items</i> are optional\n- Regular items are supplementary')
-  .addRowObject(
-    new Row()
-      .addTextCell('Assessment Methods', { bold: true })
-      .addTextCell('- Written test\n- Practical demonstrations\n- Group projects')
-  )
-  .build();
-  .setWidth(100, WidthType.PERCENTAGE)
-  .addRowObject(
-    new Row()
-      .addTitleCell('COMPLEX TABLE HEADER\nWith Multiple Lines', 3)
-      .setAsHeader(true)
-      .setHeight(600, 'exact')
-  )
-  .addRowObject(
-    new Row()
-      .addTextCell('Column 1', { 
-        bold: true, 
-        alignment: AlignmentType.CENTER,
-        style: 'Heading4'
-      })
-      .addTextCell('Column 2', { 
-        italic: true,
-        alignment: AlignmentType.LEFT 
-      })
-      .addTextCell('Column 3', { 
-        alignment: AlignmentType.RIGHT 
-      })
-      .setHeight(400, 'atLeast')
-      .setCantSplit(true)
-  )
-  .addRowObject(
-    new Row()
-      .addFormField('Name')
-      .addTextCell('Additional Info', { columnSpan: 1 })
-  )
-  .setBorders({
-    top: { style: BorderStyle.SINGLE, size: 2, color: '000000' },
-    bottom: { style: BorderStyle.SINGLE, size: 2, color: '000000' },
-    left: { style: BorderStyle.SINGLE, size: 1, color: 'CCCCCC' },
-    right: { style: BorderStyle.SINGLE, size: 1, color: 'CCCCCC' }
-  })
-  .build();
-
-// Example 2: Simple chaining approach (backward compatible)
-const simpleTable = new TableWrapper()
-  .addTitleRow('Simple Title')
-  .addFormFieldRow('Field Label')
-  .addFormFieldRow('Another Field')
-  .build();
-
-// Example 3: Mixed approach - combining Row objects and convenience methods
-const mixedTable = new TableWrapper()
-  .addTitleRow('Header Row')
-  .addLabelValuePairRow('Label 1', 'Value 1')
-  .addLabelValuePairRow('Label 2', 'Value 2')
-  .addRowObject(
-    new Row()
-      .addTextCell('Custom Cell 1', { bold: true })
-      .addTextCell('Custom Cell 2', { italic: true })
-      .setHeight(300, 'exact')
-  )
-  .addFormFieldRow('Standard Form Field')
-  .build();
-
-// Example 4: Using addLabelValueRow for 4-column layout
-const fourColumnTable = new TableWrapper()
-  .addTitleRow('Header')
-  .addLabelValueRow('Label 1', 'Value 1', 'Label 2', 'Value 2')
-  .addLabelValueRow('Label 3', 'Value 3', 'Label 4', 'Value 4')
-  .build();
-
-// Example 5: Advanced Row with multiple cells and styling
-const advancedRow = new Row()
-  .addTitleCell('Section Header', 2)
-  .addTextCell('Data', { alignment: AlignmentType.CENTER })
-  .setAsHeader(false)
-  .setCantSplit(true)
-  .setHeight(500, 'atLeast');
-
-const tableWithAdvancedRow = new TableWrapper()
-  .addRowObject(advancedRow)
-  .build();
+```javascript
+await new DocWrapper()
+  .withDefaultStyles()
+  .addSection(mySection)
+  .save("output/MyDocument.docx");
 ```
 
 ---
 
-## Example Usage
+## SectionWrapper
 
-The following example demonstrates how to combine these API functions to structure complete document sections and export them using the `docx` library.
+Fluent builder for a single Document section. Replaces raw children arrays entirely.
 
 ```javascript
-import fs from 'fs';
-import path from 'path';
-import { Document, Packer, Table, TableRow, WidthType, AlignmentType, ImageRun } from 'docx';
-import {
-  createParagraph,
-  createHeading,
-  createHeadingWithChildren,
-  bulletPoint,
-  titleCell,
-  formField,
-  getNumberingConfig
-} from '../src/scripts/docx-api.js';
+import { SectionWrapper } from './docx-api.js'
+import { properties } from './docx-config.js'
 
-(async () => {
-  const coverPage = {
-    properties: { /* your custom page properties */ },
-    children: [
-      // Blank space
-      createParagraph('', {
-        before: 3000,
-        line: 240,
-        lineRule: 'AUTO'
-      }),
-      // Image header
-      createParagraph(
-        {
-          children: [
-            new ImageRun({
-              data: fs.readFileSync(
-                path.join(__dirname, '../assets/tut-wuri-handayani.png')
-              ),
-              transformation: {
-                width: 200,
-                height: 200
-              }
-            })
-          ],
-          alignment: AlignmentType.CENTER
-        },
-        {
-          after: 400,
-          lineRule: 'AUTO'
-        }
-      ),
-      new Table({
-        rows: [
-          // Title row (supports \n for multiple lines)
-          new TableRow({
-            children: [
-              titleCell('MODUL AJAR\nKURIKULUM MERDEKA (Deep Learning)')
-            ]
-          }),
-          // Form fields mapping using the helper
-          new TableRow({ children: formField('Nama Sekolah') }),
-          new TableRow({ children: formField('Nama Penyusun') }),
-          new TableRow({ children: formField('NIP') }),
-          new TableRow({ children: formField('Tema / Subtema') }),
-          new TableRow({ children: formField('Fase / Kelas / Semester') })
-        ],
-        width: {
-          size: 100,
-          type: WidthType.PERCENTAGE
-        },
-        indent: {
-          size: 0,
-          type: WidthType.AUTO
-        }
-      })
-    ]
-  }
+const mySection = new SectionWrapper(properties)
+  .heading('DOCUMENT TITLE', 1, { center: true })
+  .sp()
+  .table(new TableWrapper()...)
+  .sp(2)
+  .section('SECTION A', 1,
+    new SectionWrapper()
+      .sp()
+      .para('Content goes here.'),
+    { numbering: { level: 0 } }
+  )
+  .build()
+```
 
-  const contentPage = {
-    properties: { /* your page properties */ },
-    children: [
-      createHeading('MODUL AJAR DEEP LEARNING\nTEMA/SUBTEMA: Diriku/Tubuhku\nBAB I: MENGENAL BAGIAN TUBUH', 1, true),
-      createParagraph(''),
-      
-      // Creating sections with nested sub-content (like tables or text)
-      ...createHeadingWithChildren(
-        'IDENTITAS MODUL',
-        2,
-        [
-          new Table({
-            rows: [
-              new TableRow({ children: formField('Nama Sekolah') }),
-              new TableRow({ children: formField('Nama Penyusun') }),
-              new TableRow({ children: formField('NIP') }),
-              new TableRow({ children: formField('Tema / Subtema') }),
-              new TableRow({ children: formField('Fase / Kelas / Semester') }),
-              new TableRow({ children: formField('Alokasi Waktu') }),
-              new TableRow({ children: formField('Tahun Ajaran') })
-            ],
-            width: {
-              size: 100,
-              type: WidthType.PERCENTAGE
-            }
-          })
-        ],
-        720, // Indentation indentSize for level 2 children
-        0,
-        {
-          numbering: { level: 0 }
-        }
-      ),
-      createParagraph(''),
-      
-      // Using bullet point utilities with nested bullets
-      ...createHeadingWithChildren(
-        'IDENTIFIKASI KESIAPAN PESERTA DIDIK',
-        2,
-        [
-          ...bulletPoint('Pengetahuan Awal: ', 'Peserta didik telah memiliki pengetahuan dasar tentang nama-nama hewan dalam bahasa Inggris.'),
-          ...bulletPoint('Kebutuhan Belajar: ', '', [
-            { label: 'Visual: ', text: 'Peserta didik belajar lebih baik dengan bantuan gambar, video, dan infografis.' },
-            { label: 'Auditori: ', text: 'Peserta didik perlu mendengarkan audio dialog, monolog, dan penjelasan.' },
-            { label: 'Kinestetik: ', text: 'Peserta didik memerlukan aktivitas bergerak seperti permainan dan presentasi.' }
-          ])
-        ],
-        720,
-        0,
-        {
-          numbering: { level: 0 }
-        }
+### Constructor
+
+```javascript
+new SectionWrapper(sectionProperties?)
+```
+
+- `sectionProperties` — page size / margin config from `docx-config.js → properties`.
+  Pass `null` or omit to inherit the Document default.
+
+### Methods
+
+#### `.add(...items)` → `SectionWrapper`
+
+Add any docx content. Arrays are flattened automatically — no more `...spread`.
+
+```javascript
+// Old
+children: [
+  ...createHeadingWithChildren(...),
+  ...parseContentAsParagraphs(html)
+]
+
+// New
+.add(parseContentAsParagraphs(html))  // array auto-flattened
+```
+
+#### `.sp(n = 1)` → `SectionWrapper`
+
+Add `n` empty paragraphs for vertical spacing.
+
+```javascript
+// Old
+createParagraph("");
+createParagraph("");
+createParagraph("")
+  // New
+  .sp(3);
+```
+
+#### `.para(content = '', customSpacing?)` → `SectionWrapper`
+
+Add a paragraph. `content` may be a string (supports HTML tags) or a paragraph config object.
+
+```javascript
+.para('Regular text.')
+.para('<b>Bold</b> and <i>italic</i>.')
+.para({ children: [imageRun], alignment: AlignmentType.CENTER }, { after: 400 })
+.para('', { before: 3000, line: 240, lineRule: 'AUTO' })  // spacer with custom height
+```
+
+#### `.heading(text, level = 1, options?)` → `SectionWrapper`
+
+Add a heading paragraph without children.
+
+```javascript
+.heading('IDENTIFIKASI', 1)
+.heading('Sub Section', 2, { numbering: { level: 1 } })
+.heading('Centred Title', 1, { center: true })
+```
+
+**Options:**
+
+| Key             | Type    | Default | Description                        |
+| --------------- | ------- | ------- | ---------------------------------- |
+| `center`        | boolean | `false` | Center-align the heading           |
+| `indent`        | number  | `0`     | Left indent in twips               |
+| `customSpacing` | Object  | `{}`    | Spacing overrides                  |
+| `numbering`     | Object  | `null`  | `{ level, instance?, reference? }` |
+
+#### `.section(text, level, children, options?)` → `SectionWrapper`
+
+Add a heading followed by indented children. This is the primary nesting mechanism.
+
+`children` may be:
+
+- A `SectionWrapper` instance — its content is extracted automatically
+- A raw `Array` of docx objects
+- A single docx object
+
+```javascript
+.section('RENCANA PELAKSANAAN', 1,
+  new SectionWrapper()
+    .sp()
+    .section('AWAL', 2,
+      new SectionWrapper()
+        .sp()
+        .add(parseContentAsParagraphs('<ol><li>Step one</li></ol>')),
+      { numbering: { level: 1 } }
+    )
+    .section('INTI', 2,
+      new SectionWrapper()
+        .sp()
+        .para('Main content here.'),
+      { numbering: { level: 1 } }
+    ),
+  { numbering: { level: 0 } }
+)
+```
+
+**Options** (extends heading options):
+
+| Key             | Type    | Default | Description                        |
+| --------------- | ------- | ------- | ---------------------------------- |
+| `indentSize`    | number  | `720`   | Per-child indent in twips          |
+| `headingIndent` | number  | `0`     | Left indent on the heading itself  |
+| `numbering`     | Object  | `null`  | `{ level, instance?, reference? }` |
+| `center`        | boolean | `false` | Center the heading                 |
+
+#### `.table(tableOrWrapper)` → `SectionWrapper`
+
+Add a table. Accepts `TableWrapper` (auto-calls `.build()`) or a raw `Table`.
+
+```javascript
+.table(
+  new TableWrapper()
+    .setFitContent()
+    .addLabelValuePairRow('<b>Label</b>', 'Value')
+)
+```
+
+#### `.getChildren()` → `Array`
+
+Return the accumulated children array. Used internally when passing a `SectionWrapper`
+as the `children` argument to another `.section()` call.
+
+#### `.build()` → `{ properties?, children }`
+
+Produce the raw section descriptor. Passed directly to `DocWrapper.addSection()`.
+
+---
+
+## TableWrapper
+
+Fluent table builder. All convenience methods return `this` for chaining.
+
+```javascript
+new TableWrapper()
+  .setFitContent()
+  .addTitleRow("TABLE HEADER")
+  .addLabelValueRow("<b>Penulis</b>", name, "<b>Semester</b>", semester)
+  .addLabelValuePairRow("<b>Capaian Pembelajaran</b>", "<ul><li>...</li></ul>")
+  .addRowObject(
+    new Row().addTextCell("<b>Topik</b>").addTextCell(topik, { columnSpan: 3 }),
+  )
+  .build();
+```
+
+### Constructor Options (via setters)
+
+| Method                   | Description                             |
+| ------------------------ | --------------------------------------- |
+| `.setWidth(size, type)`  | Default: 100%                           |
+| `.setIndent(size, type)` | Default: 0                              |
+| `.setFitContent()`       | AUTOFIT layout (adapts to cell content) |
+| `.setBorders(borders)`   | Table-level border config               |
+| `.setMargins(margins)`   | Table-level cell margin defaults        |
+
+### Row convenience methods
+
+| Method                              | Result                                               |
+| ----------------------------------- | ---------------------------------------------------- |
+| `.addTitleRow(text)`                | Shaded header row spanning 2 columns. Supports `\n`. |
+| `.addFormFieldRow(label)`           | Label cell (fixed 3000 twip) + blank input cell      |
+| `.addLabelValuePairRow(label, val)` | Bold label + value, 2 columns                        |
+| `.addLabelValueRow(l1, v1, l2, v2)` | Two label/value pairs, 4 columns                     |
+| `.addRow()`                         | Returns a new `Row` for manual building              |
+| `.addRowObject(row)`                | Add a pre-built `Row` instance                       |
+
+### `.build()` → `Table`
+
+---
+
+## Row
+
+Fluent builder for a single `TableRow`.
+
+```javascript
+new Row()
+  .addTitleCell("Header", 2) // shaded, colspan 2
+  .addFormField("Field Label") // label + blank input
+  .addTextCell("content", { columnSpan: 3, rowSpan: 2 })
+  .addLabelValue("Key", "Value")
+  .setHeight(400, "exact")
+  .setCantSplit()
+  .setAsHeader()
+  .build();
+```
+
+### Cell methods
+
+#### `.addTitleCell(text, columnSpan = 2)` → `Row`
+
+Shaded (`#CCCCCC`) centered cell using `Heading3` style. Supports `\n` for multi-line.
+
+#### `.addFormField(label)` → `Row`
+
+Adds two cells: a fixed-width (3000 twips) label cell and a blank input cell.
+
+#### `.addTextCell(text, options?)` → `Row`
+
+Adds a content cell. `text` supports HTML tags and HTML/markdown lists.
+
+**Options:**
+
+| Key          | Type             | Default                                          |
+| ------------ | ---------------- | ------------------------------------------------ |
+| `columnSpan` | number           | `1`                                              |
+| `rowSpan`    | number           | `1`                                              |
+| `width`      | `{ size, type }` | `null` (auto)                                    |
+| `margins`    | Object           | `{ top: 50, bottom: 50, left: 100, right: 100 }` |
+| `borders`    | Object           | All sides `SINGLE, size 1, black`                |
+
+#### `.addLabelValue(label, value, options?)` → `Row`
+
+Adds bold label cell + value cell side by side.
+
+### Row property methods
+
+| Method                     | Description                                  |
+| -------------------------- | -------------------------------------------- |
+| `.setHeight(twips, rule?)` | `rule`: `'auto'` \| `'atLeast'` \| `'exact'` |
+| `.setCantSplit(bool?)`     | Prevent row from splitting across pages      |
+| `.setAsHeader(bool?)`      | Repeat row on each page                      |
+
+---
+
+## Paragraph & Heading Creators
+
+These remain available as standalone functions for cases where the fluent API is not needed.
+
+### `createParagraph(content, customSpacing?)` → `Paragraph`
+
+| Argument        | Type               | Description                                                      |
+| --------------- | ------------------ | ---------------------------------------------------------------- |
+| `content`       | `string \| Object` | Text (supports HTML tags) or paragraph config object             |
+| `customSpacing` | Object             | `{ before, after, line, lineRule }`. Omit to use style defaults. |
+
+### `createTitle(text, center?, customSpacing?)` → `Paragraph`
+
+`Title` style paragraph. Use for document-level titles.
+
+### `createHeading(text, level?, center?, customSpacing?, indentSize?)` → `Paragraph`
+
+`Heading1`–`Heading6` paragraph. Newlines (`\n`) become line breaks within the paragraph.
+
+### `createNumberedHeading(text, level?, numberingLevel?, numberingInstance?, center?, customSpacing?, indentSize?, numberingReference?)` → `Paragraph`
+
+Heading with `numPr` metadata. Requires `getNumberingConfig()` registered on the Document.
+Use `SectionWrapper.heading(..., { numbering: { level } })` as a shorter alternative.
+
+### `createHeadingWithChildren(headingText, level?, children?, indentSize?, headingIndent?, headingOptions?)` → `Array`
+
+Returns `[headingParagraph, ...indentedChildren]`.
+Prefer `SectionWrapper.section()` which eliminates the `...spread` requirement.
+
+---
+
+## List Helpers
+
+### `bulletPoint(label, textOrChildren?, children?)` → `Paragraph[]`
+
+Create a top-level bullet point with optional bold label and optional nested sub-bullets.
+
+```javascript
+// Simple
+bulletPoint("", "Plain bullet");
+
+// With label
+bulletPoint("Note: ", "This is important.");
+
+// With nested sub-bullets
+bulletPoint("Learning needs:", "", [
+  { label: "Visual:", text: "Prefers diagrams." },
+  { label: "Auditory:", text: "Benefits from audio." },
+]);
+```
+
+### `getNumberingConfig()` → `Array`
+
+Returns the numbering config array for `Document → numbering → config`.
+`DocWrapper` registers this automatically — you only need this when constructing `Document` manually.
+
+**Registered references:**
+
+| Reference                   | Levels                   |
+| --------------------------- | ------------------------ |
+| `html-ordered-list`         | `1.` / `a)` / `i)`       |
+| `html-unordered-list`       | `•` / `◦` / `▪`          |
+| `section-heading-numbering` | `A.` / `A.1.` / `A.1.1.` |
+
+---
+
+## HTML / Markdown Parsing
+
+### `parseHtmlTags(text)` → `TextRun[]`
+
+Parse inline `<b>`, `<i>`, `<u>`, `<s>` tags. Supports nesting.
+
+```javascript
+parseHtmlTags("Hello <b><i>world</i></b>!");
+```
+
+### `parseHtmlLists(text)` → `Paragraph[] | null`
+
+Auto-detect HTML lists (`<ul>`, `<ol>`, `<li>`) or markdown (`- item`) and convert to paragraphs.
+
+### `parseHtmlListTags(text)` → `Paragraph[] | null`
+
+HTML list parser only. Supports nesting (`<ol>` inside `<li>`).
+
+### `parseMarkdownLists(lines)` → `Paragraph[] | null`
+
+Markdown `- item` list parser. Pass `text.split('\n')`.
+
+### `parseContentAsParagraphs(content)` → `Paragraph[]`
+
+Primary smart parser. Detects lists first; falls back to a single formatted paragraph.
+Used internally by `Row.addTextCell()` and `SectionWrapper.add()`.
+
+---
+
+## Configuration Constants
+
+Exported from `docx-config.js`:
+
+| Constant            | Value  | Description                                   |
+| ------------------- | ------ | --------------------------------------------- |
+| `CONTENT_WIDTH_DXA` | `7937` | Usable width for A4 with current margins      |
+| `DEFAULT_INDENT`    | `720`  | Default indentation step (0.5 inch)           |
+| `MARGIN_LEFT`       | `2268` | Left margin (4 cm)                            |
+| `MARGIN_RIGHT`      | `1701` | Right margin (3 cm)                           |
+| `MARGIN_TOP`        | `1701` | Top margin (3 cm)                             |
+| `MARGIN_BOTTOM`     | `1701` | Bottom margin (3 cm)                          |
+| `properties`        | Object | A4 page size + margin config for sections     |
+| `spacing`           | Object | Default line spacing (360, AT_LEAST)          |
+| `paragraphStyles`   | Array  | Heading1–3 + Title + Normal style definitions |
+
+---
+
+## Migration Guide
+
+### Before (old pattern)
+
+```javascript
+// Entry file
+const doc = new Document({
+  numbering: { config: getNumberingConfig() },
+  styles: {
+    default: new DocumentDefaults({ paragraph: { spacing } }),
+    paragraphStyles
+  },
+  sections: [
+    coverPage,
+    {
+      properties,
+      children: [
+        createNumberedHeading('IDENTIFIKASI', 1),
+        createParagraph(''),
+        new TableWrapper().setFitContent()...build(),
+        createParagraph(''),
+        createParagraph(''),
+        createParagraph(''),
+        ...createHeadingWithChildren('RENCANA', 1, [
+          createParagraph(''),
+          ...createHeadingWithChildren('AWAL', 2, [
+            createParagraph(''),
+            ...parseContentAsParagraphs('<ol>...</ol>')
+          ], 720, 0, { numbering: { level: 1 } }),
+          createParagraph(''),
+          ...createHeadingWithChildren('INTI', 2, [
+            createParagraph(''),
+            createParagraph('Some text.')
+          ], 720, 0, { numbering: { level: 1 } })
+        ], 720, 0, { numbering: { level: 0 } })
+      ]
+    }
+  ]
+})
+const buffer = await Packer.toBuffer(doc)
+fs.writeFileSync('out.docx', buffer)
+```
+
+### After (new pattern)
+
+```javascript
+// Entry file
+await new DocWrapper()
+  .withDefaultStyles()
+  .addSection(coverPage)
+  .addSection(
+    new SectionWrapper(properties)
+      .heading('IDENTIFIKASI', 1, { numbering: { level: 0 } })
+      .sp()
+      .table(new TableWrapper().setFitContent()...)
+      .sp(3)
+      .section('RENCANA', 1,
+        new SectionWrapper()
+          .sp()
+          .section('AWAL', 2,
+            new SectionWrapper()
+              .sp()
+              .add(parseContentAsParagraphs('<ol>...</ol>')),
+            { numbering: { level: 1 } }
+          )
+          .sp()
+          .section('INTI', 2,
+            new SectionWrapper()
+              .sp()
+              .para('Some text.'),
+            { numbering: { level: 1 } }
+          ),
+        { numbering: { level: 0 } }
       )
-    ]
-  }
+  )
+  .save('out.docx')
+```
 
-  const doc = new Document({
-    numbering: {
-      config: getNumberingConfig()
-    },
-    styles: { /* default paragraphStyles mapping */ },
-    sections: [
-      coverPage,
-      contentPage
-    ]
-  })
+**Key differences:**
 
-  const buffer = await Packer.toBuffer(doc);
-  fs.writeFileSync('My Document.docx', buffer);
-})();
-``` 
+- No `Document`, `Packer`, `DocumentDefaults` boilerplate in entry files
+- `...spread` is gone — `.add()` flattens arrays automatically
+- `.sp(n)` replaces repeated `createParagraph('')`
+- `.section()` replaces `...createHeadingWithChildren()`
+- Nested `SectionWrapper` makes nesting depth visually clear
+
+---
+
+## Full Example
+
+```javascript
+import {
+  DocWrapper,
+  SectionWrapper,
+  TableWrapper,
+  Row,
+  parseContentAsParagraphs,
+} from "./docx-api.js";
+import { properties } from "./docx-config.js";
+import { coverPage } from "./docx-cover-page.js";
+
+await new DocWrapper()
+  .withDefaultStyles()
+
+  // Section 1: Cover page (built with SectionWrapper in docx-cover-page.js)
+  .addSection(coverPage)
+
+  // Section 2: Document content
+  .addSection(
+    new SectionWrapper(properties)
+
+      // Info table
+      .table(
+        new TableWrapper()
+          .addTitleRow("MODUL AJAR")
+          .addLabelValueRow(
+            "<b>Penulis</b>",
+            "Nikola Tesla",
+            "<b>Semester</b>",
+            "I",
+          ),
+      )
+      .sp(2)
+
+      // Section A – numbered heading with table children
+      .section(
+        "IDENTIFIKASI",
+        1,
+        new SectionWrapper()
+          .sp()
+          .table(
+            new TableWrapper()
+              .setFitContent()
+              .addRowObject(
+                new Row()
+                  .addTextCell("<b>Peserta Didik</b>", {
+                    width: { size: 1800, type: WidthType.DXA },
+                  })
+                  .addTextCell("Deskripsi peserta didik.", { columnSpan: 4 }),
+              ),
+          ),
+        { numbering: { level: 0 } },
+      )
+      .sp(2)
+
+      // Section B – nested sub-sections
+      .section(
+        "RENCANA PELAKSANAAN PEMBELAJARAN",
+        1,
+        new SectionWrapper()
+          .sp()
+          .section(
+            "AWAL",
+            2,
+            new SectionWrapper()
+              .sp()
+              .add(
+                parseContentAsParagraphs(
+                  "<ol><li>Salam pembuka</li><li>Doa bersama</li></ol>",
+                ),
+              ),
+            { numbering: { level: 1 } },
+          )
+          .sp()
+          .section(
+            "INTI",
+            2,
+            new SectionWrapper()
+              .sp()
+              .para("Deskripsi kegiatan inti.")
+              .sp()
+              .table(
+                new TableWrapper()
+                  .setFitContent()
+                  .addTitleRow("KEGIATAN INTI")
+                  .addLabelValuePairRow("<b>Hari</b>", "<b>Uraian</b>")
+                  .addLabelValuePairRow("<b>1</b>", "Aktivitas hari pertama."),
+              ),
+            { numbering: { level: 1 } },
+          ),
+        { numbering: { level: 0 } },
+      ),
+  )
+
+  .save("Modul_Ajar.docx");
+```

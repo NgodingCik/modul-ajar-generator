@@ -913,7 +913,7 @@ const getNumberingConfig = () => [
         alignment: AlignmentType.LEFT,
         style: {
           paragraph: {
-            indent: { left: 360, hanging: 0 }
+            indent: { left: 720, hanging: 360 } // Number hangs left, text wraps properly
           }
         }
       }
@@ -929,7 +929,7 @@ const getNumberingConfig = () => [
         alignment: AlignmentType.LEFT,
         style: {
           paragraph: {
-            indent: { left: 360, hanging: 0 }
+            indent: { left: 720, hanging: 360 } // Bullet hangs left, text wraps properly
           }
         }
       }

@@ -90,6 +90,9 @@ new TableWrapper()
       .addTextCell('<b>[x] DPL8</b>\nKomunikasi')
   )
   .build(),
+createParagraph(''),
+createParagraph(''),
+createParagraph(''),
 createParagraph('')
 ````
 

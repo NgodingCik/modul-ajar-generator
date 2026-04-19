@@ -99,3 +99,31 @@ createParagraph('')
 Harus memuat Heading dengan format "A. IDENTIFIKASI" dan level 1, kemudian diikuti dengan table yang memiliki 5 kolom dan beberapa baris sesuai dengan kebutuhan informasi yang harus disampaikan. Setiap cell dalam table harus diisi dengan informasi yang relevan dan sesuai dengan konteks pembelajaran anak usia dini.
 
 HARUS MENGIKUTI FORMAT TABLE YANG ADA DALAM CONTOH, JANGAN MENGUBAH STRUKTUR TABLE ATAU FORMAT PENULISAN INFORMASI DI DALAM CELL.
+
+# B. DESAIN PEMBELAJARAN
+
+Bagian ini berisi sebuah table yang memuat informasi tentang desain pembelajaran yang mencakup Capaian Pembelajaran, Lintas Disiplin Ilmu, Tujuan Pembelajaran, Topik Pembelajaran, Praktik Pedagogis, Kemitraan Pembelajaran, Lingkungan Pembelajaran, dan Pemanfaatan Digital.
+
+Kamu dapat memanfaatkan `createHeading`, `TableWrapper`, dan `Row` untuk membangun struktur bagian ini, contoh:
+
+```js
+createHeading('B. DESAIN PEMBELAJARAN', 1),
+new TableWrapper()
+  .setFitContent()
+  .addLabelValuePairRow('Capaian Pembelajaran', '<ul><li><b>Elemen Jati Diri:</b> Sub Elemen Anak memahami identitas dirinya yang terbentuk oleh ragam minat, kebutuhan, karakteristik gender, agama, dan sosial budaya</li><li><b>Elemen Jati Diri:</b> Sub Elemen Anak menggunakan fungsi gerak (motorik kasar, halus, dan taktil) untuk mengeksplorasi dan memanipulasi berbagai objek dan lingkungan sekitar sebagai bentuk pengembangan diri</li></ul>')
+  .addLabelValuePairRow('Lintas Disiplin Ilmu', 'Nilai agama dan moral (mengenal keberadaan Tuhan melalui syukur atas identitas diri), nilai Pancasila (menghargai keberagaman nama dan karakteristik teman), fisik motorik (gerakan menunjuk dan melambai), kognitif (mengingat dan menyebut nama sendiri), bahasa (mengucapkan nama dengan jelas), sosial emosional (membangun kepercayaan diri dan interaksi dengan teman)')
+  .addLabelValuePairRow('Tujuan Pembelajaran', '<ul><li>Anak mampu mengenal identitas dirinya sebagai bagian dari keluarga dan menyebutkan namanya sendiri sambil melakukan gerakan sederhana seperti melambai atau bertepuk tangan.</li></ul>')
+  .addLabelValuePairRow('Topik Pembelajaran', 'Aku Istimewa: Ayo Kita Berkenalan')
+  .addLabelValuePairRow('Praktik Pedagogis', 'Pembelajaran berbasis bermain dengan pendekatan eksplorasi langsung menggunakan metode bercerita interaktif, bernyanyi sambil bergerak, dan permainan cermin. Pendekatan ini mendukung prinsip berkesadaran melalui fokus pada diri sendiri, bermakna karena relevan dengan kehidupan sehari-hari, dan menggembirakan melalui aktivitas yang menyenangkan dan tidak menakutkan.')
+  .addLabelValuePairRow('Kemitraan Pembelajaran', '<ul><li>Lingkungan pembelajaran mengintegrasikan ruang kelas yang nyaman dengan cermin besar, area bermain terbuka untuk aktivitas motorik, dan sudut tenang untuk kegiatan refleksi, menciptakan suasana aman yang mendorong eksplorasi identitas diri.</li></ul>')
+  .addLabelValuePairRow('Lingkungan Pembelajaran', '<ul><li>Melibatkan guru kelas sebagai fasilitator utama, orang tua sebagai sumber informasi tentang anak di rumah, serta kakak kelas sebagai model positif dalam pengenalan diri dan interaksi sosial.</li></ul>')
+  .addLabelValuePairRow('Pemanfaatan Digital', '<ul><li>Perencanaan: Persiapan video cerita dan lagu digital, aplikasi dokumentasi pembelajaran</li><li>Pelaksanaan: Video interaktif "Ayo Berkenalan", musik latar untuk aktivitas, dokumentasi foto dan video proses belajar anak</li><li>Asesmen: Portofolio digital karya anak, rekaman video presentasi sederhana anak</li><li>Dukungan media ajar digital tersedia melalui https://drive.paud.id/download/ayo-berkenalan/</li></ul>')
+  .build(),
+createParagraph('')
+```
+
+Harus memuat Heading dengan format "B. DESAIN PEMBELAJARAN" dan level 1, kemudian diikuti dengan table yang memiliki 2 kolom (label dan nilai) sesuai dengan kebutuhan informasi yang harus disampaikan. Setiap cell dalam table harus diisi dengan informasi yang relevan dan sesuai dengan konteks pembelajaran anak usia dini.
+
+Pada bagian Pemanfaatan Digital, harus menyertakan informasi tentang ketersediaan media ajar digital yang dapat diakses melalui tautan yang sesuai (misalnya: https://drive.paud.id/download/ayo-berkenalan/).
+
+HARUS MENGIKUTI FORMAT TABLE YANG ADA DALAM CONTOH, JANGAN MENGUBAH STRUKTUR TABLE ATAU FORMAT PENULISAN INFORMASI DI DALAM CELL.

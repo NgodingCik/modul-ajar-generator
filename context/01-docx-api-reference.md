@@ -86,14 +86,32 @@ Creates a `Paragraph` styled as a **Heading**. Standard line breaks (`\n`) are p
 - **Returns:** `Paragraph`
 
 ### `createHeadingWithChildren(headingText, level, children, indentSize, headingIndent)`
-Creates a heading paragraph followed by an array of indented child elements (paragraphs, tables, or strings).
+Creates a heading paragraph followed by an array of indented child elements (paragraphs, tables, strings, or nested arrays).
 - **Parameters:**
   - `headingText` (String): The heading text.
   - `level` (Number, optional): The heading level (1-3). Default is `1`.
-  - `children` (Array, optional): An array of strings, `Paragraph` objects, or `Table` objects.
-  - `indentSize` (Number, optional): Left indentation for the child elements. Default is `720` (1/2 inch).
+  - `children` (Array, optional): An array of strings, `Paragraph` objects, `Table` objects, or nested arrays from spread helper calls.
+  - `indentSize` (Number, optional): Indentation step (in twips) applied to child elements in this call. Default is `720` (1/2 inch).
   - `headingIndent` (Number, optional): Left indentation for the heading itself. Default is `0`.
 - **Returns:** `Array` (Contains `[headingParagraph, ...childParagraphs]`)
+- **Behavior Notes:**
+  - Nested `createHeadingWithChildren(...)` outputs are indented cumulatively automatically.
+  - Manual `indentSize` adjustment for the second nested call is no longer required in normal usage.
+  - Existing explicitly-indented external `Paragraph`/`Table` objects are preserved.
+- **Nested Example (Auto Cumulative Indent):**
+  ```javascript
+  ...createHeadingWithChildren('C.PENGALAMAN BELAJAR', 1, [
+    ...createHeadingWithChildren('C.1. Pendahuluan', 2, [
+      createParagraph('Pendahuluan tentang pengalaman belajar.')
+    ]),
+    ...createHeadingWithChildren('C.2. Inti', 2, [
+      createParagraph('Inti dari pengalaman belajar.')
+    ]),
+    ...createHeadingWithChildren('C.3. Penutup', 2, [
+      createParagraph('Penutup dari pengalaman belajar.')
+    ])
+  ])
+  ```
 
 ### `bulletPoint(label, textOrChildren, children)`
 Creates one or more bullet-pointed paragraphs. Supports bold label prefixes and nested sub-bullets.

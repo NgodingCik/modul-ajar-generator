@@ -1,9 +1,10 @@
 import {
   Document,
   DocumentDefaults,
-  Packer
+  Packer,
+  WidthType
 } from 'docx'
-import { TableWrapper, Row, createParagraph } from './docx-api.js'
+import { TableWrapper, Row, createParagraph, createHeading } from './docx-api.js'
 import { properties, spacing, paragraphStyles } from './docx-config.js'
 import { coverPage } from './docx-cover-page.js'
 import { convertNumToRoman } from './utils.js'
@@ -40,7 +41,50 @@ import { namaPenulis, semester, asalSekolah, mingguKe, fase, bulan, jenjangKelas
                 .addTextCell(topikSubtopik, { columnSpan: 3 })
             )
             .build(),
-          createParagraph('')
+          createParagraph(''),
+          createHeading('A. IDENTIFIKASI', 1),
+          new TableWrapper()
+            .setFitContent()
+            .addRowObject(
+              new Row()
+                .addTextCell('Peserta Didik', {
+                  bold: true,
+                  width: { size: 1800, type: WidthType.DXA }
+                })
+                .addTextCell('Anak kelompok A (2-3 tahun) memiliki kemampuan bahasa yang sedang berkembang dengan kosakata terbatas namun mulai dapat mengungkapkan kebutuhan dasar. Mereka sangat membutuhkan pengulangan dan bimbingan dalam pengenalan identitas diri, serta masih dalam tahap mengembangkan kepercayaan terhadap lingkungan sekitar. Anak-anak pada usia ini belajar melalui eksplorasi sensori dan memerlukan dukungan emosional yang konsisten.', {
+                  columnSpan: 4
+                })
+            )
+            .addRowObject(
+              new Row()
+                .addTextCell('Materi Pelajaran', {
+                  bold: true,
+                  width: { size: 1800, type: WidthType.DXA }
+                })
+                .addTextCell('Materi pengenalan identitas diri mencakup pengetahuan esensial tentang nama dan bagian tubuh, pengetahuan aplikatif dalam berinteraksi sosial sederhana, serta pengetahuan nilai dan karakter melalui rasa percaya diri dan kemandirian. Materi ini sangat relevan dengan kehidupan sehari-hari anak dan memiliki tingkat kesulitan yang sesuai dengan tahap perkembangan mereka, mengintegrasikan nilai keimanan, kejujuran, dan kemandirian.', {
+                  columnSpan: 4
+                })
+            )
+            .addRowObject(
+              new Row()
+                .addTextCell('Dimensi Profil Lulusan', {
+                  bold: true,
+                  rowSpan: 2,
+                  width: { size: 1800, type: WidthType.DXA }
+                })
+                .addTextCell('<b>[x] DPL1</b>\nKeimanan dan Ketakwaan terhadap Tuhan YME')
+                .addTextCell('<b>[ ] DPL3</b>\nPenalaran Kritis')
+                .addTextCell('<b>[x] DPL5</b>\nKolaborasi')
+                .addTextCell('<b>[ ] DPL7</b>\nKesehatan')
+            )
+            .addRowObject(
+              new Row()
+                .addTextCell('<b>[x] DPL2</b>\nKewargaan')
+                .addTextCell('<b>[ ] DPL4</b>\nKreativitas')
+                .addTextCell('<b>[x] DPL6</b>\nKemandirian')
+                .addTextCell('<b>[x] DPL8</b>\nKomunikasi')
+            )
+            .build()
         ]
       }
     ]

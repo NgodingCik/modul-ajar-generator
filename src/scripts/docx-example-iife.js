@@ -11,7 +11,7 @@ import { convertNumToRoman } from './utils.js'
 import fs from 'fs'
 import { namaPenulis, semester, asalSekolah, mingguKe, fase, bulan, jenjangKelas, alokasiWaktu, modelPembelajaran, jumlahAnak, topikSubtopik } from './docx-predefined-var.js'
 
-;(async () => {
+(async () => {
   const doc = new Document({
     styles: {
       default: new DocumentDefaults({
@@ -84,6 +84,22 @@ import { namaPenulis, semester, asalSekolah, mingguKe, fase, bulan, jenjangKelas
                 .addTextCell('<b>[x] DPL6</b>\nKemandirian')
                 .addTextCell('<b>[x] DPL8</b>\nKomunikasi')
             )
+            .build(),
+          createParagraph(''),
+          createParagraph(''),
+          createParagraph(''),
+          createParagraph(''),
+          createHeading('B. DESAIN PEMBELAJARAN', 1),
+          new TableWrapper()
+            .setFitContent()
+            .addLabelValuePairRow('Capaian Pembelajaran', '- Elemen Jati Diri: Sub Elemen Anak memahami identitas dirinya yang terbentuk oleh ragam minat, kebutuhan, karakteristik gender, agama, dan sosial budaya\n- Elemen Jati Diri: Sub Elemen Anak menggunakan fungsi gerak (motorik kasar, halus, dan taktil) untuk mengeksplorasi dan memanipulasi berbagai objek dan lingkungan sekitar sebagai bentuk pengembangan diri')
+            .addLabelValuePairRow('Lintas Disiplin Ilmu', 'Nilai agama dan moral (mengenal keberadaan Tuhan melalui syukur atas identitas diri), nilai Pancasila (menghargai keberagaman nama dan karakteristik teman), fisik motorik (gerakan menunjuk dan melambai), kognitif (mengingat dan menyebut nama sendiri), bahasa (mengucapkan nama dengan jelas), sosial emosional (membangun kepercayaan diri dan interaksi dengan teman)')
+            .addLabelValuePairRow('Tujuan Pembelajaran', 'Anak mampu mengenal identitas dirinya sebagai bagian dari keluarga dan menyebutkan namanya sendiri sambil melakukan gerakan sederhana seperti melambai atau bertepuk tangan.')
+            .addLabelValuePairRow('Topik Pembelajaran', 'Aku Istimewa: Ayo Kita Berkenalan')
+            .addLabelValuePairRow('Praktik Pedagogis', 'Pembelajaran berbasis bermain dengan pendekatan eksplorasi langsung menggunakan metode bercerita interaktif, bernyanyi sambil bergerak, dan permainan cermin. Pendekatan ini mendukung prinsip berkesadaran melalui fokus pada diri sendiri, bermakna karena relevan dengan kehidupan sehari-hari, dan menggembirakan melalui aktivitas yang menyenangkan dan tidak menakutkan.')
+            .addLabelValuePairRow('Kemitraan Pembelajaran', 'Lingkungan pembelajaran mengintegrasikan ruang kelas yang nyaman dengan cermin besar, area bermain terbuka untuk aktivitas motorik, dan sudut tenang untuk kegiatan refleksi, menciptakan suasana aman yang mendorong eksplorasi identitas diri.')
+            .addLabelValuePairRow('Lingkungan Pembelajaran', 'Melibatkan guru kelas sebagai fasilitator utama, orang tua sebagai sumber informasi tentang anak di rumah, serta kakak kelas sebagai model positif dalam pengenalan diri dan interaksi sosial.')
+            .addLabelValuePairRow('Pemanfaatan Digital', '- Perencanaan: Persiapan video cerita dan lagu digital, aplikasi dokumentasi pembelajaran\n- Pelaksanaan: Video interaktif "Ayo Berkenalan", musik latar untuk aktivitas, dokumentasi foto dan video proses belajar anak\n- Asesmen: Portofolio digital karya anak, rekaman video presentasi sederhana anak\n- Dukungan media ajar digital tersedia melalui https://drive.paud.id/download/ayo-berkenalan/ ')
             .build()
         ]
       }

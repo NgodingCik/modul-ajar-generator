@@ -1,8 +1,9 @@
 import config from 'dotenv'
+import fs from 'fs'
 import path from 'path'
 import OpenAI from 'openai'
 import consola from 'consola'
-import { loadContexts } from '../utils/utils.js'
+import { loadContexts, removeImportRequire } from '../utils/utils.js'
 
 config.config({ override: true }) // Load environment variables from .env file
 
@@ -57,6 +58,14 @@ export default class OpenAIWrapper {
         content: `--- CONTEXT ${key} START ---\n${value}\n--- CONTEXT ${key} END ---`
       })
     }
+
+    // Embed exaple output IIFE
+    const exampleIIFEPath = path.join(__dirname, '../scripts/docx-example-iife.js')
+    const exampleIIFEContent = removeImportRequire(fs.readFileSync(exampleIIFEPath, 'utf-8'))
+    this.mContexts.push({
+      role: 'system',
+      content: `--- CONTEXT docx-example-iife START ---\n${exampleIIFEContent}\n--- CONTEXT docx-example-iife END ---`
+    })
   }
 
   // Public method

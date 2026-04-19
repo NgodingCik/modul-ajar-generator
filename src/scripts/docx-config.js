@@ -1,27 +1,68 @@
-const properties = { // eslint-disable-line no-unused-vars
+// ─────────────────────────────────────────────────────────────────────────────
+// Page layout
+// All measurements are in twips (DXA). 1 inch = 1440 twips.
+// A4: 11906 × 16838 twips  |  Letter: 12240 × 15840 twips
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Left margin in twips (4 cm) */
+const MARGIN_LEFT = 2268
+
+/** Right / top / bottom margins in twips (3 cm) */
+const MARGIN_RIGHT = 1701
+const MARGIN_TOP = 1701
+const MARGIN_BOTTOM = 1701
+
+/**
+ * Usable content width for A4 with these margins (in twips).
+ * = 11906 − MARGIN_LEFT − MARGIN_RIGHT = 7937
+ */
+const CONTENT_WIDTH_DXA = 11906 - MARGIN_LEFT - MARGIN_RIGHT // 7937
+
+/**
+ * Default indentation step used by SectionWrapper.section() and
+ * createHeadingWithChildren(). One tab stop = 720 twips (0.5 inch).
+ */
+const DEFAULT_INDENT = 720
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Section properties (page size + margins) — used as section.properties
+// ─────────────────────────────────────────────────────────────────────────────
+
+const properties = {
   page: {
     size: {
       orientation: 'portrait',
-      width: 11906, // A4 width in twip (21 cm)
-      height: 16838 // A4 height in twip (29.7 cm)
+      width: 11906, // A4 width  (21 cm)
+      height: 16838 // A4 height (29.7 cm)
     },
     margin: {
-      top: 1701, // 3 cm
-      right: 1701, // 3 cm
-      bottom: 1701, // 3 cm
-      left: 2268 // 4 cm
+      top: MARGIN_TOP,
+      right: MARGIN_RIGHT,
+      bottom: MARGIN_BOTTOM,
+      left: MARGIN_LEFT
     }
   }
 }
 
-const spacing = { // eslint-disable-line no-unused-vars
+// ─────────────────────────────────────────────────────────────────────────────
+// Default paragraph spacing
+// Used by DocumentDefaults and createParagraph fallback.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const spacing = {
   line: 360,
   lineRule: 'AT_LEAST',
   before: 0,
   after: 0
 }
 
-const paragraphStyles = [ // eslint-disable-line no-unused-vars
+// ─────────────────────────────────────────────────────────────────────────────
+// Paragraph styles — passed to Document `styles.paragraphStyles`
+// IDs must exactly match docx built-in names to override them.
+// font sizes are in half-points (24 = 12 pt, 32 = 16 pt, etc.)
+// ─────────────────────────────────────────────────────────────────────────────
+
+const paragraphStyles = [
   {
     id: 'Normal',
     name: 'Normal',
@@ -29,7 +70,7 @@ const paragraphStyles = [ // eslint-disable-line no-unused-vars
     next: 'Normal',
     run: {
       font: 'Times New Roman',
-      size: 24 // 12pt (docx uses half-points)
+      size: 24 // 12 pt
     }
   },
   {
@@ -39,7 +80,7 @@ const paragraphStyles = [ // eslint-disable-line no-unused-vars
     next: 'Normal',
     run: {
       font: 'Times New Roman',
-      size: 40, // 20pt
+      size: 40, // 20 pt
       bold: true
     }
   },
@@ -50,7 +91,7 @@ const paragraphStyles = [ // eslint-disable-line no-unused-vars
     next: 'Normal',
     run: {
       font: 'Times New Roman',
-      size: 32, // 16pt
+      size: 32, // 16 pt
       bold: true
     }
   },
@@ -61,7 +102,7 @@ const paragraphStyles = [ // eslint-disable-line no-unused-vars
     next: 'Normal',
     run: {
       font: 'Times New Roman',
-      size: 28, // 14pt
+      size: 28, // 14 pt
       bold: true
     }
   },
@@ -72,13 +113,22 @@ const paragraphStyles = [ // eslint-disable-line no-unused-vars
     next: 'Normal',
     run: {
       font: 'Times New Roman',
-      size: 26, // 13pt
+      size: 26, // 13 pt
       bold: true
     }
   }
 ]
 
 export {
+  // Layout constants
+  MARGIN_LEFT,
+  MARGIN_RIGHT,
+  MARGIN_TOP,
+  MARGIN_BOTTOM,
+  CONTENT_WIDTH_DXA,
+  DEFAULT_INDENT,
+
+  // Section / document config
   properties,
   spacing,
   paragraphStyles

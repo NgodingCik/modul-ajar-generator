@@ -2,6 +2,36 @@
 
 This document provides a comprehensive reference for the API functions used to build structured Word documents (`.docx`) using the `docx` library. It includes function descriptions, parameter details, and usage examples.
 
+## Breaking Changes (Latest)
+
+The heading API has been updated to support native multilevel numbering and nested indentation behavior.
+
+- `createHeadingWithChildren(...)` now accepts a 6th parameter: `headingOptions`.
+- Nested `createHeadingWithChildren(...)` calls now apply child indentation cumulatively by default.
+- A new helper, `createNumberedHeading(...)`, should be used for section numbering instead of manual text prefixes like `A.`, `B.`, `C.1`, etc.
+- `getNumberingConfig()` now includes `section-heading-numbering` in addition to HTML list numbering references.
+
+### Migration Quick Guide
+
+Old approach (manual prefix in heading text):
+
+```javascript
+createHeadingWithChildren('A. IDENTIFIKASI', 1, [...])
+createHeadingWithChildren('C.1. Pendahuluan', 2, [...])
+```
+
+New approach (native numbering):
+
+```javascript
+createHeadingWithChildren('IDENTIFIKASI', 1, [...], 720, 0, {
+  numbering: { level: 0 }
+})
+
+createHeadingWithChildren('Pendahuluan', 2, [...], 720, 0, {
+  numbering: { level: 1 }
+})
+```
+
 ## Functions
 
 ### `parseHtmlTags(text)`
@@ -33,8 +63,15 @@ Parses HTML `<ul>`, `<ol>`, `<li>` tags into paragraphs.
   ```
 
 ### `getNumberingConfig()`
-Creates numbering configuration for Document to support HTML lists.
-- **Returns:** `Array` - Numbering config object for both ordered and unordered lists
+Creates numbering configuration for Document to support HTML lists and section headings.
+- **Returns:** `Array` - Numbering config array with these references:
+  - `html-ordered-list`
+  - `html-unordered-list`
+  - `section-heading-numbering`
+- **Section heading levels (`section-heading-numbering`):**
+  - Level 0: `%1.` (A., B., C. via `UPPER_LETTER`)
+  - Level 1: `%1.%2.`
+  - Level 2: `%1.%2.%3.`
 - **Usage:** Add to Document during initialization:
   ```javascript
   const doc = new Document({
@@ -44,7 +81,7 @@ Creates numbering configuration for Document to support HTML lists.
     // ... rest of config
   })
   ```
-- **Note:** Must be called when creating the Document to enable `<ol>` and `<ul>` rendering with proper numbering
+- **Note:** Must be called when creating the Document to enable `<ol>`, `<ul>`, and section heading numbering.
 
 ### `parseMarkdownLists(lines)`
 Parses markdown-style lists (lines starting with `-`) into bullet paragraphs.
@@ -85,7 +122,21 @@ Creates a `Paragraph` styled as a **Heading**. Standard line breaks (`\n`) are p
   - `indentSize` (Number, optional): Left indentation size in twips. Default is `0`.
 - **Returns:** `Paragraph`
 
-### `createHeadingWithChildren(headingText, level, children, indentSize, headingIndent)`
+### `createNumberedHeading(text, level, numberingLevel, numberingInstance, center, customSpacing, indentSize, numberingReference)`
+Creates a heading paragraph with numbering metadata (`numPr`) attached.
+- **Parameters:**
+  - `text` (String): The heading text.
+  - `level` (Number, optional): Heading style level (`Heading1` to `Heading6`). Default is `1`.
+  - `numberingLevel` (Number, optional): Numbering level (`ilvl`). Default is `level - 1`.
+  - `numberingInstance` (Number, optional): Numbering instance (`numId` binding instance). Default is `1`.
+  - `center` (Boolean, optional): Whether to center-align the heading. Default is `false`.
+  - `customSpacing` (Object, optional): Custom spacing overrides.
+  - `indentSize` (Number, optional): Left indentation size in twips. Default is `0`.
+  - `numberingReference` (String, optional): Numbering reference key. Default is `section-heading-numbering`.
+- **Returns:** `Paragraph`
+- **Note:** Ensure `getNumberingConfig()` is used in `Document` config so the numbering reference exists.
+
+### `createHeadingWithChildren(headingText, level, children, indentSize, headingIndent, headingOptions)`
 Creates a heading paragraph followed by an array of indented child elements (paragraphs, tables, strings, or nested arrays).
 - **Parameters:**
   - `headingText` (String): The heading text.
@@ -93,6 +144,13 @@ Creates a heading paragraph followed by an array of indented child elements (par
   - `children` (Array, optional): An array of strings, `Paragraph` objects, `Table` objects, or nested arrays from spread helper calls.
   - `indentSize` (Number, optional): Indentation step (in twips) applied to child elements in this call. Default is `720` (1/2 inch).
   - `headingIndent` (Number, optional): Left indentation for the heading itself. Default is `0`.
+  - `headingOptions` (Object, optional): Heading paragraph options.
+    - `center` (Boolean, optional): Center align heading text.
+    - `customSpacing` (Object, optional): Custom heading spacing.
+    - `numbering` (Object, optional): Enable numbering on heading.
+      - `level` (Number, optional): Numbering level (`ilvl`).
+      - `instance` (Number, optional): Numbering instance.
+      - `reference` (String, optional): Numbering reference (default: `section-heading-numbering`).
 - **Returns:** `Array` (Contains `[headingParagraph, ...childParagraphs]`)
 - **Behavior Notes:**
   - Nested `createHeadingWithChildren(...)` outputs are indented cumulatively automatically.
@@ -100,17 +158,25 @@ Creates a heading paragraph followed by an array of indented child elements (par
   - Existing explicitly-indented external `Paragraph`/`Table` objects are preserved.
 - **Nested Example (Auto Cumulative Indent):**
   ```javascript
-  ...createHeadingWithChildren('C.PENGALAMAN BELAJAR', 1, [
-    ...createHeadingWithChildren('C.1. Pendahuluan', 2, [
+  ...createHeadingWithChildren('PENGALAMAN BELAJAR', 1, [
+    ...createHeadingWithChildren('Pendahuluan', 2, [
       createParagraph('Pendahuluan tentang pengalaman belajar.')
-    ]),
-    ...createHeadingWithChildren('C.2. Inti', 2, [
+    ], 720, 0, {
+      numbering: { level: 1 }
+    }),
+    ...createHeadingWithChildren('Inti', 2, [
       createParagraph('Inti dari pengalaman belajar.')
-    ]),
-    ...createHeadingWithChildren('C.3. Penutup', 2, [
+    ], 720, 0, {
+      numbering: { level: 1 }
+    }),
+    ...createHeadingWithChildren('Penutup', 2, [
       createParagraph('Penutup dari pengalaman belajar.')
-    ])
-  ])
+    ], 720, 0, {
+      numbering: { level: 1 }
+    })
+  ], 720, 0, {
+    numbering: { level: 0 }
+  })
   ```
 
 ### `bulletPoint(label, textOrChildren, children)`
@@ -133,15 +199,13 @@ Generates an array of two `TableCell` objects designed for a single `TableRow` t
   - `label` (String): The label for the form field.
 - **Returns:** `[TableCell, TableCell]`
 
-## Helper Functions
+## Removed APIs
 
 ### `convertNumToRoman(num)`
-Converts an integer to its Roman numeral representation.
-- **Parameters:**
-  - `num` (Number): The integer to convert.
-- **Returns:** `String` (Roman numeral)
+This helper is no longer exported from `docx-api.js`.
 
-Example: `convertNumToRoman(1)` returns `"I"`.
+- Use `createNumberedHeading(...)` or `createHeadingWithChildren(..., headingOptions.numbering)` for section numbering.
+- Use `getNumberingConfig()` in `Document` initialization to ensure numbering references are available.
 
 ## Classes
 
@@ -363,6 +427,15 @@ The following example demonstrates how to combine these API functions to structu
 import fs from 'fs';
 import path from 'path';
 import { Document, Packer, Table, TableRow, WidthType, AlignmentType, ImageRun } from 'docx';
+import {
+  createParagraph,
+  createHeading,
+  createHeadingWithChildren,
+  bulletPoint,
+  titleCell,
+  formField,
+  getNumberingConfig
+} from '../src/scripts/docx-api.js';
 
 (async () => {
   const coverPage = {
@@ -430,7 +503,7 @@ import { Document, Packer, Table, TableRow, WidthType, AlignmentType, ImageRun }
       
       // Creating sections with nested sub-content (like tables or text)
       ...createHeadingWithChildren(
-        'A. IDENTITAS MODUL',
+        'IDENTITAS MODUL',
         2,
         [
           new Table({
@@ -449,13 +522,17 @@ import { Document, Packer, Table, TableRow, WidthType, AlignmentType, ImageRun }
             }
           })
         ],
-        720 // Indentation indentSize for level 2 children
+        720, // Indentation indentSize for level 2 children
+        0,
+        {
+          numbering: { level: 0 }
+        }
       ),
       createParagraph(''),
       
       // Using bullet point utilities with nested bullets
       ...createHeadingWithChildren(
-        'B. IDENTIFIKASI KESIAPAN PESERTA DIDIK',
+        'IDENTIFIKASI KESIAPAN PESERTA DIDIK',
         2,
         [
           ...bulletPoint('Pengetahuan Awal: ', 'Peserta didik telah memiliki pengetahuan dasar tentang nama-nama hewan dalam bahasa Inggris.'),
@@ -465,12 +542,19 @@ import { Document, Packer, Table, TableRow, WidthType, AlignmentType, ImageRun }
             { label: 'Kinestetik: ', text: 'Peserta didik memerlukan aktivitas bergerak seperti permainan dan presentasi.' }
           ])
         ],
-        720
+        720,
+        0,
+        {
+          numbering: { level: 0 }
+        }
       )
     ]
   }
 
   const doc = new Document({
+    numbering: {
+      config: getNumberingConfig()
+    },
     styles: { /* default paragraphStyles mapping */ },
     sections: [
       coverPage,

@@ -157,6 +157,14 @@ const applyIndentToTable = (table, indentSize) => {
 // SECTION 2: HTML / Markdown parsers
 // ─────────────────────────────────────────────────────────────────────────────
 
+let htmlOrderedListInstanceCounter = 1
+
+const getNextHtmlOrderedListInstance = () => {
+  const nextInstance = htmlOrderedListInstanceCounter
+  htmlOrderedListInstanceCounter += 1
+  return nextInstance
+}
+
 /**
  * Parse inline HTML tags (<b>, <i>, <u>, <s>) into TextRun[].
  * Supports nesting (e.g. <b><i>text</i></b>).
@@ -249,7 +257,6 @@ const parseHtmlListTags = (text) => {
   const rootNode = { type: 'root', children: [] }
   const nodeStack = [rootNode]
   const tagRegex = /<\/?(ul|ol|li)\b[^>]*>/gi
-  let orderedListInstance = 1
   let lastIndex = 0
 
   const currentNode = () => nodeStack[nodeStack.length - 1]
@@ -332,7 +339,7 @@ const parseHtmlListTags = (text) => {
   const renderListNode = (listNode, level = 0, inheritedOrderedInstance = null) => {
     if (!listNode || !Array.isArray(listNode.items) || listNode.items.length === 0) return
     const currentOrderedInstance = listNode.listType === 'ol'
-      ? (typeof inheritedOrderedInstance === 'number' ? inheritedOrderedInstance : orderedListInstance++)
+      ? (typeof inheritedOrderedInstance === 'number' ? inheritedOrderedInstance : getNextHtmlOrderedListInstance())
       : inheritedOrderedInstance
 
     listNode.items.forEach((itemNode) => {

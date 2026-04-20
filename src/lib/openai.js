@@ -59,12 +59,12 @@ export default class OpenAIWrapper {
       })
     }
 
-    // Embed exaple output IIFE
-    const exampleIIFEPath = path.join(__dirname, '../scripts/docx-example-iife.js')
-    const exampleIIFEContent = removeImportRequire(fs.readFileSync(exampleIIFEPath, 'utf-8'))
+    // Embed example output
+    const exampleOutputPath = path.join(__dirname, '../scripts/docx-example-predefined-var.js')
+    const exampleOutputContent = removeImportRequire(fs.readFileSync(exampleOutputPath, 'utf-8'))
     this.mContexts.push({
       role: 'system',
-      content: `--- CONTEXT docx-example-iife START ---\n${exampleIIFEContent}\n--- CONTEXT docx-example-iife END ---`
+      content: `--- CONTEXT example-output START ---\n${exampleOutputContent}\n--- CONTEXT example-output END ---`
     })
   }
 

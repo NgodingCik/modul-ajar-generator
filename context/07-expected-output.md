@@ -17,7 +17,7 @@ const identifikasiDimensiProfilLulusan = {
   dpl5: true, // Kolaborasi
   dpl6: true, // kemandirian
   dpl7: false, // Kesehatan
-  dlp8: true // Komunikasi
+  dpl8: true // Komunikasi
 }
 
 // ---

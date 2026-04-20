@@ -90,7 +90,7 @@ const rencanaPelaksanaanIntiTable = [
       ['<b>Hari</b>', '<b>Uraian Kegiatan</b>'],
       [
         '1',
-        'Kegiatan 1: Mencocokkan Geometri (Kemandirian, Penalaran Kritis). Alat dan Bahan: Karton, kardus bekas, tutup botol aneka warna, gunting, pensil, lem tembak, pom-pom/mainan lainnya , pencapit/sumpit/ sendok atau lainnya.Cara Membuat :\n' +
+        'Kegiatan 1: Mencocokkan Geometri (Kemandirian, Penalaran Kritis). Alat dan Bahan: Karton, kardus bekas, tutup botol aneka warna, gunting, pensil, lem tembak, pom-pom/mainan lainnya , pencapit/sumpit/ sendok atau lainnya.Cara Membuat :\n\n' +
         '<ol>' +
         '<li>Siapkan kardus bekas, lalu buat pola bentuk geometri, dan letakkan tutup botol sesuai pola, kemudian gambar lingkaran sebesar tutup botol.</li>' +
         '<li>Lubangi atau gunting, pola tutup botol yang sudah di gambar pada kardus berbentuk geometri.</li>' +
@@ -98,20 +98,20 @@ const rencanaPelaksanaanIntiTable = [
         '<li>Rekatkan tutup botol tepat di atas gambar yang sudah dijiplak berdasarkan warna tutup botol.</li>' +
         '<li>Jika sudah jadi, anak-anak dapat memasangkan bentuk geometri sesuai dengan pola tutup botol, dan mengisi dengan pom-pom sesuai warna tutup botol.</li>' +
         '<li>Siapkan karton, kemudian gambar  atau buat pola di atas karton menggunakan pensil dan tutup botol bentuk geometri (lingkaran, persegi, persegi panjang dan segitiga.)</li>' +
-        '</ol>\n' +
-        'Kegiatan 2: Cermin Ajaib (Komunikasi, Kesehatan). Alat dan Bahan: Cermin besar yang aman untuk anak Cara Bermain: Anak diajak berdiri di depan cermin besar. Guru memandu anak untuk menyebutkan namanya sambil menunjuk bayangan dirinya di cermin. Guru juga meminta anak menunjuk bagian-bagian tubuh utama seperti kepala, tangan, dan kaki pada bayangannya di cermin. Kegiatan ini membantu anak mengenal identitas dirinya dan bagian-bagian tubuhnya\n' +
+        '</ol>\n\n' +
+        'Kegiatan 2: Cermin Ajaib (Komunikasi, Kesehatan). Alat dan Bahan: Cermin besar yang aman untuk anak Cara Bermain: Anak diajak berdiri di depan cermin besar. Guru memandu anak untuk menyebutkan namanya sambil menunjuk bayangan dirinya di cermin. Guru juga meminta anak menunjuk bagian-bagian tubuh utama seperti kepala, tangan, dan kaki pada bayangannya di cermin. Kegiatan ini membantu anak mengenal identitas dirinya dan bagian-bagian tubuhnya\n\n' +
         'Kegiatan 3: Nama dan Foto (Kolaborasi, Kreativitas). Alat dan Bahan: Foto anak-anak, kertas, lem, spidol. Cara Bermain: Tempelkan foto anak-anak di selembar kertas dan tuliskan nama mereka di bawahnya. Ajak anak-anak mengenal teman mereka dengan menyebutkan nama teman berdasarkan foto.'
       ],
       [
         '2',
-        'Kegiatan 1: Memasukkan mainan ke dalam gelas dengan penjepit (Kemandirian, Penalaran Kritis). Alat dan Bahan: 2 Buah tutup botol, 2 Buah stik es krim, 1 Penjepit baju jemuran, Lem tembak, Pom-pom, Gelas kertas.\nCara Membuat :' +
+        'Kegiatan 1: Memasukkan mainan ke dalam gelas dengan penjepit (Kemandirian, Penalaran Kritis). Alat dan Bahan: 2 Buah tutup botol, 2 Buah stik es krim, 1 Penjepit baju jemuran, Lem tembak, Pom-pom, Gelas kertas.\nCara Membuat :\n' +
         '<ol>' +
         '<li>Pertama rekatkan tutup botol, pada bagian ujung stik es krim, agar dapat menjepit mainan.</li>' +
         '<li>Selanjutnya siapkan penjepit baju, kemudian rekatkan stik baju pada bagian kanan dan kiri dengan menggunakan lem.</li>' +
         '<li>Jika lem sudah jadi penjepit bisa langsung digunakan untuk bermain anak-anak.</li>' +
         '<li>Anak-anak dapat menggunakan penjepit dengan memasukkan pom-pom ke dalam gelas kertas berdasarkan warna, ukuran dan lainnya.</li>' +
-        '</ol>\n' +
-        'Kegiatan 2: Tepuk Nama Komunikasi, Kolaborasi. Alat dan Bahan: Tidak diperlukan Cara Bermain: Guru mengajak anak-anak duduk melingkar. Guru memulai dengan menyebutkan nama seorang anak sambil bertepuk tangan. Anak yang namanya disebut harus berdiri dan bertepuk tangan. Kegiatan ini diulang untuk semua anak. Permainan ini membantu anak mengenal namanya dan nama teman-temannya, serta melatih motorik dengan gerakan tepuk tangan.\n' +
+        '</ol>\n\n' +
+        'Kegiatan 2: Tepuk Nama Komunikasi, Kolaborasi. Alat dan Bahan: Tidak diperlukan Cara Bermain: Guru mengajak anak-anak duduk melingkar. Guru memulai dengan menyebutkan nama seorang anak sambil bertepuk tangan. Anak yang namanya disebut harus berdiri dan bertepuk tangan. Kegiatan ini diulang untuk semua anak. Permainan ini membantu anak mengenal namanya dan nama teman-temannya, serta melatih motorik dengan gerakan tepuk tangan.\n\n' +
         'Kegiatan 3: Bola Nama Kreativitas, Komunikasi. Alat dan Bahan: Bola ringan. Cara Bermain: Duduk dalam lingkaran, lempar bola satu per satu sambil menyebutkan nama penerima bola. Hal ini memperkenalkan nama dan meningkatkan keterampilan sosial.'
       ]
     ]
@@ -122,26 +122,26 @@ const rencanaPelaksanaanIntiTable = [
       ['<b>Hari</b>', '<b>Uraian Kegiatan</b>'],
       [
         '3',
-        'Kegiatan 1 : Kotak Pensil Aku dan Teman Kreativitas, Kemandirian. Alat dan Bahan, Kardus bekas, Lem, Gambar anak-anak tanpa gambar wajah, Krayon, Gunting, Cara Membuat:' +
+        'Kegiatan 1 : Kotak Pensil Aku dan Teman Kreativitas, Kemandirian. Alat dan Bahan, Kardus bekas, Lem, Gambar anak-anak tanpa gambar wajah, Krayon, Gunting, Cara Membuat:\n' +
         '<ol>' +
         '<li>Siapkan gambar anak-anak tanpa wajah, kemudian warnai dengan menggunakan krayon atau cat warna.</li>' +
         '<li>Selanjutnya, mintalah anak-anak untuk memotong gambar foto wajah mereka sendiri dan menempelkannya pada gambar yang sudah di beri warna sebelumnya.</li>' +
         '<li>Selanjutnya, potong kardus atau bisa di ganti dengan karton membentuk persegi panjang dan gulung membentuk tabung.</li>' +
         '<li>Buat bentuk lingkaran, lalu potong dan tempelkan bentuk tabung diatas bentuk lingkaran jadi satu (seperti tempat pensil).</li>' +
         '<li>Terakhir tempelkan gambar foto yang sudah dibuat pada tempat pensil.</li>' +
-        '</ol>\n' +
-        'Kegiatan 2: Lompat Nama (Kesehatan, Komunikasi). Alat dan Bahan: Kertas warna-warni yang ditempel di lantai membentuk lingkaran Cara Bermain: Guru meletakkan kertas warna-warni di lantai membentuk lingkaran. Anak diminta melompat dari satu kertas ke kertas lain sambil menyebutkan namanya setiap kali mendarat. Kegiatan ini membantu anak mengenal namanya sambil melatih keseimbangan dan koordinasi tubuhnya.\n' +
+        '</ol>\n\n' +
+        'Kegiatan 2: Lompat Nama (Kesehatan, Komunikasi). Alat dan Bahan: Kertas warna-warni yang ditempel di lantai membentuk lingkaran Cara Bermain: Guru meletakkan kertas warna-warni di lantai membentuk lingkaran. Anak diminta melompat dari satu kertas ke kertas lain sambil menyebutkan namanya setiap kali mendarat. Kegiatan ini membantu anak mengenal namanya sambil melatih keseimbangan dan koordinasi tubuhnya.\n\n' +
         'Kegiatan 3: Gambar Keluarga (Keimanan dan Ketakwaan). Alat dan Bahan: Kertas gambar, krayon atau spidol. Cara Bermain: Minta anak-anak menggambar keluarganya. Setelah selesai, setiap anak bisa memperlihatkan dan memperkenalkan siapa saja anggota keluarganya.'
       ],
       [
         '4',
         'Kegiatan 1 : Belajar Mencari Pasangan Sepatu (Penalaran Kritis, Kemandirian). Alat dan Bahan: Berbagai jenis model dan warna sepatu.\n' +
-        'Cara membuat dan Memainkannya : ' +
+        'Cara membuat dan Memainkannya : \n' +
         '<ol>' +
         '<li>Siapkan berbagai macam sepatu dengan model dan warna yang berbeda.</li>' +
         '<li>Selanjutnya, mintalah anak-anak untuk mencari pasangan sepatu yang memiliki warna dan model atau bentuk sama.</li>' +
-        '</ol>\n' +
-        'Kegiatan 2 : Menyusun Huruf Nama (Komunikasi, Kreativitas). Alat dan Bahan: Huruf-huruf magnet. Cara Bermain: Beri anak huruf magnet yang bisa mereka susun menjadi nama mereka sendiri. Setelah selesai, mereka bisa memperkenalkan nama mereka.\n' +
+        '</ol>\n\n' +
+        'Kegiatan 2 : Menyusun Huruf Nama (Komunikasi, Kreativitas). Alat dan Bahan: Huruf-huruf magnet. Cara Bermain: Beri anak huruf magnet yang bisa mereka susun menjadi nama mereka sendiri. Setelah selesai, mereka bisa memperkenalkan nama mereka.\n\n' +
         'Kegiatan 3: Stempel Tangan (Kemandirian, Kreativitas). Alat dan Bahan: Cat tangan, kertas besar. Cara Bermain: Anak-anak membuat cetakan tangan mereka di kertas besar dan di bawahnya tuliskan nama mereka. Ini membantu mengenal identitas setiap anak secara visual.'
       ]
     ]
@@ -152,8 +152,8 @@ const rencanaPelaksanaanIntiTable = [
       ['<b>Hari</b>', '<b>Uraian Kegiatan</b>'],
       [
         '5',
-        'Kegiatan 1: Mencocokkan benda dengan gambar (Penalaran Kritis, Kemandirian). Alat dan Bahan : Kancing, stik es krim, mainan, kertas HVS, spidol atau krayon. Cara Membuat dan memainkan :Siapkan 3 lembar kertas HVS, kemudian gambar bentuk stik es krim, kancing dan mainan dan beri warna sesuai dengan warna stik es krim, kancing dan mainan. Mintalah anak-anak untuk mencocokkan stik es krim, kancing dan mainan sesuai dengan gambar, bentuk dan warna.\n' +
-            'Kegiatn 2: Boneka Keluarga (Kewargaan, Kolaborasi). Alat dan Bahan: Boneka tangan atau boneka jari yang merepresentasikan anggota keluarga Cara Bermain: Guru menggunakan boneka untuk memperkenalkan anggota keluarga (ayah, ibu, kakak/adik). Anak diajak untuk memegang boneka dan menirukan suara atau gerakan sederhana untuk setiap anggota keluarga. Kegiatan ini membantu anak mengenal peran anggota keluarga dan melatih motorik halusnya.\n' +
+        'Kegiatan 1: Mencocokkan benda dengan gambar (Penalaran Kritis, Kemandirian). Alat dan Bahan : Kancing, stik es krim, mainan, kertas HVS, spidol atau krayon. Cara Membuat dan memainkan :Siapkan 3 lembar kertas HVS, kemudian gambar bentuk stik es krim, kancing dan mainan dan beri warna sesuai dengan warna stik es krim, kancing dan mainan. Mintalah anak-anak untuk mencocokkan stik es krim, kancing dan mainan sesuai dengan gambar, bentuk dan warna.\n\n' +
+            'Kegiatn 2: Boneka Keluarga (Kewargaan, Kolaborasi). Alat dan Bahan: Boneka tangan atau boneka jari yang merepresentasikan anggota keluarga Cara Bermain: Guru menggunakan boneka untuk memperkenalkan anggota keluarga (ayah, ibu, kakak/adik). Anak diajak untuk memegang boneka dan menirukan suara atau gerakan sederhana untuk setiap anggota keluarga. Kegiatan ini membantu anak mengenal peran anggota keluarga dan melatih motorik halusnya.\n\n' +
             'Kegiatan 3: Ayo Cari Teman (Komunikasi, Kolaborasi). Alat dan Bahan: Kartu nama anak-anak. Cara Bermain: Sebar kartu nama anak di lantai, minta anak-anak mencari nama mereka sendiri. Setelah ditemukan, mintalah mereka mencari nama teman yang diberi tahu.'
       ]
     ]

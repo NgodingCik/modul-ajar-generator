@@ -22,7 +22,7 @@ const identifikasiDimensiProfilLulusan = {
   dpl5: true, // Kolaborasi
   dpl6: true, // Kemandirian
   dpl7: false, // Kesehatan
-  dlp8: true // Komunikasi
+  dpl8: true // Komunikasi
 };
 const kegiatanPembelajaran = 'Kegiatan pembelajaran dirancang untuk anak kelompok A (2-3 tahun) dengan pendekatan kolaboratif dan eksperimental. Kegiatan ini melibatkan eksplorasi diri melalui permainan peran, pengenalan bagian tubuh dengan lagu dan gerakan, serta interaksi sosial sederhana untuk membangun kepercayaan diri. Setiap kegiatan disesuaikan dengan kebutuhan perkembangan anak, memberikan dukungan emosional, dan memfasilitasi pembelajaran yang menyenangkan dan bermakna.';
 ```

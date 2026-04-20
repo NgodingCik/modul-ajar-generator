@@ -305,8 +305,8 @@ new TableWrapper()
 | ----------------------------------- | ---------------------------------------------------- |
 | `.addTitleRow(text)`                | Shaded header row spanning 2 columns. Supports `\n`. |
 | `.addFormFieldRow(label)`           | Label cell (fixed 3000 twip) + blank input cell      |
-| `.addLabelValuePairRow(label, val)` | Bold label + value, 2 columns                        |
-| `.addLabelValueRow(l1, v1, l2, v2)` | Two label/value pairs, 4 columns                     |
+| `.addLabelValuePairRow(label, val)` | Bold label + value, 2 columns. Supports `\n` in both cells |
+| `.addLabelValueRow(l1, v1, l2, v2)` | Two label/value pairs, 4 columns. Supports `\n` in all cells |
 | `.addRow()`                         | Returns a new `Row` for manual building              |
 | `.addRowObject(row)`                | Add a pre-built `Row` instance                       |
 
@@ -342,7 +342,7 @@ Adds two cells: a fixed-width (3000 twips) label cell and a blank input cell.
 
 #### `.addTextCell(text, options?)` → `Row`
 
-Adds a content cell. `text` supports HTML tags and HTML/markdown lists.
+Adds a content cell. `text` supports HTML tags, HTML/markdown lists, and explicit line breaks via `\n`.
 
 **Options:**
 
@@ -458,7 +458,7 @@ Markdown `- item` list parser. Pass `text.split('\n')`.
 
 ### `parseContentAsParagraphs(content)` → `Paragraph[]`
 
-Primary smart parser. Detects lists first; falls back to a single formatted paragraph.
+Primary smart parser. Detects lists first; if no list is detected, `\n` is converted to line breaks in the same paragraph, then it falls back to a single formatted paragraph.
 Used internally by `Row.addTextCell()` and `SectionWrapper.add()`.
 
 ---

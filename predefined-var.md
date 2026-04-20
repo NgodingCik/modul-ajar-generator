@@ -335,6 +335,8 @@ desainPembelajaranTujuanPembelajaran: string[]
 ### desainPembelajaranTopikPembelajaran
 Judul topik pembelajaran yang spesifik dan menarik untuk anak usia dini. Dapat ditulis dalam format: `'[Subtema Utama]: [Aktivitas atau Fokus Khusus]'`.
 
+> ⚠️ **WAJIB konsisten dengan `temaSubtema`** yang diberikan di credentials. Nilai variabel ini harus mencerminkan atau merupakan turunan langsung dari nilai `temaSubtema`. Jangan buat judul topik yang bertentangan atau tidak berkaitan dengan tema/subtema yang telah ditetapkan.
+
 ```js
 const desainPembelajaranTopikPembelajaran = 'Aku Istimewa: Ayo Kita Berkenalan'
 ```
@@ -461,15 +463,21 @@ Array yang berisi **3 tabel kegiatan inti** sesuai tiga tahap Deep Learning. Set
 - `rows` → array of `[string, string]` — kolom pertama nomor hari, kolom kedua uraian kegiatan (boleh mengandung HTML `<ol>` / `<li>`)
 - Baris pertama setiap tabel **wajib** berupa header: `['<b>Hari</b>', '<b>Uraian Kegiatan</b>']`
 
+> ⚠️ **Wajib mencerminkan `alokasiWaktu`** — Struktur tabel ini adalah representasi langsung dari nilai credential `alokasiWaktu` dengan format `N x M JP`:
+> - **N** = total hari pembelajaran → jumlah baris data (di luar header) di ketiga tabel harus berjumlah **N**
+> - **M** = kegiatan per hari → setiap baris harus berisi tepat **M kegiatan** (Kegiatan 1, Kegiatan 2, ... Kegiatan M)
+>
+> Contoh: `alokasiWaktu = '5 x 3 JP'` → 5 hari total, 3 kegiatan per hari.
+
 **Format title yang baku (jangan diubah):**
 ```
-'MEMAHAMI (BERKESADARAN, BERMAKNA, MENGGEMBIRAKAN)'   → Hari 1–2
-'MENGAPLIKASI (BERKESADARAN, BERMAKNA)'               → Hari 3–4
-'MEREFLEKSI (BERKESADARAN, BERMAKNA)'                 → Hari 5
+'MEMAHAMI'                   → Hari 1–2
+'MENGAPLIKASI'               → Hari 3–4
+'MEREFLEKSI'                 → Hari 5
 ```
 
 **Format uraian kegiatan per hari:**
-Setiap hari idealnya memiliki 2–3 kegiatan berbeda yang menyasar DPL yang bervariasi. Tulis dalam format:
+Setiap hari harus memiliki tepat **M kegiatan** (sesuai `alokasiWaktu`) yang menyasar DPL yang bervariasi. Tulis dalam format:
 ```
 'Kegiatan [N]: [Nama Kegiatan] ([DPL yang disasar]). Alat dan Bahan: [...]. Cara Bermain/Membuat: [...]\n\n'
 ```
@@ -478,7 +486,7 @@ Jika ada langkah-langkah pembuatan, gunakan `<ol><li>...</li></ol>`.
 ```js
 const rencanaPelaksanaanIntiTable = [
   {
-    title: 'MEMAHAMI (BERKESADARAN, BERMAKNA, MENGGEMBIRAKAN)',
+    title: 'MEMAHAMI',
     rows: [
       ['<b>Hari</b>', '<b>Uraian Kegiatan</b>'],
       [
@@ -537,7 +545,7 @@ const rencanaPelaksanaanIntiTable = [
     ]
   },
   {
-    title: 'MEREFLEKSI (BERKESADARAN, BERMAKNA)',
+    title: 'MEREFLEKSI',
     rows: [
       ['<b>Hari</b>', '<b>Uraian Kegiatan</b>'],
       [

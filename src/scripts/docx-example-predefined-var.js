@@ -9,7 +9,7 @@ const identifikasiDimensiProfilLulusan = {
   dpl5: true, // Kolaborasi
   dpl6: true, // Kemandirian
   dpl7: false, // Kesehatan
-  dlp8: true // Komunikasi
+  dpl8: true // Komunikasi
 }
 // ---
 // Desain Pembelajaran ---

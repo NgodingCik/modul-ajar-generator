@@ -1,410 +1,641 @@
-# Predefined var
+# Predefined Variables — Modul Ajar PAUD Fase Fondasi
 
-## Credentials var
+> **Konteks Kurikulum:** Dokumen ini mengacu pada **Kurikulum Merdeka** dengan pendekatan **Deep Learning** (Pembelajaran Mendalam) untuk **Fase Fondasi (TK/PAUD, usia 3–6 tahun)**. Semua variabel yang didefinisikan di sini akan diimpor ke dalam skrip pembuat dokumen `.docx` dan **tidak boleh menggunakan `import` atau `export`** — tulis sebagai `const` biasa.
+
+---
+
+## ⚠️ Aturan Umum Output
+
+- **Output hanya berisi kode JavaScript** — tidak ada teks penjelasan, tidak ada komentar di luar kode, tidak ada pembungkus ` ```javascript ``` `.
+- **Isi setiap variabel harus detail dan informatif** — jangan isi dengan teks terlalu singkat atau placeholder kosong.
+- **Validasi semua nama variabel** sebelum dikirim — pastikan tidak ada yang hilang atau salah nama (lihat daftar lengkap di bawah).
+- **Daftar lengkap variabel yang wajib ada:**
+  ```
+  Credentials:       namaSekolah, namaPenyusun, nip, temaSubtema, fase, kelas,
+                     semester, mingguKe, bulan, alokasiWaktu, modelPembelajaran, jumlahAnak
+
+  Identifikasi:      identifikasiPesertaDidik, identifikasiMateriPembelajaran,
+                     identifikasiDimensiProfilLulusan
+
+  Desain:            desainPembelajaranCapaianPembelajaran, desainPembelajaranLintasDisiplinIlmu,
+                     desainPembelajaranTujuanPembelajaran, desainPembelajaranTopikPembelajaran,
+                     desainPembelajaranPraktikPedagogis, desainPembelajaranKemitraanPembelajaran,
+                     desainPembelajaranLingkunganPembelajaran, desainPembelajaranPemanfaatanDigital
+
+  Pelaksanaan:       rencanaPelaksanaanAwal, rencanaPelaksanaanInti,
+                     rencanaPelaksanaanIntiTable, rencanaPelaksanaanPenutup
+
+  Asesmen:           asesmenPembelajaranAwal, asesmenPembelajaranProses, asesmenPembelajaranAkhir
+  ```
+
+---
+
+## 📌 Referensi Cepat: Fase Fondasi
+
+**Tiga Elemen Capaian Pembelajaran (CP) Fase Fondasi:**
+1. **Nilai Agama dan Budi Pekerti** — Kepercayaan kepada Tuhan YME, menjaga kebersihan/kesehatan/keselamatan, menghargai sesama dan alam.
+2. **Jati Diri** — Identitas diri, emosi dan sosial, peran dalam keluarga/sekolah/masyarakat, fungsi gerak motorik.
+3. **Dasar-dasar Literasi, Matematika, Sains, Teknologi, Rekayasa, dan Seni** — Literasi awal, bilangan, sains, teknologi sederhana, seni.
+
+**Tiga Pilar Deep Learning (Pembelajaran Mendalam):**
+| Pilar | Penjelasan |
+|---|---|
+| **Mindful (Berkesadaran)** | Pembelajaran sadar dan aktif; guru memahami keunikan tiap anak, anak fokus pada proses berpikir. |
+| **Meaningful (Bermakna)** | Materi dikaitkan dengan pengalaman nyata anak dan kehidupan sehari-hari. |
+| **Joyful (Menggembirakan)** | Suasana belajar menyenangkan sehingga anak termotivasi untuk terus belajar. |
+
+**Tiga Tahap Pengalaman Belajar Deep Learning:**
+1. **Memahami (Understanding)** — Mengonstruksi pengetahuan secara aktif (Berkesadaran, Bermakna, Menggembirakan).
+2. **Mengaplikasi (Applying)** — Menggunakan pengetahuan untuk membuat karya atau solusi (Berkesadaran, Bermakna).
+3. **Merefleksi (Reflecting)** — Mengevaluasi apa yang dipelajari dan dampaknya (Berkesadaran, Bermakna).
+
+**8 Dimensi Profil Lulusan (DPL):**
+| Key | Kode | Dimensi |
+|---|---|---|
+| `dpl1` | DPL1 | Keimanan dan Ketakwaan terhadap Tuhan YME |
+| `dpl2` | DPL2 | Kewargaan |
+| `dpl3` | DPL3 | Penalaran Kritis |
+| `dpl4` | DPL4 | Kreativitas |
+| `dpl5` | DPL5 | Kolaborasi |
+| `dpl6` | DPL6 | Kemandirian |
+| `dpl7` | DPL7 | Kesehatan |
+| `dpl8` | DPL8 | Komunikasi ⚠️ *Key-nya `dpl8` (bukan `dpl8`) — jangan diubah, sudah di-handle oleh sistem* |
+
+---
+
+## Credentials
 
 ### namaSekolah
-Nama sekolah atau satuan pendidikan yang ditepati.
-Contoh:
+Nama sekolah atau satuan pendidikan.
+
 ```js
 const namaSekolah = 'TK Negeri Pembina Bangsa'
 ```
-```namaSekolah: string```
+```
+namaSekolah: string
+```
+
+---
 
 ### namaPenyusun
-Nama penyusun Dokumen
+Nama lengkap beserta gelar penyusun modul ajar.
+
 ```js
 const namaPenyusun = 'Zert S.Pd.'
 ```
-```namaPenyusun: string```
+```
+namaPenyusun: string
+```
+
+---
 
 ### nip
-NIP Penyusun Dokumen
-Contoh:
+Nomor Induk Pegawai (NIP) penyusun dokumen. Isi string kosong `''` jika tidak ada.
+
 ```js
 const nip = '198001012010121001'
 ```
-```nip: string```
+```
+nip: string
+```
+
+---
 
 ### temaSubtema
-Tema dan Subtema yang dipilih untuk pembelajaran.
-Contoh:
+Tema dan subtema pembelajaran yang dipilih. Format: `'Tema / Subtema (Topik Spesifik)'`.
+
 ```js
 const temaSubtema = 'Identitas / Diriku (Aku Istimewa; Ayo Kita Berkenalan)'
 ```
-```temaSubtema: string```
+```
+temaSubtema: string
+```
+
+---
 
 ### fase
-Fase perkembangan anak
-Contoh:
+Fase perkembangan anak sesuai Kurikulum Merdeka. Untuk TK/PAUD selalu **"Fondasi"**.
+
 ```js
 const fase = 'Fondasi'
 ```
-```fase: string```
+```
+fase: string
+```
+
+---
 
 ### kelas
-Kelas yang dipilih untuk pembelajaran.
-Contoh:
+Kelompok usia anak. Gunakan format resmi PAUD (Kelompok A atau Kelompok B).
+
 ```js
-const kelas = 'Kelompok A (2-3 tahub)'
+const kelas = 'Kelompok A (2-3 tahun)'
 ```
-```kelas: string```
+> ⚠️ Perhatikan penulisan "tahun" — jangan "tahub".
+```
+kelas: string
+```
+
+---
 
 ### semester
-Semester saat ini
-Contoh:
+Semester saat ini dalam bentuk angka integer (`1` atau `2`). Akan dikonversi otomatis ke angka Romawi (I / II) oleh fungsi `convertNumToRoman(semester)`.
+
 ```js
 const semester = 1
 ```
-```semester: number```
+```
+semester: number  // integer 1 atau 2
+```
 
-> Note: Tipenya integer, soalnya nanti akan dikonvert ke Roman dengan function `convertNumToRoman(semester)`
+---
 
 ### mingguKe
-Minggu ke berapa dalam pembelajaran.
-Contoh:
+Nomor minggu pelaksanaan pembelajaran dalam semester berjalan.
+
 ```js
 const mingguKe = 1
 ```
-```mingguKe: number```
+```
+mingguKe: number
+```
+
+---
 
 ### bulan
-Bulan saat ini
-Contoh:
+Nama bulan pelaksanaan pembelajaran dalam Bahasa Indonesia.
+
 ```js
 const bulan = 'Januari'
 ```
-```bulan: string```
+```
+bulan: string
+```
+
+---
 
 ### alokasiWaktu
-Alokasi waktu untuk pembelajaran.
-Contoh:
+Total alokasi waktu pembelajaran. Format: `'[jumlah hari] x [JP per hari] JP'`.
+
 ```js
 const alokasiWaktu = '5 x 3 JP'
 ```
-```alokasiWaktu: string```
+```
+alokasiWaktu: string
+```
+
+---
 
 ### modelPembelajaran
-Model pembelajaran yang dipilih untuk pembelajaran.
-Contoh:
+Model/pendekatan pembelajaran yang digunakan. Mengacu pada metode Deep Learning yang sesuai untuk PAUD, seperti: Kolaboratif, Eksperimental, Bermain Peran, Discovery Learning, dll.
+
 ```js
-const modelPembelajaran = 'Kolabortif, Eksperimental'
+const modelPembelajaran = 'Kolaboratif, Eksperimental'
 ```
-```modelPembelajaran: string```
+```
+modelPembelajaran: string
+```
+
+---
 
 ### jumlahAnak
-Jumlah anak yang mengikuti pembelajaran.
-Contoh:
+Jumlah anak yang mengikuti pembelajaran (integer).
+
 ```js
 const jumlahAnak = 10
 ```
-```jumlahAnak: number```
+```
+jumlahAnak: number
+```
+
+---
 
 ## Identifikasi
 
 ### identifikasiPesertaDidik
-Identifikasi latar belakang dan kemampuan yang berkembang untuk mendukung pembelajaran.
-Contoh:
+Deskripsi latar belakang, karakteristik perkembangan, dan kemampuan awal peserta didik yang relevan dengan tema pembelajaran. Isi harus mencakup:
+- Kemampuan bahasa dan komunikasi sesuai kelompok usia
+- Tahap perkembangan kognitif, sosial-emosional, dan motorik
+- Kebutuhan khusus atau dukungan yang diperlukan
+- Cara belajar yang paling efektif pada usia tersebut
+
 ```js
 const identifikasiPesertaDidik = 'Anak kelompok A (2-3 tahun) memiliki kemampuan bahasa yang sedang berkembang dengan kosakata terbatas namun mulai dapat mengungkapkan kebutuhan dasar. Mereka sangat membutuhkan pengulangan dan bimbingan dalam pengenalan identitas diri, serta masih dalam tahap mengembangkan kepercayaan terhadap lingkungan sekitar. Anak-anak pada usia ini belajar melalui eksplorasi sensori dan memerlukan dukungan emosional yang konsisten.'
 ```
-```identifikasiPesertaDidik: string```
+```
+identifikasiPesertaDidik: string
+```
+
+---
 
 ### identifikasiMateriPembelajaran
-Identifikasi materi pembelajaran yang sesuai dengan tema dan subtema yang dipilih.
-Contoh:
+Deskripsi materi pembelajaran yang dikaitkan dengan tema dan subtema. Harus mencakup:
+- Jenis pengetahuan: **esensial** (apa yang perlu diketahui), **aplikatif** (bagaimana menerapkan), **nilai dan karakter** (sikap yang dikembangkan)
+- Relevansi dengan kehidupan sehari-hari anak
+- Tingkat kesulitan yang sesuai dengan tahap perkembangan Fase Fondasi
+- Nilai-nilai yang diintegrasikan (keimanan, kejujuran, kemandirian, dll.)
+
 ```js
 const identifikasiMateriPembelajaran = 'Materi pengenalan identitas diri mencakup pengetahuan esensial tentang nama dan bagian tubuh, pengetahuan aplikatif dalam berinteraksi sosial sederhana, serta pengetahuan nilai dan karakter melalui rasa percaya diri dan kemandirian. Materi ini sangat relevan dengan kehidupan sehari-hari anak dan memiliki tingkat kesulitan yang sesuai dengan tahap perkembangan mereka, mengintegrasikan nilai keimanan, kejujuran, dan kemandirian.'
 ```
-```identifikasiMateriPembelajaran: string```
+```
+identifikasiMateriPembelajaran: string
+```
+
+---
 
 ### identifikasiDimensiProfilLulusan
-Identifikasi dimensi profil lulusan yang dipelajari.
-Contoh:
+Menandai dimensi profil lulusan mana saja yang dikembangkan dalam modul ajar ini. Set `true` jika dimensi tersebut relevan dengan tema dan kegiatan pembelajaran, `false` jika tidak.
+
+> ⚠️ **PENTING — Nama key harus persis seperti di bawah:**
+> - `dpl1` s/d `dpl7` → penulisan normal
+> - **`dpl8`** (bukan `dpl8`) → ini adalah nama key yang sudah ditetapkan sistem, jangan diubah meskipun tampak seperti typo.
+
 ```js
 const identifikasiDimensiProfilLulusan = {
-    dpl1: true, // Keimana dan Ketawaan terhadap Tuhan YME
-    dpl2: true, // Kewargaan
-    dpl3: true, // Penalaran kritis
-    dpl4: false, // Kreativitas
-    dpl5: true, // Kolaborasi
-    dpl6: true, // kemandirian
-    dpl7: false, // Kesehatan
-    dlp8: true // Komunikasi
+  dpl1: true,  // DPL1 — Keimanan dan Ketakwaan terhadap Tuhan YME
+  dpl2: true,  // DPL2 — Kewargaan
+  dpl3: true,  // DPL3 — Penalaran Kritis
+  dpl4: false, // DPL4 — Kreativitas
+  dpl5: true,  // DPL5 — Kolaborasi
+  dpl6: true,  // DPL6 — Kemandirian
+  dpl7: false, // DPL7 — Kesehatan
+  dpl8: true   // DPL8 — Komunikasi  ⚠️ key-nya 'dpl8', bukan 'dpl8'
 }
 ```
-```identifikasiDimensiProfilLulusan: { dpl1: boolean, dpl2: boolean, dpl3: boolean, dpl4: boolean, dpl5: boolean, dpl6: boolean, dpl7: boolean, dlp8: boolean }```
+```
+identifikasiDimensiProfilLulusan: {
+  dpl1: boolean, dpl2: boolean, dpl3: boolean, dpl4: boolean,
+  dpl5: boolean, dpl6: boolean, dpl7: boolean, dpl8: boolean
+}
+```
+
+---
 
 ## Desain Pembelajaran
 
 ### desainPembelajaranCapaianPembelajaran
-Capaian pembelajaran yang ingin dicapai setelah pembelajaran selesai.
-Contoh:
+Daftar Capaian Pembelajaran (CP) dari Fase Fondasi yang dituju dalam modul ini. Setiap item array adalah satu CP, ditulis dalam format:
+`'<b>Elemen [Nama Elemen]:</b> Sub Elemen [narasi sub-elemen yang relevan].'`
+
+Pilih dari tiga elemen CP Fase Fondasi:
+- **Nilai Agama dan Budi Pekerti**
+- **Jati Diri** *(identitas diri, emosi-sosial, motorik)*
+- **Dasar-dasar Literasi, Matematika, Sains, Teknologi, Rekayasa, dan Seni**
+
 ```js
 const desainPembelajaranCapaianPembelajaran = [
-    '<b>Elemen Jati Diri:</b> Sub Elemen Anak memahami identitas dirinya yang terbentuk oleh ragam minat, kebutuhan, karakteristik gender, agama, dan sosial budaya.',
-    '<b>Elemen Jati Diri:</b> Sub Elemen Anak menggunakan fungsi gerak (motorik kasar, halus, dan taktil) untuk mengeksplorasi dan memanipulasi berbagai objek dan lingkungan sekitar sebagai bentuk pengembangan diri.'
+  '<b>Elemen Jati Diri:</b> Sub Elemen Anak memahami identitas dirinya yang terbentuk oleh ragam minat, kebutuhan, karakteristik gender, agama, dan sosial budaya.',
+  '<b>Elemen Jati Diri:</b> Sub Elemen Anak menggunakan fungsi gerak (motorik kasar, halus, dan taktil) untuk mengeksplorasi dan memanipulasi berbagai objek dan lingkungan sekitar sebagai bentuk pengembangan diri.'
 ]
 ```
-```desainPembelajaranCapaianPembelajaran: string[]```
+```
+desainPembelajaranCapaianPembelajaran: string[]
+```
+> Minimal 1 item. Gunakan tag `<b>` untuk nama elemen. Pilih CP yang benar-benar relevan dengan tema/subtema yang dipilih.
+
+---
 
 ### desainPembelajaranLintasDisiplinIlmu
-Integrasi berbagai bidang studi dan pendekatan untuk menciptakan pengalaman belajar yang bermakna (meaningful), sadar (mindful), dan menyenangkan (joyful)
-Contoh:
+Uraian integrasi lintas bidang pengembangan PAUD dalam satu kalimat ringkas. Sebutkan seluruh bidang yang relevan dengan aktivitas pembelajaran:
+
+| Bidang | Contoh Keterkaitan |
+|---|---|
+| Nilai agama dan moral | Syukur atas ciptaan Tuhan |
+| Nilai Pancasila | Menghargai keberagaman |
+| Fisik motorik | Gerakan, koordinasi, motorik halus/kasar |
+| Kognitif | Mengingat, mencocokkan, memecahkan masalah |
+| Bahasa | Menyebutkan nama, berkomunikasi verbal |
+| Sosial emosional | Kepercayaan diri, interaksi dengan teman |
+
 ```js
 const desainPembelajaranLintasDisiplinIlmu = 'Nilai agama dan moral (mengenal keberadaan Tuhan melalui syukur atas identitas diri), nilai Pancasila (menghargai keberagaman nama dan karakteristik teman), fisik motorik (gerakan menunjuk dan melambai), kognitif (mengingat dan menyebut nama sendiri), bahasa (mengucapkan nama dengan jelas), sosial emosional (membangun kepercayaan diri dan interaksi dengan teman.)'
 ```
-```desainPembelajaranLintasDisiplinIlmu: string```
+```
+desainPembelajaranLintasDisiplinIlmu: string
+```
+
+---
 
 ### desainPembelajaranTujuanPembelajaran
-Pencapaian pembelajaran yang ingin dicapai setelah pembelajaran selesai.
-Contoh:
+Daftar Tujuan Pembelajaran (TP) yang diturunkan dari CP Fase Fondasi. Setiap item menggambarkan kemampuan konkret yang ingin dicapai anak setelah pembelajaran selesai. Gunakan kata kerja operasional yang sesuai perkembangan anak usia dini (mengenal, menyebutkan, menunjukkan, mempraktikkan, dll.).
+
 ```js
 const desainPembelajaranTujuanPembelajaran = [
-    'Anak mampu mengenal identitas dirinya sebagai bagian dari keluarga dan menyebutkan namanya sendiri sambil melakukan gerakan sederhana seperti melambai atau bertepuk tangan.'
+  'Anak mampu mengenal identitas dirinya sebagai bagian dari keluarga dan menyebutkan namanya sendiri sambil melakukan gerakan sederhana seperti melambai atau bertepuk tangan.'
 ]
 ```
-```desainPembelajaranTujuanPembelajaran: string[]```
+```
+desainPembelajaranTujuanPembelajaran: string[]
+```
+> Minimal 1 item. TP harus dapat diobservasi dan terukur, sesuai kemampuan anak Fase Fondasi.
+
+---
 
 ### desainPembelajaranTopikPembelajaran
-Topik pembelajaran yang dipilih untuk pembelajaran.
-Contoh:
+Judul topik pembelajaran yang spesifik dan menarik untuk anak usia dini. Dapat ditulis dalam format: `'[Subtema Utama]: [Aktivitas atau Fokus Khusus]'`.
+
 ```js
 const desainPembelajaranTopikPembelajaran = 'Aku Istimewa: Ayo Kita Berkenalan'
 ```
-```desainPembelajaranTopikPembelajaran: string```
+```
+desainPembelajaranTopikPembelajaran: string
+```
+
+---
 
 ### desainPembelajaranPraktikPedagogis
-Praktik pedagogis yang digunakan dalam pembelajaran.
-Contoh:
+Deskripsi pendekatan dan metode pedagogis yang digunakan, dikaitkan secara eksplisit dengan **tiga pilar Deep Learning** (Mindful/Berkesadaran, Meaningful/Bermakna, Joyful/Menggembirakan). Sebutkan metode pembelajaran yang dipilih (bermain peran, bercerita, bernyanyi, eksplorasi, dll.) dan jelaskan mengapa sesuai untuk Fase Fondasi.
+
 ```js
-const desainPembelajaranPraktikPedagogis = 'Pembelajaran berbasis bermain dengan pendekatan eksplorasi langsung menggunakan metode bercerita interaktif, bernyanyi sambil bergerak, dan permainan cermin. Pendekatan ini mendukung prinsip berkesadaran melalui fokus pada diri sendiri, bermakna karena relevan dengan kehidupan sehari-hari, dan menggembirakan melalui aktivitas yang menyenangkan dan tidak menakutkan.'
+const desainPembelajaranPraktikPedagogis = 'Pembelajaran berbasis bermain dengan pendekatan eksplorasi langsung menggunakan metode bercerita interaktif, bernyanyi sambil bergerak, dan permainan cermin. Pendekatan ini mendukung prinsip berkesadaran (mindful) melalui fokus pada diri sendiri, bermakna (meaningful) karena relevan dengan kehidupan sehari-hari anak, dan menggembirakan (joyful) melalui aktivitas yang menyenangkan dan tidak menakutkan.'
 ```
-```desainPembelajaranPraktikPedagogis: string```
+```
+desainPembelajaranPraktikPedagogis: string
+```
+
+---
 
 ### desainPembelajaranKemitraanPembelajaran
-Beberapa kemitraan yang terlibat selama proses pembelajaran.
-Contoh:
+Daftar pihak-pihak yang bermitra dalam mendukung pembelajaran (guru, orang tua, kakak kelas, komunitas, dll.). Setiap item array menjelaskan satu pihak dan perannya.
+
 ```js
 const desainPembelajaranKemitraanPembelajaran = [
-    'Lingkungan pembelajaran mengintegrasikan ruang kelas yang nyaman dengan cermin besar, area bermain terbuka untuk aktivitas motorik, dan sudut tenang untuk kegiatan refleksi, menciptakan suasana aman yang mendorong eksplorasi identitas diri.'
+  'Melibatkan guru kelas sebagai fasilitator utama dalam setiap kegiatan pembelajaran',
+  'Melibatkan orang tua sebagai sumber informasi tentang kebiasaan dan kemampuan anak di rumah, serta pendukung kegiatan tindak lanjut di rumah',
+  'Melibatkan kakak kelas sebagai model positif dalam pengenalan diri dan interaksi sosial'
 ]
 ```
-```desainPembelajaranKemitraanPembelajaran: string[]```
+```
+desainPembelajaranKemitraanPembelajaran: string[]
+```
+
+---
 
 ### desainPembelajaranLingkunganPembelajaran
-lingkungan yang mendukung selama proses pembelajaran.
-Contoh:
+Deskripsi lingkungan fisik dan suasana belajar yang dirancang untuk mendukung pembelajaran. Jelaskan tata ruang, area bermain, dan elemen lingkungan yang relevan dengan tema.
+
 ```js
 const desainPembelajaranLingkunganPembelajaran = [
-    'Melibatkankan guru kelas sebagai fasilitator utama',
-    'Melibatkan orang tua sebagai sumber informasi tentang anak di rumah',
-    'Serta melibatkan kakak kelas sebagai model positif dalam pengenalan diri dan interaksi sosial.'
+  'Ruang kelas yang nyaman dengan cermin besar yang aman untuk anak, mendukung eksplorasi identitas diri secara visual',
+  'Area bermain terbuka untuk aktivitas motorik kasar seperti melompat dan berlari',
+  'Sudut tenang dengan bantal dan boneka untuk kegiatan refleksi dan bermain peran secara mandiri'
 ]
 ```
-```desainPembelajaranLingkunganPembelajaran: string[]```
+```
+desainPembelajaranLingkunganPembelajaran: string[]
+```
+
+---
 
 ### desainPembelajaranPemanfaatanDigital
-Pemanfaatan teknologi digital untuk mendukung pembelajaran.
-Contoh:
+Daftar rencana pemanfaatan teknologi digital yang dibagi ke dalam tiga tahap: **Perencanaan**, **Pelaksanaan**, dan **Asesmen**. Setiap item array mencakup satu tahap atau satu jenis media digital.
+
 ```js
 const desainPembelajaranPemanfaatanDigital = [
-    'Perencanaan: Persiapan video cerita dan lagu digital, aplikasi dokumentasi pembelajaran',
-    'Pelaksanaan: Video interaktif "Ayo Berkenalan", musik latar untuk aktivitas, dokumentasi foto dan video proses belajar anak',
-    'Asesmen: Portofolio digital karya anak, rekaman video presentasi sederhana anak',
-    'Dukungan media ajar digital tersedia melalui https://drive.paud.id/download/ayo-berkenalan/'
+  'Perencanaan: Persiapan video cerita dan lagu digital tentang identitas diri, serta aplikasi dokumentasi perkembangan anak',
+  'Pelaksanaan: Pemutaran video interaktif "Ayo Berkenalan", musik latar untuk aktivitas gerak dan lagu, dokumentasi foto dan video proses belajar anak',
+  'Asesmen: Portofolio digital berupa karya anak (foto hasil kreasi), rekaman video perkenalan diri sederhana sebagai bukti perkembangan',
+  'Dukungan media ajar digital tersedia melalui https://drive.paud.id/download/ayo-berkenalan/'
 ]
 ```
-```desainPembelajaranPemanfaatanDigital: string[]```
+```
+desainPembelajaranPemanfaatanDigital: string[]
+```
+
+---
 
 ## Rencana Pelaksanaan Pembelajaran
 
 ### rencanaPelaksanaanAwal
-Rencana pelaksanaan pembelajaran pada awal pembelajaran.
-Contoh:
+Rencana kegiatan **pembuka** pembelajaran. Harus bersifat **Berkesadaran, Bermakna, dan Menggembirakan** sesuai pilar Deep Learning. Struktur array:
+
+- Item berupa `string` → poin narasi tunggal (ditulis sebagai `<li>` biasa)
+- Item berupa `[string, string[]]` → poin dengan sub-poin bersarang (judul + daftar sub-item)
+
+Isi yang wajib ada: orientasi (salam/doa), apersepsi (kaitan dengan pengalaman anak), motivasi/pemantik, dan pertanyaan pemantik yang mencakup semua 8 DPL.
+
 ```js
 const rencanaPelaksanaanAwal = [
-    ['Pembuka dari proses pembelajaran yang bertujuan untuk mempersiapkan peserta didik sebelum memasuki inti pembelajaran.'],
-    ['Kegiatan dalam tahap ini meliputi orientasi yang bermakna, apersepsi yang kontekstual, dan motivasi yang menggembirakan:', [
-        'Salam dan doa pembuka untuk menciptakan suasana tenang dan fokus.',
-        'Menyanyikan lagu "1234 Pergi Sekolah" untuk membangun semangat belajar.'
-    ]],
-    ['Kegiatan pemantik dengan buku cerita/video "Ayo Berkenalan".'],
-    ['Permainan konsentrasi sederhana untuk memusatkan perhatian anak.'],
-    ['Pertanyaan pemantik untuk mengembangkan berbagai aspek:', [
-        '"Siapa yang menciptakan kita semua?" (Keimanan dan Ketakwaan.)',
-        '"Apa yang bisa kamu lakukan sendiri hari ini?" (Kemandirian.)',
-        '"Bagaimana perasaanmu ketika menyebutkan namamu?" (Kesehatan.)',
-        '"Siapa temanmu yang paling baik?" (Kolaborasi.)',
-        '"Apa yang membuat namamu istimewa?" (Kreativitas.)',
-        '"Mengapa kita harus mengenal teman-teman kita?" (Kewargaan.)',
-        '"Bagaimana caranya agar teman tahu nama kita?" (Komunikasi.)',
-        '"Apa yang terjadi jika kita tidak tahu nama sendiri?" (Penalaran Kritis.)'
-    ]]
+  ['Pembuka dari proses pembelajaran yang bertujuan untuk mempersiapkan peserta didik sebelum memasuki inti pembelajaran.'],
+  ['Kegiatan dalam tahap ini meliputi orientasi yang bermakna, apersepsi yang kontekstual, dan motivasi yang menggembirakan:', [
+    'Salam dan doa pembuka untuk menciptakan suasana tenang dan fokus.',
+    'Menyanyikan lagu "1234 Pergi Sekolah" untuk membangun semangat belajar.'
+  ]],
+  ['Kegiatan pemantik dengan buku cerita/video "Ayo Berkenalan".'],
+  ['Permainan konsentrasi sederhana untuk memusatkan perhatian anak.'],
+  ['Pertanyaan pemantik untuk mengembangkan berbagai aspek:', [
+    '"Siapa yang menciptakan kita semua?" (Keimanan dan Ketakwaan.)',
+    '"Apa yang bisa kamu lakukan sendiri hari ini?" (Kemandirian.)',
+    '"Bagaimana perasaanmu ketika menyebutkan namamu?" (Kesehatan.)',
+    '"Siapa temanmu yang paling baik?" (Kolaborasi.)',
+    '"Apa yang membuat namamu istimewa?" (Kreativitas.)',
+    '"Mengapa kita harus mengenal teman-teman kita?" (Kewargaan.)',
+    '"Bagaimana caranya agar teman tahu nama kita?" (Komunikasi.)',
+    '"Apa yang terjadi jika kita tidak tahu nama sendiri?" (Penalaran Kritis.)'
+  ]]
 ]
 ```
-```rencanaPelaksanaanAwal: (string | [string, string[]])[]```
+```
+rencanaPelaksanaanAwal: (string | [string, string[]])[]
+```
+> Setiap item poin utama harus dalam array sendiri `['teks poin']`. Sub-poin ditulis sebagai `['judul', ['sub1', 'sub2', ...]]`. Jangan gunakan string kosong.
+
+---
 
 ### rencanaPelaksanaanInti
-Rencana pelaksanaan pembelajaran pada inti pembelajaran.
-Contoh:
+Narasi pengantar untuk kegiatan **inti** pembelajaran. Jelaskan secara singkat bahwa anak akan melalui tiga tahap Deep Learning (Memahami, Mengaplikasi, Merefleksi) dengan tiga pilar (Berkesadaran, Bermakna, Menggembirakan).
+
 ```js
-const rencanaPelaksanaanInti = 'Pada tahap ini, anak aktif terlibat dalam pengalaman belajar memahami, mengaplikasi, dan merefleksi. Guru menerapkan prinsip pembelajaran berkesadaran, bermakna, menggembirakan untuk mencapai tujuan pembelajaran.'
+const rencanaPelaksanaanInti = 'Pada tahap ini, anak aktif terlibat dalam pengalaman belajar memahami, mengaplikasi, dan merefleksi. Guru menerapkan prinsip pembelajaran berkesadaran (mindful), bermakna (meaningful), dan menggembirakan (joyful) untuk mendukung pencapaian tujuan pembelajaran secara mendalam.'
 ```
-```rencanaPelaksanaanInti: string```
+```
+rencanaPelaksanaanInti: string
+```
 
-> Note: Jangan panjang-panjang, soalnya stelah ini akan ada table dengan rincian kegiatan inti pembelajaran, jadi cukup jelaskan secara umum saja.
+---
 
-#### rencanaPelaksanaanIntiTable
-Rincian kegiatan inti pembelajaran dalam bentuk tabel.
-Contoh:
+### rencanaPelaksanaanIntiTable
+Array yang berisi **3 tabel kegiatan inti** sesuai tiga tahap Deep Learning. Setiap tabel memiliki struktur `{ title, rows }`:
+- `title` → nama tahap belajar (lihat format baku di bawah)
+- `rows` → array of `[string, string]` — kolom pertama nomor hari, kolom kedua uraian kegiatan (boleh mengandung HTML `<ol>` / `<li>`)
+- Baris pertama setiap tabel **wajib** berupa header: `['<b>Hari</b>', '<b>Uraian Kegiatan</b>']`
+
+**Format title yang baku (jangan diubah):**
+```
+'MEMAHAMI (BERKESADARAN, BERMAKNA, MENGGEMBIRAKAN)'   → Hari 1–2
+'MENGAPLIKASI (BERKESADARAN, BERMAKNA)'               → Hari 3–4
+'MEREFLEKSI (BERKESADARAN, BERMAKNA)'                 → Hari 5
+```
+
+**Format uraian kegiatan per hari:**
+Setiap hari idealnya memiliki 2–3 kegiatan berbeda yang menyasar DPL yang bervariasi. Tulis dalam format:
+```
+'Kegiatan [N]: [Nama Kegiatan] ([DPL yang disasar]). Alat dan Bahan: [...]. Cara Bermain/Membuat: [...]\n\n'
+```
+Jika ada langkah-langkah pembuatan, gunakan `<ol><li>...</li></ol>`.
+
 ```js
 const rencanaPelaksanaanIntiTable = [
-    {
-        title: 'MEMAHAMI (BERKESADARAN, BERMAKNA, MENGGEMBIRAKAN)',
-        rows: [
-            ['<b>Hari</b>', '<b>Uraian Kegiatan</b>'],
-            [
-                '1',
-                'Kegiatan 1: Mencocokkan Geometri (Kemandirian, Penalaran Kritis). Alat dan Bahan: Karton, kardus bekas, tutup botol aneka warna, gunting, pensil, lem tembak, pom-pom/mainan lainnya , pencapit/sumpit/ sendok atau lainnya.Cara Membuat :\n' +
-                '<ol>' +
-                '<li>Siapkan kardus bekas, lalu buat pola bentuk geometri, dan letakkan tutup botol sesuai pola, kemudian gambar lingkaran sebesar tutup botol.</li>' +
-                '<li>Lubangi atau gunting, pola tutup botol yang sudah di gambar pada kardus berbentuk geometri.</li>' +
-                '<li>Selanjutnya, jiplak bentuk geometri yang sudah di gunting di atas kertas karton.</li>' +
-                '<li>Rekatkan tutup botol tepat di atas gambar yang sudah dijiplak berdasarkan warna tutup botol.</li>' +
-                '<li>Jika sudah jadi, anak-anak dapat memasangkan bentuk geometri sesuai dengan pola tutup botol, dan mengisi dengan pom-pom sesuai warna tutup botol.</li>' +
-                '<li>Siapkan karton, kemudian gambar  atau buat pola di atas karton menggunakan pensil dan tutup botol bentuk geometri (lingkaran, persegi, persegi panjang dan segitiga.)</li>' +
-                '</ol>\n' +
-                'Kegiatan 2: Cermin Ajaib (Komunikasi, Kesehatan). Alat dan Bahan: Cermin besar yang aman untuk anak Cara Bermain: Anak diajak berdiri di depan cermin besar. Guru memandu anak untuk menyebutkan namanya sambil menunjuk bayangan dirinya di cermin. Guru juga meminta anak menunjuk bagian-bagian tubuh utama seperti kepala, tangan, dan kaki pada bayangannya di cermin. Kegiatan ini membantu anak mengenal identitas dirinya dan bagian-bagian tubuhnya\n' +
-                'Kegiatan 3: Nama dan Foto (Kolaborasi, Kreativitas). Alat dan Bahan: Foto anak-anak, kertas, lem, spidol. Cara Bermain: Tempelkan foto anak-anak di selembar kertas dan tuliskan nama mereka di bawahnya. Ajak anak-anak mengenal teman mereka dengan menyebutkan nama teman berdasarkan foto.'
-            ],
-            [
-                '2',
-                'Kegiatan 1: Memasukkan mainan ke dalam gelas dengan penjepit (Kemandirian, Penalaran Kritis). Alat dan Bahan: 2 Buah tutup botol, 2 Buah stik es krim, 1 Penjepit baju jemuran, Lem tembak, Pom-pom, Gelas kertas
-Cara Membuat :' +
-                '<ol>' +
-                '<li>Pertama rekatkan tutup botol, pada bagian ujung stik es krim, agar dapat menjepit mainan.</li>' +
-                '<li>Selanjutnya siapkan penjepit baju, kemudian rekatkan stik baju pada bagian kanan dan kiri dengan menggunakan lem.</li>' +
-                '<li>Jika lem sudah jadi penjepit bisa langsung digunakan untuk bermain anak-anak.</li>' +
-                '<li>Anak-anak dapat menggunakan penjepit dengan memasukkan pom-pom ke dalam gelas kertas berdasarkan warna, ukuran dan lainnya.</li>' +
-                '</ol>\n' +
-                'Kegiatan 2: Tepuk Nama Komunikasi, Kolaborasi. Alat dan Bahan: Tidak diperlukan Cara Bermain: Guru mengajak anak-anak duduk melingkar. Guru memulai dengan menyebutkan nama seorang anak sambil bertepuk tangan. Anak yang namanya disebut harus berdiri dan bertepuk tangan. Kegiatan ini diulang untuk semua anak. Permainan ini membantu anak mengenal namanya dan nama teman-temannya, serta melatih motorik dengan gerakan tepuk tangan.\n' +
-                'Kegiatan 3: Bola Nama Kreativitas, Komunikasi. Alat dan Bahan: Bola ringan. Cara Bermain: Duduk dalam lingkaran, lempar bola satu per satu sambil menyebutkan nama penerima bola. Hal ini memperkenalkan nama dan meningkatkan keterampilan sosial.'
-            ]
-        ]
-    },
-    {
-        title: 'MEMAHAMI (BERKESADARAN, BERMAKNA)',
-        rows: [
-            ['<b>Hari</b>', '<b>Uraian Kegiatan</b>'],
-            [
-                '3',
-                'Kegiatan 1 : Kotak Pensil Aku dan Teman Kreativitas, Kemandirian. Alat dan Bahan, Kardus bekas, Lem, Gambar anak-anak tanpa gambar wajah, Krayon, Gunting, Cara Membuat:' +
-                '<ol>' +
-                '<li>Siapkan gambar anak-anak tanpa wajah, kemudian warnai dengan menggunakan krayon atau cat warna.</li>' +
-                '<li>Selanjutnya, mintalah anak-anak untuk memotong gambar foto wajah mereka sendiri dan menempelkannya pada gambar yang sudah di beri warna sebelumnya.</li>' +
-                '<li>Selanjutnya, potong kardus atau bisa di ganti dengan karton membentuk persegi panjang dan gulung membentuk tabung.</li>' +
-                '<li>Buat bentuk lingkaran, lalu potong dan tempelkan bentuk tabung diatas bentuk lingkaran jadi satu (seperti tempat pensil).</li>' +
-                '<li>Terakhir tempelkan gambar foto yang sudah dibuat pada tempat pensil.</li>' +
-                '</ol>\n' +
-                'Kegiatan 2: Lompat Nama (Kesehatan, Komunikasi). Alat dan Bahan: Kertas warna-warni yang ditempel di lantai membentuk lingkaran Cara Bermain: Guru meletakkan kertas warna-warni di lantai membentuk lingkaran. Anak diminta melompat dari satu kertas ke kertas lain sambil menyebutkan namanya setiap kali mendarat. Kegiatan ini membantu anak mengenal namanya sambil melatih keseimbangan dan koordinasi tubuhnya.\n' +
-                'Kegiatan 3: Gambar Keluarga (Keimanan dan Ketakwaan). Alat dan Bahan: Kertas gambar, krayon atau spidol. Cara Bermain: Minta anak-anak menggambar keluarganya. Setelah selesai, setiap anak bisa memperlihatkan dan memperkenalkan siapa saja anggota keluarganya.'
-        ],
-        [
-            '4',
-            'Kegiatan 1 : Belajar Mencari Pasangan Sepatu (Penalaran Kritis, Kemandirian). Alat dan Bahan: Berbagai jenis model dan warna sepatu.\n' +
-            'Cara membuat dan Memainkannya : ' +
-            '<ol>' +
-            '<li>Siapkan berbagai macam sepatu dengan model dan warna yang berbeda.</li>' +
-            '<li>Selanjutnya, mintalah anak-anak untuk mencari pasangan sepatu yang memiliki warna dan model atau bentuk sama.</li>' +
-            '</ol>\n' +
-            'Kegiatan 2 : Menyusun Huruf Nama (Komunikasi, Kreativitas). Alat dan Bahan: Huruf-huruf magnet. Cara Bermain: Beri anak huruf magnet yang bisa mereka susun menjadi nama mereka sendiri. Setelah selesai, mereka bisa memperkenalkan nama mereka.\n' +
-            'Kegiatan 3: Stempel Tangan (Kemandirian, Kreativitas). Alat dan Bahan: Cat tangan, kertas besar. Cara Bermain: Anak-anak membuat cetakan tangan mereka di kertas besar dan di bawahnya tuliskan nama mereka. Ini membantu mengenal identitas setiap anak secara visual.'
-        ]
-    },
-    {
-        title: 'MEREFLEKSI (BERKESADARAN, BERMAKNA)',
-        rows: [
-            ['<b>Hari</b>', '<b>Uraian Kegiatan</b>'],
-            [
-                '5',
-                'Kegiatan 1: Mencocokkan benda dengan gambar (Penalaran Kritis, Kemandirian). Alat dan Bahan : Kancing, stik es krim, mainan, kertas HVS, spidol atau krayon. Cara Membuat dan memainkan :Siapkan 3 lembar kertas HVS, kemudian gambar bentuk stik es krim, kancing dan mainan dan beri warna sesuai dengan warna stik es krim, kancing dan mainan. Mintalah anak-anak untuk mencocokkan stik es krim, kancing dan mainan sesuai dengan gambar, bentuk dan warna.\n' +
-                'Kegiatn 2: Boneka Keluarga (Kewargaan, Kolaborasi). Alat dan Bahan: Boneka tangan atau boneka jari yang merepresentasikan anggota keluarga Cara Bermain: Guru menggunakan boneka untuk memperkenalkan anggota keluarga (ayah, ibu, kakak/adik). Anak diajak untuk memegang boneka dan menirukan suara atau gerakan sederhana untuk setiap anggota keluarga. Kegiatan ini membantu anak mengenal peran anggota keluarga dan melatih motorik halusnya.\n' +
-                'Kegiatan 3: Ayo Cari Teman (Komunikasi, Kolaborasi). Alat dan Bahan: Kartu nama anak-anak. Cara Bermain: Sebar kartu nama anak di lantai, minta anak-anak mencari nama mereka sendiri. Setelah ditemukan, mintalah mereka mencari nama teman yang diberi tahu.'
-            ]
-        ]
-    }
+  {
+    title: 'MEMAHAMI (BERKESADARAN, BERMAKNA, MENGGEMBIRAKAN)',
+    rows: [
+      ['<b>Hari</b>', '<b>Uraian Kegiatan</b>'],
+      [
+        '1',
+        'Kegiatan 1: Mencocokkan Geometri (Kemandirian, Penalaran Kritis). Alat dan Bahan: Karton, kardus bekas, tutup botol aneka warna, gunting, pensil, lem tembak, pom-pom. Cara Membuat:\n\n' +
+        '<ol>' +
+        '<li>Siapkan kardus bekas, buat pola bentuk geometri, dan gambar lingkaran sebesar tutup botol.</li>' +
+        '<li>Lubangi atau gunting pola tutup botol pada kardus berbentuk geometri.</li>' +
+        '<li>Jiplak bentuk geometri yang sudah digunting di atas kertas karton.</li>' +
+        '<li>Rekatkan tutup botol tepat di atas gambar yang sudah dijiplak berdasarkan warna tutup botol.</li>' +
+        '<li>Anak-anak memasangkan bentuk geometri sesuai pola dan mengisi dengan pom-pom sesuai warna.</li>' +
+        '</ol>\n\n' +
+        'Kegiatan 2: Cermin Ajaib (Komunikasi, Kesehatan). Alat dan Bahan: Cermin besar yang aman untuk anak. Cara Bermain: Anak berdiri di depan cermin besar. Guru memandu anak menyebutkan namanya sambil menunjuk bayangan dirinya. Anak juga diminta menunjuk bagian tubuh utama (kepala, tangan, kaki) pada bayangannya di cermin.\n\n' +
+        'Kegiatan 3: Nama dan Foto (Kolaborasi, Kreativitas). Alat dan Bahan: Foto anak-anak, kertas, lem, spidol. Cara Bermain: Tempelkan foto anak di kertas dan tuliskan nama mereka di bawahnya. Ajak anak mengenal teman dengan menyebutkan nama berdasarkan foto.'
+      ],
+      [
+        '2',
+        'Kegiatan 1: Memasukkan Mainan ke Gelas dengan Penjepit (Kemandirian, Penalaran Kritis). Alat dan Bahan: 2 tutup botol, 2 stik es krim, 1 penjepit baju, lem tembak, pom-pom, gelas kertas. Cara Membuat:\n\n' +
+        '<ol>' +
+        '<li>Rekatkan tutup botol pada ujung stik es krim agar dapat menjepit mainan.</li>' +
+        '<li>Siapkan penjepit baju, rekatkan stik pada bagian kanan dan kiri dengan lem.</li>' +
+        '<li>Gunakan penjepit untuk memasukkan pom-pom ke dalam gelas kertas berdasarkan warna.</li>' +
+        '</ol>\n\n' +
+        'Kegiatan 2: Tepuk Nama (Komunikasi, Kolaborasi). Alat dan Bahan: Tidak diperlukan. Cara Bermain: Guru mengajak anak duduk melingkar. Guru menyebutkan nama seorang anak sambil bertepuk tangan; anak yang namanya disebut berdiri dan bertepuk tangan. Diulang untuk semua anak.\n\n' +
+        'Kegiatan 3: Bola Nama (Kreativitas, Komunikasi). Alat dan Bahan: Bola ringan. Cara Bermain: Duduk melingkar, lempar bola satu per satu sambil menyebutkan nama penerima bola. Kegiatan ini memperkenalkan nama dan meningkatkan keterampilan sosial.'
+      ]
+    ]
+  },
+  {
+    title: 'MENGAPLIKASI (BERKESADARAN, BERMAKNA)',
+    rows: [
+      ['<b>Hari</b>', '<b>Uraian Kegiatan</b>'],
+      [
+        '3',
+        'Kegiatan 1: Kotak Pensil Aku dan Teman (Kreativitas, Kemandirian). Alat dan Bahan: Kardus bekas, lem, gambar anak tanpa wajah, krayon, gunting. Cara Membuat:\n\n' +
+        '<ol>' +
+        '<li>Siapkan gambar anak tanpa wajah, warnai dengan krayon atau cat.</li>' +
+        '<li>Minta anak memotong foto wajah mereka dan menempelkannya pada gambar.</li>' +
+        '<li>Potong kardus membentuk persegi panjang dan gulung menjadi tabung.</li>' +
+        '<li>Buat lingkaran, potong, dan tempelkan tabung di atasnya (seperti tempat pensil).</li>' +
+        '<li>Tempelkan gambar foto yang sudah dibuat pada tempat pensil.</li>' +
+        '</ol>\n\n' +
+        'Kegiatan 2: Lompat Nama (Kesehatan, Komunikasi). Alat dan Bahan: Kertas warna-warni ditempel di lantai membentuk lingkaran. Cara Bermain: Anak melompat dari satu kertas ke kertas lain sambil menyebutkan namanya setiap kali mendarat. Melatih keseimbangan dan koordinasi.\n\n' +
+        'Kegiatan 3: Gambar Keluarga (Keimanan dan Ketakwaan, Kewargaan). Alat dan Bahan: Kertas gambar, krayon atau spidol. Cara Bermain: Anak menggambar anggota keluarganya, lalu memperlihatkan dan memperkenalkan siapa saja anggota keluarganya.'
+      ],
+      [
+        '4',
+        'Kegiatan 1: Mencari Pasangan Sepatu (Penalaran Kritis, Kemandirian). Alat dan Bahan: Berbagai model dan warna sepatu. Cara Bermain:\n\n' +
+        '<ol>' +
+        '<li>Siapkan berbagai macam sepatu dengan model dan warna berbeda.</li>' +
+        '<li>Minta anak mencari pasangan sepatu yang memiliki warna dan model yang sama.</li>' +
+        '</ol>\n\n' +
+        'Kegiatan 2: Menyusun Huruf Nama (Komunikasi, Kreativitas). Alat dan Bahan: Huruf-huruf magnet. Cara Bermain: Berikan huruf magnet untuk disusun menjadi nama sendiri. Setelah selesai, anak memperkenalkan nama mereka kepada teman.\n\n' +
+        'Kegiatan 3: Stempel Tangan (Kemandirian, Kreativitas). Alat dan Bahan: Cat tangan, kertas besar. Cara Bermain: Anak-anak membuat cetakan tangan di kertas besar dan di bawahnya dituliskan nama mereka. Membantu mengenal identitas setiap anak secara visual.'
+      ]
+    ]
+  },
+  {
+    title: 'MEREFLEKSI (BERKESADARAN, BERMAKNA)',
+    rows: [
+      ['<b>Hari</b>', '<b>Uraian Kegiatan</b>'],
+      [
+        '5',
+        'Kegiatan 1: Mencocokkan Benda dengan Gambar (Penalaran Kritis, Kemandirian). Alat dan Bahan: Kancing, stik es krim, mainan, kertas HVS, spidol atau krayon. Cara Bermain: Siapkan 3 lembar kertas HVS dengan gambar stik es krim, kancing, dan mainan yang sudah diberi warna. Minta anak mencocokkan benda nyata dengan gambarnya sesuai bentuk dan warna.\n\n' +
+        'Kegiatan 2: Boneka Keluarga (Kewargaan, Kolaborasi). Alat dan Bahan: Boneka tangan atau boneka jari yang merepresentasikan anggota keluarga. Cara Bermain: Guru menggunakan boneka untuk memperkenalkan peran anggota keluarga (ayah, ibu, kakak/adik). Anak memegang boneka dan menirukan suara atau gerakan sederhana setiap anggota keluarga.\n\n' +
+        'Kegiatan 3: Ayo Cari Teman (Komunikasi, Kolaborasi). Alat dan Bahan: Kartu nama anak-anak. Cara Bermain: Sebar kartu nama di lantai. Minta anak mencari kartu namanya sendiri, lalu mencari nama teman yang disebutkan guru.'
+      ]
+    ]
+  }
 ]
 ```
-```rencanaPelaksanaanIntiTable: { title: string, rows: string[][] }[]```
+```
+rencanaPelaksanaanIntiTable: { title: string, rows: string[][] }[]
+```
+> ⚠️ **Wajib ada 3 objek tabel**: `MEMAHAMI`, `MENGAPLIKASI`, dan `MEREFLEKSI`. Setiap tabel harus dimulai dengan baris header `['<b>Hari</b>', '<b>Uraian Kegiatan</b>']`. Total 5 hari kegiatan tersebar di tiga tabel.
+
+---
 
 ### rencanaPelaksanaanPenutup
-Rencana pelaksanaan pembelajaran pada penutup pembelajaran.
-Contoh:
-```js
-const rencanaPelaksanaanPenutup = 'Tahap akhir dalam proses pembelajaran yang bertujuan memberikan umpan balik yang konstruktif kepada anak atas pengalaman belajar yang telah dilakukan, menyimpulkan pembelajaran, dan anak terlibat dalam perencanaan pembelajaran selanjutnya:\n' +
-    '<ol>' +
-    '<li>Recalling kegiatan dengan antusias dan memberikan apresiasi</li>' +
-    '<li>Anak bangga menunjukkan hasil karya dan menceritakan pengalaman</li>' +
-    '<li>Permainan tepuk tangan bersama sambil menyebut nama masing-masing</li>' +
-    '<li>Bernyanyi lagu "Namaku" dengan gerakan sederhana</li>' +
-    '<li>Memberikan pelukan atau high-five sebagai bentuk penghargaan</li>' +
-    '<li>Doa penutup dan persiapan pulang dengan riang gembira</li>' +
-    '</ol>'
-```
-```rencanaPelaksanaanPenutup: string```
+Rencana kegiatan **penutup** pembelajaran. Harus bersifat **Berkesadaran dan Menggembirakan**. Diawali dengan narasi singkat tujuan penutup, lalu diikuti ordered list `<ol>` berisi langkah-langkah kegiatan penutup.
 
-> Note: Harus terdapat ordered list (ol) untuk urutan kegiatan penutup pembelajaran, dan setiap item dalam list harus berupa string yang menjelaskan secara singkat kegiatan penutup pembelajaran. Jangan terlalu panjang.
+```js
+const rencanaPelaksanaanPenutup = 'Tahap akhir dalam proses pembelajaran yang bertujuan memberikan umpan balik konstruktif kepada anak atas pengalaman belajar yang telah dilakukan, menyimpulkan pembelajaran, dan melibatkan anak dalam perencanaan pembelajaran selanjutnya:\n' +
+  '<ol>' +
+  '<li>Recalling kegiatan hari ini dengan antusias dan memberikan apresiasi atas partisipasi anak</li>' +
+  '<li>Anak bangga menunjukkan hasil karya dan menceritakan pengalaman belajar hari ini</li>' +
+  '<li>Permainan tepuk tangan bersama sambil menyebut nama masing-masing</li>' +
+  '<li>Bernyanyi lagu "Namaku" dengan gerakan sederhana sebagai penutup yang menyenangkan</li>' +
+  '<li>Memberikan pelukan atau high-five sebagai bentuk penghargaan atas usaha anak hari ini</li>' +
+  '<li>Doa penutup dan persiapan pulang dengan suasana riang gembira</li>' +
+  '</ol>'
+```
+```
+rencanaPelaksanaanPenutup: string
+```
+> Wajib ada tag `<ol>` dengan minimal 4 item `<li>`. Setiap item singkat dan jelas. Akhiri dengan suasana menyenangkan (joyful).
+
+---
 
 ## Asesmen Pembelajaran
 
+> **Catatan:** Asesmen di PAUD bersifat **autentik** — mengamati perilaku dan kemampuan anak secara alami, bukan tes formal. Setiap jenis asesmen diawali dengan narasi singkat tujuan, lalu diikuti `<ol>` berisi teknik asesmen yang konkret dan operasional.
+
 ### asesmenPembelajaranAwal
-Rencana asesmen pembelajaran pada awal pembelajaran.
-Contoh:
+Asesmen sebelum pembelajaran dimulai untuk mengetahui kemampuan awal, kesiapan belajar, dan titik mulai setiap anak. Fokus pada observasi informal, bukan tes.
+
 ```js
 const asesmenPembelajaranAwal = 'Asesmen awal dilakukan untuk mengidentifikasi kemampuan dasar anak dalam mengenal identitas diri dan kesiapan mengikuti pembelajaran. Observasi difokuskan pada respon verbal, non-verbal, dan interaksi sosial anak.' +
-    '<ol>' +
-    '<li>Tanyakan langsung "Siapa namamu?" dan catat apakah anak menjawab, diam, atau menunjuk diri</li>' +
-    '<li>Panggil nama anak satu per satu dan observasi respon (menoleh, tersenyum, atau mengabaikan)</li>' +
-    '<li>Minta anak menunjuk bagian tubuh (kepala, tangan, kaki) dan catat keakuratan responnya</li>' +
-    '</li>Amati tingkat kepercayaan diri anak saat berinteraksi dengan guru dan teman baru</li>' +
-    '<li>Dokumentasikan kemampuan motorik awal melalui permainan sederhana seperti tepuk tangan</li>' +
-    '</ol>'
+  '<ol>' +
+  '<li>Tanyakan langsung "Siapa namamu?" dan catat apakah anak menjawab secara verbal, diam, atau menunjuk diri sendiri</li>' +
+  '<li>Panggil nama anak satu per satu dan observasi respon (menoleh, tersenyum, atau mengabaikan)</li>' +
+  '<li>Minta anak menunjuk bagian tubuh (kepala, tangan, kaki) dan catat keakuratan responnya</li>' +
+  '<li>Amati tingkat kepercayaan diri anak saat berinteraksi dengan guru dan teman baru</li>' +
+  '<li>Dokumentasikan kemampuan motorik awal melalui permainan sederhana seperti tepuk tangan bersama</li>' +
+  '</ol>'
 ```
-```asesmenPembelajaranAwal: string```
+```
+asesmenPembelajaranAwal: string
+```
+> Wajib ada `<ol>` dengan minimal 4 item `<li>`. Teknik asesmen harus operasional dan sesuai konteks anak PAUD (observasi, tanya jawab sederhana, catatan anekdotal).
 
-> Note: Harus terdapat ordered list (ol) untuk urutan kegiatan asesmen awal pembelajaran, dan setiap item dalam list harus berupa string yang menjelaskan secara singkat kegiatan asesmen awal pembelajaran. Jangan terlalu panjang.
+---
 
 ### asesmenPembelajaranProses
-Rencana asesmen pembelajaran pada proses pembelajaran.
-Contoh:
-```js
-const asesmenPembelajaranProses = 'Asesmen proses dilakukan berkelanjutan selama kegiatan berlangsung untuk memantau perkembangan dan memberikan dukungan tepat waktu. Focus pada partisipasi aktif dan kemajuan keterampilan.' +
-    '<ol>' +
-    '<li>Catat frekuensi anak menyebutkan nama sendiri selama aktivitas dan tingkat kejelasan ucapan</li>' +
-    '<li>Observasi keaktifan anak dalam setiap permainan dan beri tanda centang pada lembar checklist</li>' +
-    '<li>Dokumentasikan interaksi sosial positif seperti berbagi, membantu, atau bermain bersama teman</li>' +
-    '<li>Amati kemampuan mengikuti instruksi sederhana dan beri bantuan jika diperlukan</li>' +
-    '<li>Berikan pujian langsung saat anak menunjukkan progress dan catat momen keberhasilannya</li>' +
-    '</ol>'
-```
-```asesmenPembelajaranProses: string```
+Asesmen berkelanjutan selama kegiatan inti berlangsung untuk memantau perkembangan dan memberikan dukungan tepat waktu. Dilakukan sambil anak bermain dan beraktivitas.
 
-> Note: Harus terdapat ordered list (ol) untuk urutan kegiatan asesmen proses pembelajaran, dan setiap item dalam list harus berupa string yang menjelaskan secara singkat kegiatan asesmen proses pembelajaran. Jangan terlalu panjang.
+```js
+const asesmenPembelajaranProses = 'Asesmen proses dilakukan secara berkelanjutan selama kegiatan berlangsung untuk memantau perkembangan dan memberikan dukungan tepat waktu. Fokus pada partisipasi aktif, kemajuan keterampilan, dan interaksi sosial anak.' +
+  '<ol>' +
+  '<li>Catat frekuensi dan kejelasan anak menyebutkan nama sendiri selama berbagai aktivitas</li>' +
+  '<li>Observasi keaktifan anak dalam setiap permainan dan tandai pada lembar checklist perkembangan</li>' +
+  '<li>Dokumentasikan interaksi sosial positif: berbagi, membantu teman, atau bermain bersama secara kooperatif</li>' +
+  '<li>Amati kemampuan mengikuti instruksi sederhana dua tahap dan berikan scaffolding jika diperlukan</li>' +
+  '<li>Berikan pujian langsung saat anak menunjukkan kemajuan dan catat momen keberhasilan dalam catatan anekdotal</li>' +
+  '</ol>'
+```
+```
+asesmenPembelajaranProses: string
+```
+> Wajib ada `<ol>` dengan minimal 4 item `<li>`. Gunakan teknik asesmen autentik yang tidak mengganggu kegiatan bermain anak.
+
+---
 
 ### asesmenPembelajaranAkhir
-Rencana asesmen pembelajaran pada akhir pembelajaran.
-Contoh:
+Asesmen di akhir pembelajaran untuk mengevaluasi pencapaian Tujuan Pembelajaran dan memberikan gambaran kemajuan anak secara keseluruhan.
+
 ```js
-const asesmenPembelajaranAkhir = 'Asesmen akhir mengevaluasi pencapaian tujuan pembelajaran dan memberikan gambaran kemajuan anak secara keseluruhan. Fokus pada demonstrasi kemampuan yang telah dipelajari.' +
-    '<ol>' +
-    '<li>Minta setiap anak memperkenalkan diri di depan teman dan catat kelancaran serta kepercayaan dirinya</li>' +
-    '<li>Tes kemampuan menunjuk foto diri sendiri dari kumpulan foto anak-anak di kelas</li>' +
-    '<li>Observasi kemampuan motorik melalui gerakan melambai dan bertepuk tangan saat menyebut nama</li>' +
-    '<li>Dokumentasikan ekspresi kegembiraan dan antusiasme anak melalui foto atau video singkat</li>' +
-    '<li>Berikan reward berupa stiker atau pujian khusus dan catat reaksi positif anak terhadap penghargaan</li>' +
-    '</ol>'
+const asesmenPembelajaranAkhir = 'Asesmen akhir mengevaluasi pencapaian tujuan pembelajaran dan memberikan gambaran kemajuan anak secara keseluruhan. Fokus pada demonstrasi kemampuan yang telah dipelajari selama satu minggu kegiatan.' +
+  '<ol>' +
+  '<li>Minta setiap anak memperkenalkan diri di depan teman-teman; catat kelancaran dan kepercayaan dirinya</li>' +
+  '<li>Uji kemampuan anak menunjuk foto diri sendiri dari kumpulan foto seluruh anak di kelas</li>' +
+  '<li>Observasi kemampuan motorik melalui gerakan melambai dan bertepuk tangan saat menyebut nama sendiri</li>' +
+  '<li>Dokumentasikan ekspresi kegembiraan dan antusiasme anak melalui foto atau video singkat sebagai portofolio</li>' +
+  '<li>Berikan reward berupa stiker bintang atau pujian khusus dan catat reaksi positif anak terhadap penghargaan</li>' +
+  '</ol>'
 ```
-```asesmenPembelajaranAkhir: string```
-
-> Note: Harus terdapat ordered list (ol) untuk urutan kegiatan asesmen akhir pembelajaran, dan setiap item dalam list harus berupa string yang menjelaskan secara singkat kegiatan asesmen akhir pembelajaran. Jangan terlalu panjang.
-
+```
+asesmenPembelajaranAkhir: string
+```
+> Wajib ada `<ol>` dengan minimal 4 item `<li>`. Asesmen akhir di PAUD harus tetap menyenangkan dan tidak menimbulkan kecemasan pada anak.

@@ -1,39 +1,18 @@
-// Credentials ---
-
-const namaSekolah = 'TK Negeri Pembina Bangsa'
-const namaPenyusun = 'Zert S.Pd.'
-const nip = '198001012010121001'
-const temaSubtema = 'Identitas / Diriku (Aku Istimewa; Ayo Kita Berkenalan)'
-const fase = 'Fondasi'
-const kelas = 'Kelompok A (2-3 tahub)'
-const semester = 1
-const mingguKe = 1
-const bulan = 'Januari'
-const alokasiWaktu = '5 x 3 JP'
-const modelPembelajaran = 'Kolabortif, Eksperimental'
-const jumlahAnak = 10
-
-// ---
-
 // Identifikasi ---
-
 const identifikasiPesertaDidik = 'Anak kelompok A (2-3 tahun) memiliki kemampuan bahasa yang sedang berkembang dengan kosakata terbatas namun mulai dapat mengungkapkan kebutuhan dasar. Mereka sangat membutuhkan pengulangan dan bimbingan dalam pengenalan identitas diri, serta masih dalam tahap mengembangkan kepercayaan terhadap lingkungan sekitar. Anak-anak pada usia ini belajar melalui eksplorasi sensori dan memerlukan dukungan emosional yang konsisten.'
 const identifikasiMateriPembelajaran = 'Materi pengenalan identitas diri mencakup pengetahuan esensial tentang nama dan bagian tubuh, pengetahuan aplikatif dalam berinteraksi sosial sederhana, serta pengetahuan nilai dan karakter melalui rasa percaya diri dan kemandirian. Materi ini sangat relevan dengan kehidupan sehari-hari anak dan memiliki tingkat kesulitan yang sesuai dengan tahap perkembangan mereka, mengintegrasikan nilai keimanan, kejujuran, dan kemandirian.'
 const identifikasiDimensiProfilLulusan = {
-  dpl1: true, // Keimana dan Ketawaan terhadap Tuhan YME
+  dpl1: true, // Keimanan dan Ketakwaan terhadap Tuhan YME
   dpl2: true, // Kewargaan
   dpl3: true, // Penalaran kritis
   dpl4: false, // Kreativitas
   dpl5: true, // Kolaborasi
-  dpl6: true, // kemandirian
+  dpl6: true, // Kemandirian
   dpl7: false, // Kesehatan
   dlp8: true // Komunikasi
 }
-
 // ---
-
 // Desain Pembelajaran ---
-
 const desainPembelajaranCapaianPembelajaran = [
   '<b>Elemen Jati Diri:</b> Sub Elemen Anak memahami identitas dirinya yang terbentuk oleh ragam minat, kebutuhan, karakteristik gender, agama, dan sosial budaya.',
   '<b>Elemen Jati Diri:</b> Sub Elemen Anak menggunakan fungsi gerak (motorik kasar, halus, dan taktil) untuk mengeksplorasi dan memanipulasi berbagai objek dan lingkungan sekitar sebagai bentuk pengembangan diri.'
@@ -58,11 +37,8 @@ const desainPembelajaranPemanfaatanDigital = [
   'Asesmen: Portofolio digital karya anak, rekaman video presentasi sederhana anak',
   'Dukungan media ajar digital tersedia melalui https://drive.paud.id/download/ayo-berkenalan/'
 ]
-
 // ---
-
 // Rencana Pelaksanaan Pembelajaran ---
-
 const rencanaPelaksanaanAwal = [
   ['Pembuka dari proses pembelajaran yang bertujuan untuk mempersiapkan peserta didik sebelum memasuki inti pembelajaran.'],
   ['Kegiatan dalam tahap ini meliputi orientasi yang bermakna, apersepsi yang kontekstual, dan motivasi yang menggembirakan:', [
@@ -130,7 +106,7 @@ const rencanaPelaksanaanIntiTable = [
         '<li>Buat bentuk lingkaran, lalu potong dan tempelkan bentuk tabung diatas bentuk lingkaran jadi satu (seperti tempat pensil).</li>' +
         '<li>Terakhir tempelkan gambar foto yang sudah dibuat pada tempat pensil.</li>' +
         '</ol>\n\n' +
-        'Kegiatan 2: Lompat Nama (Kesehatan, Komunikasi). Alat dan Bahan: Kertas warna-warni yang ditempel di lantai membentuk lingkaran Cara Bermain: Guru meletakkan kertas warna-warni di lantai membentuk lingkaran. Anak diminta melompat dari satu kertas ke kertas lain sambil menyebutkan namanya setiap kali mendarat. Kegiatan ini membantu anak mengenal namanya sambil melatih keseimbangan dan koordinasi tubuhnya.\n\n' +
+        'Kegiatan 2: Lompat Nama (Kesehatan, Komunikasi). Alat dan Bahan: Kertas warna-warni yang ditempel di lantai membentuk lingkaran Cara Bermain: Guru meletakkan kertas warna-warni di lantai membentuk lingkaran. Anak diminta melompat dari satu kertas ke kertas lain sambil menyebutkan namanya setiap kali mendarat. Kegiatan ini membantu anak mengenal namaya sambil melatih keseimbangan dan koordinasi tubuhnya.\n\n' +
         'Kegiatan 3: Gambar Keluarga (Keimanan dan Ketakwaan). Alat dan Bahan: Kertas gambar, krayon atau spidol. Cara Bermain: Minta anak-anak menggambar keluarganya. Setelah selesai, setiap anak bisa memperlihatkan dan memperkenalkan siapa saja anggota keluarganya.'
       ],
       [
@@ -168,11 +144,8 @@ const rencanaPelaksanaanPenutup = 'Tahap akhir dalam proses pembelajaran yang be
     '<li>Memberikan pelukan atau high-five sebagai bentuk penghargaan</li>' +
     '<li>Doa penutup dan persiapan pulang dengan riang gembira</li>' +
     '</ol>'
-
 // ---
-
 // Asesmen Pembelajaran ---
-
 const asesmenPembelajaranAwal = 'Asesmen awal dilakukan untuk mengidentifikasi kemampuan dasar anak dalam mengenal identitas diri dan kesiapan mengikuti pembelajaran. Observasi difokuskan pada respon verbal, non-verbal, dan interaksi sosial anak.' +
     '<ol>' +
     '<li>Tanyakan langsung "Siapa namamu?" dan catat apakah anak menjawab, diam, atau menunjuk diri</li>' +
@@ -197,38 +170,4 @@ const asesmenPembelajaranAkhir = 'Asesmen akhir mengevaluasi pencapaian tujuan p
     '<li>Dokumentasikan ekspresi kegembiraan dan antusiasme anak melalui foto atau video singkat</li>' +
     '<li>Berikan reward berupa stiker atau pujian khusus dan catat reaksi positif anak terhadap penghargaan</li>' +
     '</ol>'
-
 // ---
-
-export {
-  namaSekolah,
-  namaPenyusun,
-  nip,
-  temaSubtema,
-  fase,
-  kelas,
-  semester,
-  mingguKe,
-  bulan,
-  alokasiWaktu,
-  modelPembelajaran,
-  jumlahAnak,
-  identifikasiPesertaDidik,
-  identifikasiMateriPembelajaran,
-  identifikasiDimensiProfilLulusan,
-  desainPembelajaranCapaianPembelajaran,
-  desainPembelajaranLintasDisiplinIlmu,
-  desainPembelajaranTujuanPembelajaran,
-  desainPembelajaranTopikPembelajaran,
-  desainPembelajaranPraktikPedagogis,
-  desainPembelajaranKemitraanPembelajaran,
-  desainPembelajaranLingkunganPembelajaran,
-  desainPembelajaranPemanfaatanDigital,
-  rencanaPelaksanaanAwal,
-  rencanaPelaksanaanInti,
-  rencanaPelaksanaanIntiTable,
-  rencanaPelaksanaanPenutup,
-  asesmenPembelajaranAwal,
-  asesmenPembelajaranProses,
-  asesmenPembelajaranAkhir
-}

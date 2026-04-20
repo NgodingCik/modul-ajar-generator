@@ -7,39 +7,28 @@ import {
   parseContentAsParagraphs
 } from './docx-api.js'
 import { properties } from './docx-config.js'
-import { coverPage } from './docx-cover-page.js'
-import { convertNumToRoman } from './utils.js'
-import {
-  namaSekolah,
-  namaPenyusun,
-  temaSubtema,
-  fase,
-  kelas,
-  semester,
-  mingguKe,
-  bulan,
-  alokasiWaktu,
-  modelPembelajaran,
-  jumlahAnak,
-  identifikasiPesertaDidik,
-  identifikasiMateriPembelajaran,
-  identifikasiDimensiProfilLulusan,
-  desainPembelajaranCapaianPembelajaran,
-  desainPembelajaranLintasDisiplinIlmu,
-  desainPembelajaranTujuanPembelajaran,
-  desainPembelajaranTopikPembelajaran,
-  desainPembelajaranPraktikPedagogis,
-  desainPembelajaranKemitraanPembelajaran,
-  desainPembelajaranLingkunganPembelajaran,
-  desainPembelajaranPemanfaatanDigital,
-  rencanaPelaksanaanAwal,
-  rencanaPelaksanaanInti,
-  rencanaPelaksanaanIntiTable,
-  rencanaPelaksanaanPenutup,
-  asesmenPembelajaranAwal,
-  asesmenPembelajaranProses,
-  asesmenPembelajaranAkhir
-} from './docx-predefined-var.js'
+import { createCoverPage } from './docx-cover-page.js'
+import { convertNumToRoman } from '../utils/utils.js'
+// import {
+//   identifikasiPesertaDidik,
+//   identifikasiMateriPembelajaran,
+//   identifikasiDimensiProfilLulusan,
+//   desainPembelajaranCapaianPembelajaran,
+//   desainPembelajaranLintasDisiplinIlmu,
+//   desainPembelajaranTujuanPembelajaran,
+//   desainPembelajaranTopikPembelajaran,
+//   desainPembelajaranPraktikPedagogis,
+//   desainPembelajaranKemitraanPembelajaran,
+//   desainPembelajaranLingkunganPembelajaran,
+//   desainPembelajaranPemanfaatanDigital,
+//   rencanaPelaksanaanAwal,
+//   rencanaPelaksanaanInti,
+//   rencanaPelaksanaanIntiTable,
+//   rencanaPelaksanaanPenutup,
+//   asesmenPembelajaranAwal,
+//   asesmenPembelajaranProses,
+//   asesmenPembelajaranAkhir
+// } from './docx-example-predefined-var.js'
 
 const toStringSafe = (value) => {
   if (value === null || value === undefined) return ''
@@ -133,32 +122,46 @@ const appendRencanaIntiTables = (sectionWrapper, tableGroups) => {
 
 const dimensiProfilLulusan = {
   row1: [
-    createDplCell('dpl1', 'DPL1', 'Keimanan dan Ketakwaan terhadap Tuhan YME', identifikasiDimensiProfilLulusan),
-    createDplCell('dpl3', 'DPL3', 'Penalaran Kritis', identifikasiDimensiProfilLulusan),
-    createDplCell('dpl5', 'DPL5', 'Kolaborasi', identifikasiDimensiProfilLulusan),
-    createDplCell('dpl7', 'DPL7', 'Kesehatan', identifikasiDimensiProfilLulusan)
+    createDplCell('dpl1', 'DPL1', 'Keimanan dan Ketakwaan terhadap Tuhan YME', identifikasiDimensiProfilLulusan), // eslint-disable-line no-undef
+    createDplCell('dpl3', 'DPL3', 'Penalaran Kritis', identifikasiDimensiProfilLulusan), // eslint-disable-line no-undef
+    createDplCell('dpl5', 'DPL5', 'Kolaborasi', identifikasiDimensiProfilLulusan), // eslint-disable-line no-undef
+    createDplCell('dpl7', 'DPL7', 'Kesehatan', identifikasiDimensiProfilLulusan) // eslint-disable-line no-undef
   ],
   row2: [
-    createDplCell('dpl2', 'DPL2', 'Kewargaan', identifikasiDimensiProfilLulusan),
-    createDplCell('dpl4', 'DPL4', 'Kreativitas', identifikasiDimensiProfilLulusan),
-    createDplCell('dpl6', 'DPL6', 'Kemandirian', identifikasiDimensiProfilLulusan),
-    createDplCell(['dpl8', 'dlp8'], 'DPL8', 'Komunikasi', identifikasiDimensiProfilLulusan)
+    createDplCell('dpl2', 'DPL2', 'Kewargaan', identifikasiDimensiProfilLulusan), // eslint-disable-line no-undef
+    createDplCell('dpl4', 'DPL4', 'Kreativitas', identifikasiDimensiProfilLulusan), // eslint-disable-line no-undef
+    createDplCell('dpl6', 'DPL6', 'Kemandirian', identifikasiDimensiProfilLulusan), // eslint-disable-line no-undef
+    createDplCell(['dpl8', 'dlp8'], 'DPL8', 'Komunikasi', identifikasiDimensiProfilLulusan) // eslint-disable-line no-undef
   ]
 }
 
-const capaianPembelajaranContent = toOrderedListHtml(desainPembelajaranCapaianPembelajaran)
-const tujuanPembelajaranContent = toOrderedListHtml(desainPembelajaranTujuanPembelajaran)
-const kemitraanPembelajaranContent = toOrderedListHtml(desainPembelajaranKemitraanPembelajaran)
-const lingkunganPembelajaranContent = toOrderedListHtml(desainPembelajaranLingkunganPembelajaran)
-const pemanfaatanDigitalContent = toOrderedListHtml(desainPembelajaranPemanfaatanDigital)
-const rencanaPelaksanaanAwalContent = toRencanaAwalHtml(rencanaPelaksanaanAwal)
+const capaianPembelajaranContent = toOrderedListHtml(desainPembelajaranCapaianPembelajaran) // eslint-disable-line no-undef
+const tujuanPembelajaranContent = toOrderedListHtml(desainPembelajaranTujuanPembelajaran) // eslint-disable-line no-undef
+const kemitraanPembelajaranContent = toOrderedListHtml(desainPembelajaranKemitraanPembelajaran) // eslint-disable-line no-undef
+const lingkunganPembelajaranContent = toOrderedListHtml(desainPembelajaranLingkunganPembelajaran) // eslint-disable-line no-undef
+const pemanfaatanDigitalContent = toOrderedListHtml(desainPembelajaranPemanfaatanDigital) // eslint-disable-line no-undef
+const rencanaPelaksanaanAwalContent = toRencanaAwalHtml(rencanaPelaksanaanAwal) // eslint-disable-line no-undef
 
-;(async () => {
+async function main (credentialVars = {}) { // eslint-disable-line no-unused-vars
+  const {
+    namaSekolah = '',
+    namaPenyusun = '',
+    temaSubtema = '',
+    fase = '',
+    kelas = '',
+    semester = 0,
+    mingguKe = '',
+    bulan = '',
+    alokasiWaktu = '',
+    modelPembelajaran = '',
+    jumlahAnak = ''
+  } = credentialVars
+
   const buffer = await new DocWrapper()
     .withDefaultStyles()
 
     // ── Section 1: Cover page ─────────────────────────────────────────────────
-    .addSection(coverPage)
+    .addSection(createCoverPage(credentialVars))
 
     // ── Section 2: Document content ───────────────────────────────────────────
     .addSection(
@@ -175,15 +178,15 @@ const rencanaPelaksanaanAwalContent = toRencanaAwalHtml(rencanaPelaksanaanAwal)
         .table(
           new TableWrapper()
             .setFitContent()
-            .addLabelValueRow('<b>Penulis</b>', namaPenyusun || '', '<b>Semester</b>', convertNumToRoman(semester || 0))
-            .addLabelValueRow('<b>Asal Sekolah</b>', namaSekolah || '', '<b>Minggu Ke-</b>', toStringSafe(mingguKe))
-            .addLabelValueRow('<b>Fase</b>', fase || '', '<b>Bulan</b>', bulan || '')
-            .addLabelValueRow('<b>Jenjang/Kelas</b>', kelas || '', '<b>Alokasi Waktu</b>', alokasiWaktu || '')
-            .addLabelValueRow('<b>Model Pembelajaran</b>', modelPembelajaran || '', '<b>Jumlah Anak</b>', toStringSafe(jumlahAnak))
+            .addLabelValueRow('<b>Penulis</b>', namaPenyusun, '<b>Semester</b>', convertNumToRoman(semester))
+            .addLabelValueRow('<b>Asal Sekolah</b>', namaSekolah, '<b>Minggu Ke-</b>', toStringSafe(mingguKe))
+            .addLabelValueRow('<b>Fase</b>', fase, '<b>Bulan</b>', bulan)
+            .addLabelValueRow('<b>Jenjang/Kelas</b>', kelas, '<b>Alokasi Waktu</b>', alokasiWaktu)
+            .addLabelValueRow('<b>Model Pembelajaran</b>', modelPembelajaran, '<b>Jumlah Anak</b>', toStringSafe(jumlahAnak))
             .addRowObject(
               new Row()
                 .addTextCell('<b>Topik / Sub Topik</b>', { bold: true })
-                .addTextCell(temaSubtema || '', { columnSpan: 3 })
+                .addTextCell(temaSubtema, { columnSpan: 3 })
             )
         )
         .sp(2)
@@ -201,7 +204,7 @@ const rencanaPelaksanaanAwalContent = toRencanaAwalHtml(rencanaPelaksanaanAwal)
                   width: { size: 1800, type: WidthType.DXA }
                 })
                 .addTextCell(
-                  identifikasiPesertaDidik || '',
+                  identifikasiPesertaDidik || '', // eslint-disable-line no-undef
                   { columnSpan: 4 }
                 )
             )
@@ -212,7 +215,7 @@ const rencanaPelaksanaanAwalContent = toRencanaAwalHtml(rencanaPelaksanaanAwal)
                   width: { size: 1800, type: WidthType.DXA }
                 })
                 .addTextCell(
-                  identifikasiMateriPembelajaran || '',
+                  identifikasiMateriPembelajaran || '', // eslint-disable-line no-undef
                   { columnSpan: 4 }
                 )
             )
@@ -247,13 +250,13 @@ const rencanaPelaksanaanAwalContent = toRencanaAwalHtml(rencanaPelaksanaanAwal)
             .addLabelValuePairRow('<b>Capaian Pembelajaran</b>',
               capaianPembelajaranContent)
             .addLabelValuePairRow('<b>Lintas Disiplin Ilmu</b>',
-              desainPembelajaranLintasDisiplinIlmu || '')
+              desainPembelajaranLintasDisiplinIlmu || '') // eslint-disable-line no-undef
             .addLabelValuePairRow('<b>Tujuan Pembelajaran</b>',
               tujuanPembelajaranContent)
             .addLabelValuePairRow('<b>Topik Pembelajaran</b>',
-              desainPembelajaranTopikPembelajaran || '')
+              desainPembelajaranTopikPembelajaran || '') // eslint-disable-line no-undef
             .addLabelValuePairRow('<b>Praktik Pedagogis</b>',
-              desainPembelajaranPraktikPedagogis || '')
+              desainPembelajaranPraktikPedagogis || '') // eslint-disable-line no-undef
             .addLabelValuePairRow('<b>Kemitraan Pembelajaran</b>',
               kemitraanPembelajaranContent)
             .addLabelValuePairRow('<b>Lingkungan Pembelajaran</b>',
@@ -282,9 +285,9 @@ const rencanaPelaksanaanAwalContent = toRencanaAwalHtml(rencanaPelaksanaanAwal)
               appendRencanaIntiTables(
                 new SectionWrapper()
                   .sp()
-                  .para(rencanaPelaksanaanInti || '')
+                  .para(rencanaPelaksanaanInti || '') // eslint-disable-line no-undef
                   .sp(),
-                rencanaPelaksanaanIntiTable
+                rencanaPelaksanaanIntiTable || [] // eslint-disable-line no-undef
               ),
               { numbering: { level: 1 } }
             )
@@ -294,7 +297,7 @@ const rencanaPelaksanaanAwalContent = toRencanaAwalHtml(rencanaPelaksanaanAwal)
             .section('PENUTUP (BEKESADARAN, MENGGEMBIRAKAN)', 2,
               new SectionWrapper()
                 .sp()
-                .add(parseContentAsParagraphs(rencanaPelaksanaanPenutup || '')),
+                .add(parseContentAsParagraphs(rencanaPelaksanaanPenutup || '')), // eslint-disable-line no-undef
               { numbering: { level: 1 } }
             )
             .sp()
@@ -304,13 +307,13 @@ const rencanaPelaksanaanAwalContent = toRencanaAwalHtml(rencanaPelaksanaanAwal)
               new SectionWrapper()
                 .sp()
                 .para('Asesmen pada Awal Pembelajaran:')
-                .add(parseContentAsParagraphs(asesmenPembelajaranAwal || ''))
+                .add(parseContentAsParagraphs(asesmenPembelajaranAwal || '')) // eslint-disable-line no-undef
                 .sp()
                 .para('Asesmen pada Proses Pembelajaran:')
-                .add(parseContentAsParagraphs(asesmenPembelajaranProses || ''))
+                .add(parseContentAsParagraphs(asesmenPembelajaranProses || '')) // eslint-disable-line no-undef
                 .sp()
                 .para('Asesmen pada Akhir Pembelajaran:')
-                .add(parseContentAsParagraphs(asesmenPembelajaranAkhir || '')),
+                .add(parseContentAsParagraphs(asesmenPembelajaranAkhir || '')), // eslint-disable-line no-undef
               { numbering: { level: 1 } }
             ),
 
@@ -319,6 +322,6 @@ const rencanaPelaksanaanAwalContent = toRencanaAwalHtml(rencanaPelaksanaanAwal)
     )
     .save('Modul_Ajar_Keluarga_TK_Bintang_Kecil.docx')
 
-  shared.buffer = buffer // eslint-disable-line no-undef
   console.log('Dokumen berhasil dibuat!')
-})()
+  return buffer
+}

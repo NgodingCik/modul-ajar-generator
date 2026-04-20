@@ -3,6 +3,8 @@ import { SectionWrapper, TableWrapper } from './docx-api.js'
 import { properties } from './docx-config.js'
 import fs from 'fs'
 import path from 'path'
+import { namaSekolah, namaPenyusun, nip, temaSubtema, fase, kelas, semester } from './docx-predefined-var.js'
+import { convertNumToRoman } from '../utils/utils.js'
 
 const __dirname = import.meta.dirname
 
@@ -36,11 +38,11 @@ const coverPage = new SectionWrapper(properties)
   .table(
     new TableWrapper()
       .addTitleRow('MODUL AJAR\nKURIKULUM MERDEKA (Deep Learning)')
-      .addFormFieldRow('Nama Sekolah')
-      .addFormFieldRow('Nama Penyusun')
-      .addFormFieldRow('NIP')
-      .addFormFieldRow('Tema / Subtema')
-      .addFormFieldRow('Fase / Kelas / Semester')
+      .addLabelValuePairRow('Nama Sekolah', namaSekolah || '')
+      .addLabelValuePairRow('Nama Penyusun', namaPenyusun || '')
+      .addLabelValuePairRow('NIP', nip || '')
+      .addLabelValuePairRow('Tema / Subtema', temaSubtema || '')
+      .addLabelValuePairRow('Fase / Kelas / Semester', `${fase || ''} / ${kelas || ''} / ${convertNumToRoman(semester || 0)}`)
   )
 
   .build()

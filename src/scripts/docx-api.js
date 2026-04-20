@@ -165,6 +165,16 @@ const getNextHtmlOrderedListInstance = () => {
   return nextInstance
 }
 
+const createTextRuns = (text, formatting = {}) => {
+  const lines = String(text ?? '').split('\n')
+
+  return lines.flatMap((line, index) => {
+    const run = new TextRun({ ...formatting, text: line })
+    if (index >= lines.length - 1) return [run]
+    return [run, new TextRun({ break: 1 })]
+  })
+}
+
 /**
  * Parse inline HTML tags (<b>, <i>, <u>, <s>) into TextRun[].
  * Supports nesting (e.g. <b><i>text</i></b>).
@@ -174,7 +184,7 @@ const getNextHtmlOrderedListInstance = () => {
  */
 const parseHtmlTags = (text) => {
   if (!text || typeof text !== 'string') return [new TextRun({ text: '' })]
-  if (!text.includes('<')) return [new TextRun({ text })]
+  if (!text.includes('<')) return createTextRuns(text)
 
   const parseToObjects = (str) => {
     if (!str || !str.includes('<')) {
@@ -216,13 +226,13 @@ const parseHtmlTags = (text) => {
     return result
   }
 
-  return parseToObjects(text).map((obj) => {
-    const props = { text: obj.text }
+  return parseToObjects(text).flatMap((obj) => {
+    const props = {}
     if (obj.bold) props.bold = true
     if (obj.italic) props.italics = true
     if (obj.underline) props.underline = {}
     if (obj.strike) props.strike = true
-    return new TextRun(props)
+    return createTextRuns(obj.text, props)
   })
 }
 
@@ -391,6 +401,26 @@ const parseMarkdownLists = (lines) => {
 }
 
 /**
+ * Create a paragraph that supports explicit line breaks from "\n".
+ *
+ * @param {string} text
+ * @returns {Paragraph}
+ */
+const createParagraphWithLineBreaks = (text) => {
+  const lines = text.split('\n')
+  const children = lines.flatMap((line, index) => {
+    const runs = line.includes('<')
+      ? parseHtmlTags(line)
+      : [new TextRun({ text: line })]
+
+    if (index < lines.length - 1) runs.push(new TextRun({ break: 1 }))
+    return runs
+  })
+
+  return new Paragraph({ children })
+}
+
+/**
  * Intelligently parse any content string into Paragraph[].
  * Detects lists first; falls back to a single formatted paragraph.
  *
@@ -401,6 +431,7 @@ const parseContentAsParagraphs = (content) => {
   if (typeof content === 'string') {
     const listParagraphs = parseHtmlLists(content)
     if (listParagraphs) return listParagraphs
+    if (content.includes('\n')) return [createParagraphWithLineBreaks(content)]
     if (content.includes('<')) return [new Paragraph({ children: parseHtmlTags(content) })]
     return [new Paragraph({ text: content })]
   }

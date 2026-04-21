@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    <form action="" method="post" class="mt-5">
+    <form action="/api/generate" method="post" class="mt-5">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 w-full">
 
         <label class="group block cursor-pointer" for="namaSekolah">
@@ -155,7 +155,7 @@
               placeholder="Contoh: Keluarga / Keluargaku Sayang" required>
 
             <div class="flex items-center pr-3">
-              <%- include('components/ai.ejs', {prompt: "Sempurnakan tema/subtema", type: "temaSubtemaAi"}) %>
+              <%- include('components/ai.ejs', { type: "ai.temaSubtema" }) %>
             </div>
           </div>
         </div>
@@ -268,6 +268,46 @@
         </div>
 
         <div class="group block md:col-span-2">
+          <label for="materiPembelajaran" class="cursor-pointer">
+            <p class="font-semibold text-blue-800">Materi Pembelajaran</p>
+            <small class="block text-gray-500">Deskripsikan dengan singkat materi yang akan diajarkan</small>
+          </label>
+
+          <div class="relative mt-2 rounded-md border-2 border-blue-800/50 transition-all focus-within:border-blue-800 focus-within:ring-2 focus-within:ring-blue-800/50">
+            <textarea
+              name="materiPembelajaran"
+              id="materiPembelajaran"
+              rows="3"
+              class="w-full resize-y border-none bg-transparent p-2.5 pr-12 text-gray-700 placeholder:text-gray-400 focus:ring-0 focus:outline-none"
+              placeholder="Contoh: Anak mampu menyebutkan anggota keluarganya..." required></textarea>
+
+            <div class="absolute right-3 top-3 flex items-center">
+              <%- include('components/ai.ejs', {type: "ai.materiPembelajaran"}) %>
+            </div>
+          </div>
+        </div>
+
+        <div class="group block md:col-span-2">
+          <label for="identifikasiPesertaDidik" class="cursor-pointer">
+            <p class="font-semibold text-blue-800">Identifikasi Peserta Didik</p>
+            <small class="block text-gray-500">Deskripsikan karakteristik dan perkembangan peserta didik</small>
+          </label>
+
+          <div class="relative mt-2 rounded-md border-2 border-blue-800/50 transition-all focus-within:border-blue-800 focus-within:ring-2 focus-within:ring-blue-800/50">
+            <textarea
+              name="identifikasiPesertaDidik"
+              id="identifikasiPesertaDidik"
+              rows="3"
+              class="w-full resize-y border-none bg-transparent p-2.5 pr-12 text-gray-700 placeholder:text-gray-400 focus:ring-0 focus:outline-none"
+              placeholder="Contoh: Anak mampu menyebutkan anggota keluarganya..." required></textarea>
+
+            <div class="absolute right-3 top-3 flex items-center">
+              <%- include('components/ai.ejs', {type: "ai.identifikasiPesertaDidik"}) %>
+            </div>
+          </div>
+        </div>
+
+        <div class="group block md:col-span-2">
           <label for="tujuanPembelajaran" class="cursor-pointer">
             <p class="font-semibold text-blue-800">Tujuan Pembelajaran</p>
             <small class="block text-gray-500">Tulis singkat 1-2 kalimat target pembelajaran</small>
@@ -282,7 +322,7 @@
               placeholder="Contoh: Anak mampu menyebutkan anggota keluarganya..." required></textarea>
 
             <div class="absolute right-3 top-3 flex items-center">
-              <%- include('components/ai.ejs', {prompt: "Sempurnakan tujuan pembelajaran", type: "tujuanPembelajaranAi"}) %>
+              <%- include('components/ai.ejs', {type: "ai.tujuanPembelajaran"}) %>
             </div>
           </div>
         </div>
@@ -302,7 +342,7 @@
               placeholder="Contoh: Aku dan Lingkungan Sekitarku" required>
 
             <div class="flex items-center pr-3">
-              <%- include('components/ai.ejs', {prompt: "Sempurnakan topik pembelajaran", type: "topikPembelajaranAi"}) %>
+              <%- include('components/ai.ejs', {type: "ai.topikPembelajaran"}) %>
             </div>
           </div>
         </div>
@@ -322,6 +362,12 @@
         </template>
 
       </div>
+
+      <button type="submit">
+        <span class="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-700 focus:ring-offset-2">
+          <span>Generate Dokumen</span>
+        </span>
+      </button>
     </form>
   </div>
 </main>
@@ -329,3 +375,4 @@
 <%- include('js/home.ejs') %>
 <%- include('js/dynamic-save-input.ejs') %>
 <%- include('js/home-template') %>
+<%- include('js/home-ai.ejs') %>

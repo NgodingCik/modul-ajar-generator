@@ -12,27 +12,30 @@
     "cli:docx": "node src/cli/read-docx.js",
     "poc:vm-executor": "node poc/vm-executor.js",
     "poc:vm-docx": "node poc/vm-docx.js",
-    "poc:vm-generate-docx": "node poc/vm-generate-docx.js"
+    "poc:vm-generate-docx": "node poc/vm-generate-docx.js",
+    "poc:ai-request": "node poc/ai-request.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "@mohtasham/md-to-docx": "^2.9.0",
     "@tailwindcss/typography": "^0.5.19",
     "consola": "^3.4.2",
     "docx": "^9.6.1",
     "dotenv": "^17.3.1",
     "ejs": "^5.0.1",
     "express": "^5.2.1",
-    "marked": "^17.0.5",
     "openai": "^6.33.0",
-    "string-template": "^1.0.0",
     "tailwindcss": "^4.2.2"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.2.2",
     "standard": "^17.1.2"
+  },
+  "standard": {
+    "ignore": [
+      "src/scripts/docx-example-predefined-var.js"
+    ]
   }
 }

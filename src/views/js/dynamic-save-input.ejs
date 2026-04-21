@@ -1,0 +1,119 @@
+<script>
+  /**
+   * Dynamic Save to LocalStorage System (Single JSON Key)
+   * - Auto restore values from localStorage JSON on page load
+   * - Auto save all input changes every 5 seconds as single JSON object
+   * - Supports: text, number, textarea, select, checkbox, radio
+   */
+  const initDynamicSaveInput = () => {
+    const STORAGE_KEY = 'formData';
+
+    // Get all form inputs with IDs
+    const getFormInputs = () => {
+      return document.querySelectorAll('input[id], textarea[id], select[id]');
+    };
+
+    /**
+     * Restore all values from localStorage JSON
+     */
+    const restoreValuesFromStorage = () => {
+      try {
+        const savedData = localStorage.getItem(STORAGE_KEY);
+        if (!savedData) return;
+
+        const formData = JSON.parse(savedData);
+        const inputs = getFormInputs();
+
+        inputs.forEach((input) => {
+          const key = input.id;
+          if (!key || !(key in formData)) return;
+
+          const value = formData[key];
+
+          // Handle different input types
+          if (input.type === 'checkbox' || input.type === 'radio') {
+            input.checked = value === true || value === 'true';
+            // Trigger change event to update dependent fields
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+          } else {
+            input.value = value !== null ? value : '';
+            // Trigger input event for text fields
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+        });
+      } catch (error) {
+        console.warn('Failed to restore form data from localStorage:', error.message);
+      }
+    };
+
+    /**
+     * Save all input values to localStorage as single JSON object
+     */
+    const saveValuesToStorage = () => {
+      try {
+        const inputs = getFormInputs();
+        const formData = {};
+
+        inputs.forEach((input) => {
+          const key = input.id;
+          if (!key) return;
+
+          if (input.type === 'checkbox' || input.type === 'radio') {
+            formData[key] = input.checked;
+          } else {
+            formData[key] = input.value || '';
+          }
+        });
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+      } catch (error) {
+        console.warn(`Failed to save form data to localStorage:`, error.message);
+      }
+    };
+
+    /**
+     * Clear all saved form data from localStorage
+     */
+    const clearStorage = () => {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (error) {
+        console.warn('Failed to clear localStorage:', error.message);
+      }
+    };
+
+    // Restore values on initialization
+    restoreValuesFromStorage();
+
+    // Auto-save every 5 seconds (5000 ms)
+    const saveInterval = setInterval(saveValuesToStorage, 5000);
+
+    // Expose methods globally for debugging/manual control
+    window.dynamicSaveControl = {
+      save: saveValuesToStorage,
+      restore: restoreValuesFromStorage,
+      clear: clearStorage,
+      getStorageKey: () => STORAGE_KEY,
+      getStorageData: () => {
+        try {
+          return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        } catch (error) {
+          return {};
+        }
+      },
+      stopAutoSave: () => clearInterval(saveInterval),
+      startAutoSave: () => {
+        window.dynamicSaveControl.stopAutoSave();
+        const newInterval = setInterval(saveValuesToStorage, 5000);
+        window.dynamicSaveControl.stopAutoSave = () => clearInterval(newInterval);
+      },
+    };
+  };
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDynamicSaveInput);
+  } else {
+    initDynamicSaveInput();
+  }
+</script>

@@ -1,569 +1,177 @@
 <script>
-  const btnGenerate = document.getElementById("btn_generate");
-  const btnDownload = document.getElementById("btn_download");
-  const previewContent = document.getElementById("preview_content");
-  const form = document.getElementById("form-rpp");
-  const previewContainer = document.getElementById("preview_container");
-  const resizeDivider = document.getElementById("resize_divider");
+  const alokasiWaktu1 = document.getElementById('alokasiWaktu1');
+  const alokasiWaktu2 = document.getElementById('alokasiWaktu2');
+  const alokasiWaktu = document.getElementById('alokasiWaktu');
+  const modelPembelajaran = document.getElementById('modelPembelajaran');
+  const modelPembelajaranOptions = document.querySelectorAll('.model-pembelajaran-option');
+  const elemenCp = document.getElementById('elemenCp');
+  const elemenCpOptions = document.querySelectorAll('.elemen-cp-option');
+  const dimensiProfilLulusan = document.getElementById('dimensiProfilLulusan');
+  const dplOptions = document.querySelectorAll('.dpl-option');
+  const kegiatanDynamicContainer = document.getElementById('kegiatanDynamicContainer');
+  const kegiatanAiButtonTemplate = document.getElementById('kegiatanAiButtonTemplate');
 
-  let currentMarkdown = null;
-  let rppObject = null;
-  let isResizing = false;
-  let previewHeight = 384;
+  const savedKegiatanValues = {};
 
-  const BTN_CLASSES = {
-    active: "flex-1 py-2 px-4 rounded font-semibold transition-colors bg-blue-500 text-white border border-blue-500 hover:bg-blue-600 focus:outline-none",
-    inactive: "flex-1 py-2 px-4 rounded font-semibold transition-colors bg-gray-700 text-gray-300 border border-gray-600 hover:bg-gray-600 focus:outline-none"
+  const createAiButton = (dayIndex, jpIndex) => {
+    const fallbackButton = document.createElement('button');
+    fallbackButton.type = 'button';
+    fallbackButton.className = 'bg-transparent border-0 p-0 m-0 cursor-pointer';
+    fallbackButton.title = `AI: Sempurnakan kegiatan hari ${dayIndex} JP ${jpIndex}`;
+    fallbackButton.id = `kegiatanHari${dayIndex}Jp${jpIndex}Ai`;
+
+    if (!kegiatanAiButtonTemplate) {
+      fallbackButton.textContent = 'AI';
+      return fallbackButton;
+    }
+
+    const aiButton = kegiatanAiButtonTemplate.content.firstElementChild.cloneNode(true);
+    aiButton.id = `ai.kegiatanHari${dayIndex}Jp${jpIndex}`;
+    aiButton.title = `AI: Sempurnakan kegiatan hari ${dayIndex} JP ${jpIndex}`;
+
+    const aiLabel = aiButton.querySelector('.sr-only');
+    if (aiLabel) {
+      aiLabel.textContent = `AI: Sempurnakan kegiatan hari ${dayIndex} JP ${jpIndex}`;
+    }
+
+    return aiButton;
   };
 
-  const DEFAULT_MODELS = [
-    { label: "Project-Based Learning (PjBL)", value: "Project-Based Learning (PjBL)" },
-    { label: "Problem-Based Learning (PBL)", value: "Problem-Based Learning (PBL)" },
-    { label: "Inquiry & Discovery Learning", value: "Inquiry & Discovery Learning" },
-    { label: "Pembelajaran Berdiferensiasi", value: "Pembelajaran Berdiferensiasi" },
-    { label: "Flipped Classroom", value: "Flipped Classroom" },
-    { label: "Game-Based Learning & Gamification", value: "Game-Based Learning & Gamification" },
-    { label: "Cooperative Learning (Jigsaw, TPS)", value: "Cooperative Learning (Jigsaw, TPS)" }
-  ];
+  const createKegiatanInput = (dayIndex, jpIndex, existingValue = '') => {
+    const inputWrapper = document.createElement('div');
+    inputWrapper.className = 'relative flex items-center rounded-md border-2 border-violet-800/30 transition-all focus-within:border-violet-800 focus-within:ring-2 focus-within:ring-violet-800/40';
 
-  const DEFAULT_PHASES = [
-    { label: "Fase Fondasi (PAUD)", value: "Fondasi" },
-    { label: "Fase A (Kelas I-II SD/MI)", value: "A" },
-    { label: "Fase B (Kelas III-IV SD/MI)", value: "B" },
-    { label: "Fase C (Kelas V-VI SD/MI)", value: "C" },
-    { label: "Fase D (Kelas VII-IX SMP/MTs)", value: "D" },
-    { label: "Fase E (Kelas X SMA/MA)", value: "E" },
-    { label: "Fase F (Kelas XI-XII SMA/MA)", value: "F" }
-  ];
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.name = `kegiatanHari${dayIndex}Jp${jpIndex}`;
+    input.id = `kegiatanHari${dayIndex}Jp${jpIndex}`;
+    input.value = existingValue;
+    input.className = 'w-full border-none bg-transparent p-2.5 text-gray-700 placeholder:text-gray-400 focus:ring-0 focus:outline-none';
+    input.placeholder = `Kegiatan hari ${dayIndex} - JP ${jpIndex}`;
 
-  function getCustomModels() {
-    const stored = localStorage.getItem("customModels");
-    return stored ? JSON.parse(stored) : [];
-  }
-
-  function saveCustomModelsToStorage(models) {
-    localStorage.setItem("customModels", JSON.stringify(models));
-  }
-
-  function loadCustomModelsToDropdown() {
-    const select = document.getElementById("model_pembelajaran");
-    const customModels = getCustomModels();
-
-    customModels.forEach(model => {
-      const optionExists = Array.from(select.options).some(opt => opt.value === model);
-      if (!optionExists) {
-        const option = document.createElement("option");
-        option.value = model;
-        option.textContent = model;
-        select.insertBefore(option, select.querySelector('option[value="__custom__"]'));
-      }
-    });
-  }
-
-  function getCustomPhases() {
-    const stored = localStorage.getItem("customPhases");
-    return stored ? JSON.parse(stored) : [];
-  }
-
-  function saveCustomPhasesToStorage(phases) {
-    localStorage.setItem("customPhases", JSON.stringify(phases));
-  }
-
-  function loadCustomPhasesToDropdown() {
-    const select = document.getElementById("fase");
-    const customPhases = getCustomPhases();
-
-    customPhases.forEach(phase => {
-      const optionExists = Array.from(select.options).some(opt => opt.value === phase);
-      if (!optionExists) {
-        const option = document.createElement("option");
-        option.value = phase;
-        option.textContent = phase;
-        select.insertBefore(option, select.querySelector('option[value="__custom__"]'));
-      }
-    });
-  }
-
-  function initResizablePreview() {
-    const isMobile = window.innerWidth < 768;
-
-    if (!isMobile) {
-      const savedWidth = localStorage.getItem("previewWidth");
-      if (savedWidth) {
-        previewContainer.style.width = savedWidth;
-      }
-
-      resizeDivider.addEventListener("mousedown", startResize);
-    }
-  }
-
-  function startResize(e) {
-    isResizing = true;
-    const startX = e.clientX;
-    const startWidth = previewContainer.offsetWidth;
-
-    function onMouseMove(e) {
-      if (!isResizing) return;
-      const diff = e.clientX - startX;
-      let newWidth = startWidth - diff;
-      const minWidth = 300;
-      const maxWidth = window.innerWidth - 400;
-
-      newWidth = Math.max(minWidth, Math.min(maxWidth, newWidth));
-      previewContainer.style.width = newWidth + "px";
-      localStorage.setItem("previewWidth", newWidth + "px");
-    }
-
-    function onMouseUp() {
-      isResizing = false;
-      document.removeEventListener("mousemove", onMouseMove);
-      document.removeEventListener("mouseup", onMouseUp);
-    }
-
-    document.addEventListener("mousemove", onMouseMove);
-    document.addEventListener("mouseup", onMouseUp);
-  }
-
-  function showPreview() {
-    previewContainer.style.display = "flex";
-    previewContainer.style.flexDirection = "column";
-    document.getElementById("preview_backdrop").classList.remove("hidden");
-    previewHeight = 384;
-    localStorage.setItem("previewVisible", "true");
-    updatePreviewToggleButton();
-  }
-
-  function hidePreview() {
-    previewContainer.style.display = "none";
-    document.getElementById("preview_backdrop").classList.add("hidden");
-    localStorage.setItem("previewVisible", "false");
-    updatePreviewToggleButton();
-  }
-
-  function togglePreviewMobile() {
-    const isMobile = window.innerWidth < 768;
-    if (!isMobile) return;
-
-    if (previewContainer.style.display === "none") {
-      showPreview();
-    } else {
-      hidePreview();
-    }
-  }
-
-  function updatePreviewToggleButton() {
-    const toggleBtn = document.getElementById("btn_preview_toggle");
-    const toggleIcon = document.getElementById("preview_toggle_icon");
-
-    if (!toggleBtn || !toggleIcon) return;
-
-    if (previewContainer.style.display === "none") {
-      toggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />';
-      toggleBtn.title = "Show preview";
-    } else {
-      toggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />';
-      toggleBtn.title = "Hide preview";
-    }
-  }
-
-  function minimizePreview() {
-    const isMobile = window.innerWidth < 768;
-    previewHeight = 60;
-    if (isMobile) {
-      previewContainer.style.height = "60px";
-      document.getElementById("preview_backdrop").classList.add("hidden");
-    }
-    const prose = previewContainer.querySelector(".prose");
-    if (prose) prose.style.display = "none";
-
-    const minimizeBtn = document.getElementById("btn_preview_minimize");
-    minimizeBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18" /></svg>';
-    minimizeBtn.title = "Expand";
-    minimizeBtn.setAttribute("onclick", "expandPreview()");
-
-    document.getElementById("btn_download").style.display = "none";
-    localStorage.setItem("previewHeight", "60");
-  }
-
-  function expandPreview() {
-    const isMobile = window.innerWidth < 768;
-    previewHeight = 384;
-    if (isMobile) {
-      previewContainer.style.height = "80vh";
-      document.getElementById("preview_backdrop").classList.remove("hidden");
-    } else {
-      previewContainer.style.height = "";
-    }
-    const prose = previewContainer.querySelector(".prose");
-    if (prose) prose.style.display = "block";
-    if (currentMarkdown) {
-      document.getElementById("btn_download").style.display = "inline-block";
-    }
-
-    const minimizeBtn = document.getElementById("btn_preview_minimize");
-    minimizeBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5L12 20.25l-7.5-6.75M19.5 6.75L12 13.5l-7.5-6.75" /></svg>';
-    minimizeBtn.title = "Minimize";
-    minimizeBtn.setAttribute("onclick", "minimizePreview()");
-
-    localStorage.setItem("previewHeight", "384");
-  }
-
-  window.addEventListener("DOMContentLoaded", () => {
-    loadCustomModelsToDropdown();
-    loadCustomPhasesToDropdown();
-    initResizablePreview();
-
-    const savedVisible = localStorage.getItem("previewVisible");
-    const savedHeight = localStorage.getItem("previewHeight");
-
-    if (savedVisible === "false" && window.innerWidth < 768) {
-      hidePreview();
-    }
-
-    if (savedHeight === "60" && window.innerWidth < 768) {
-      minimizePreview();
-    }
-
-    updatePreviewToggleButton();
-
-    const savedData = localStorage.getItem("rppFormData");
-    if (savedData) {
-      const formData = JSON.parse(savedData);
-      for (const key in formData) {
-        const input = document.querySelector(`[name="${key}"]`);
-        if (input) input.value = formData[key];
-      }
-    }
-
-    const savedMarkdown = localStorage.getItem("rppPreviewMarkdown");
-    if (savedMarkdown) {
-      currentMarkdown = savedMarkdown;
-      previewContent.innerHTML = marked.parse(savedMarkdown);
-      btnDownload.classList.remove("hidden");
-      showPreview();
-      expandPreview();
-    }
-
-    const savedRppObject = localStorage.getItem("rppPreviewObject");
-    if (savedRppObject) {
-      rppObject = JSON.parse(savedRppObject);
-    }
-  });
-
-  window.addEventListener("resize", () => {
-    initResizablePreview();
-  });
-
-  form.addEventListener("input", () => {
-    const formData = new FormData(form);
-    const dataToSave = {};
-    formData.forEach((value, key) => {
-      dataToSave[key] = value;
-    });
-    localStorage.setItem("rppFormData", JSON.stringify(dataToSave));
-  });
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    localStorage.removeItem("rppPreviewMarkdown");
-    localStorage.removeItem("rppPreviewObject");
-    currentMarkdown = null;
-    rppObject = null;
-    previewContent.innerHTML =
-      '<p class="text-blue-400 animate-pulse">Sedang menghasilkan RPP, harap tunggu sebentar...</p>';
-    btnDownload.classList.add("hidden");
-    showPreview();
-    expandPreview();
-
-    const formData = new FormData(e.target);
-    const dataInput = {};
-    formData.forEach((value, key) => {
-      dataInput[key] = value;
+    input.addEventListener('input', (e) => {
+      savedKegiatanValues[e.target.id] = e.target.value;
     });
 
-    try {
-      btnGenerate.disabled = true;
-      btnGenerate.classList.add("animate-pulse");
-      btnGenerate.textContent = "Sedang Membuat RPP...";
-      previewContent.innerHTML =
-        '<p class="text-blue-400 animate-pulse">Sedang menghasilkan RPP menggunakan AI, harap tunggu sebentar...</p>';
+    const aiWrapper = document.createElement('div');
+    aiWrapper.className = 'flex items-center pr-3';
+    aiWrapper.appendChild(createAiButton(dayIndex, jpIndex));
 
-      const response = await fetch("<%= BASE_URL %>/api/generate-rpp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ data: dataInput }),
-      });
+    inputWrapper.appendChild(input);
+    inputWrapper.appendChild(aiWrapper);
 
-      const data = await response.json();
+    return inputWrapper;
+  };
 
-      if (data.rpp) {
-        currentMarkdown = data.rpp;
-        rppObject = data.obj;
-        previewContent.innerHTML = marked.parse(data.rpp);
-        localStorage.setItem("rppPreviewMarkdown", data.rpp);
-        localStorage.setItem("rppPreviewObject", JSON.stringify(data.obj));
-        btnDownload.classList.remove("hidden");
-      } else {
-        previewContent.innerHTML =
-          '<p class="text-red-500">Gagal menghasilkan RPP.</p>';
-      }
-    } catch (error) {
-      console.error("Error generating RPP:", error);
-      previewContent.innerHTML =
-        '<p class="text-red-500">Terjadi kesalahan pada server saat menghasilkan RPP.</p>';
-    } finally {
-      btnGenerate.disabled = false;
-      btnGenerate.classList.remove("animate-pulse");
-      btnGenerate.textContent = "Buat RPP";
-    }
-  });
+  const renderKegiatanFields = () => {
+    if (!kegiatanDynamicContainer) return;
 
-  async function downloadRPP() {
-    if (!currentMarkdown) return;
+    const existingInputs = kegiatanDynamicContainer.querySelectorAll('input[type="text"]');
+    existingInputs.forEach((input) => {
+      savedKegiatanValues[input.id] = input.value;
+    });
 
-    const btnDownloadEl = document.getElementById("btn_download");
-    const originalText = btnDownloadEl.textContent;
-    btnDownloadEl.disabled = true;
-    btnDownloadEl.textContent = "Mengunduh...";
+    const totalDays = Number.parseInt(alokasiWaktu1?.value, 10);
+    const totalJp = Number.parseInt(alokasiWaktu2?.value, 10);
 
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData);
+    kegiatanDynamicContainer.innerHTML = '';
 
-    data.GROUP_AGE = {
-      "kelompok_a": "Kelompok A (4-5 Tahun)",
-      "kelompok_b": "Kelompok B (5-6 Tahun)"
-    }[data.GROUP_AGE] || data.GROUP_AGE;
-
-    const mergedData = { ...data, ...rppObject };
-
-    try {
-      const response = await fetch("/api/download-rpp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ rppObject: mergedData, md: currentMarkdown }),
-      });
-
-      if (!response.ok) throw new Error("Failed to download RPP");
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "RPP.docx";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error downloading RPP:", error);
-      alert("Gagal mengunduh RPP. Silakan coba lagi.");
-    } finally {
-      btnDownloadEl.disabled = false;
-      btnDownloadEl.textContent = originalText;
-    }
-  }
-
-  function requestRecommendation() {
-    try {
-      const button = document.getElementById("btn_recommendation");
-      const submitButton = document.getElementById("btn_generate");
-      const inputField = document.getElementById("tujuan_pembelajaran");
-
-      if (!inputField.value) {
-        alert("Silakan isi tujuan pembelajaran terlebih dahulu!");
-        return;
-      }
-
-      button.classList.add("animate-pulse");
-      button.disabled = true;
-      inputField.disabled = true;
-      submitButton.disabled = true;
-
-      const formData = new FormData(form);
-      const data = Object.fromEntries(formData);
-
-      fetch("/api/recommendation", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: inputField.value, data }),
-      })
-        .then((response) => response.json())
-        .then((result) => {
-          if (result.recommendation) {
-            inputField.value = result.recommendation;
-          } else {
-            alert("Rekomendasi tidak tersedia. Silakan coba lagi nanti.");
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching recommendation:", error);
-          alert("Terjadi kesalahan saat mengambil rekomendasi. Silakan coba lagi.");
-        })
-        .finally(() => {
-          button.classList.remove("animate-pulse");
-          button.disabled = false;
-          inputField.disabled = false;
-          submitButton.disabled = false;
-        });
-    } catch (error) {
-      console.error("Error in requestRecommendation:", error);
-      alert("Terjadi kesalahan. Silakan coba lagi.");
-    }
-  }
-
-  function handleModelChange() {
-    const select = document.getElementById("model_pembelajaran");
-    const container = document.getElementById("custom_model_container");
-    const btn = document.getElementById("btn_add_custom_model");
-
-    if (select.value === "__custom__") {
-      showAddCustomModel();
-    } else {
-      container.classList.add("hidden");
-      btn.classList.add("hidden");
-      select.value = select.options[select.selectedIndex].value;
-    }
-  }
-
-  function showAddCustomModel() {
-    const container = document.getElementById("custom_model_container");
-    const input = document.getElementById("custom_model_input");
-    const select = document.getElementById("model_pembelajaran");
-
-    select.value = "__custom__";
-    container.classList.remove("hidden");
-    input.focus();
-  }
-
-  function saveCustomModel() {
-    const input = document.getElementById("custom_model_input");
-    const select = document.getElementById("model_pembelajaran");
-    const modelName = input.value.trim();
-
-    if (!modelName) {
-      alert("Silakan masukkan nama model pembelajaran!");
+    if (!Number.isFinite(totalDays) || totalDays <= 0 || !Number.isFinite(totalJp) || totalJp <= 0) {
+      const emptyHint = document.createElement('p');
+      emptyHint.className = 'text-sm text-gray-500';
+      emptyHint.textContent = 'Isi Hari dan JP pada Alokasi Waktu untuk membuat kolom kegiatan otomatis.';
+      kegiatanDynamicContainer.appendChild(emptyHint);
       return;
     }
 
-    const customModels = getCustomModels();
-    if (!customModels.includes(modelName)) {
-      customModels.push(modelName);
-      saveCustomModelsToStorage(customModels);
+    for (let dayIndex = 1; dayIndex <= totalDays; dayIndex += 1) {
+      const dayBlock = document.createElement('div');
+      dayBlock.className = 'rounded-md border-2 border-violet-800/20 p-3';
 
-      const option = document.createElement("option");
-      option.value = modelName;
-      option.textContent = modelName;
-      select.insertBefore(option, select.querySelector('option[value="__custom__"]'));
+      const heading = document.createElement('h3');
+      heading.className = 'font-semibold text-violet-800';
+      heading.textContent = `Hari ${dayIndex}`;
+
+      const helper = document.createElement('small');
+      helper.className = 'block text-sm text-gray-500 mt-1';
+      helper.textContent = `Isi ${totalJp} kegiatan untuk hari ke-${dayIndex}.`; 
+
+      const dayGrid = document.createElement('div');
+      dayGrid.className = 'mt-3 grid grid-cols-1 gap-2';
+
+      for (let jpIndex = 1; jpIndex <= totalJp; jpIndex += 1) {
+        const inputId = `kegiatanHari${dayIndex}Jp${jpIndex}`;
+        const existingValue = savedKegiatanValues[inputId] || '';
+        dayGrid.appendChild(createKegiatanInput(dayIndex, jpIndex, existingValue));
+      }
+
+      dayBlock.appendChild(heading);
+      dayBlock.appendChild(helper);
+      dayBlock.appendChild(dayGrid);
+      kegiatanDynamicContainer.appendChild(dayBlock);
     }
+  };
 
-    select.value = modelName;
-    cancelCustomModel();
-  }
-
-  function cancelCustomModel() {
-    const container = document.getElementById("custom_model_container");
-    const input = document.getElementById("custom_model_input");
-    const select = document.getElementById("model_pembelajaran");
-
-    container.classList.add("hidden");
-    input.value = "";
-    select.value = "";
-  }
-
-  function pilihTipeRPP(tipe) {
-    const isRpph = tipe === "rpph";
-    document.getElementById("rpp_type").value = isRpph ? "HARIAN" : "MINGGUAN";
-    document.getElementById("initial_type").value = isRpph ? "H" : "M";
-
-    const btnRpph = document.getElementById("btn_rpph");
-    const btnRppm = document.getElementById("btn_rppm");
-
-    if (isRpph) {
-      btnRpph.className = BTN_CLASSES.active;
-      btnRppm.className = BTN_CLASSES.inactive;
+  const handleAlokasiWaktuChange = () => {
+    if (alokasiWaktu1?.value && alokasiWaktu2?.value) {
+      alokasiWaktu.value = `${alokasiWaktu1.value} x ${alokasiWaktu2.value} JP`;
     } else {
-      btnRppm.className = BTN_CLASSES.active;
-      btnRpph.className = BTN_CLASSES.inactive;
-    }
-  }
-
-  function toggleAdvanceOptions() {
-    const container = document.getElementById("advance_options_container");
-    const icon = document.getElementById("icon_advance_chevron");
-    const isHidden = container.classList.contains("hidden");
-
-    if (isHidden) {
-      container.classList.remove("hidden");
-      container.classList.add("flex");
-      icon.style.transform = "rotate(-180deg)";
-    } else {
-      container.classList.add("hidden");
-      container.classList.remove("flex");
-      icon.style.transform = "rotate(0deg)";
-    }
-  }
-
-  function handlePhaseChange() {
-    const select = document.getElementById("fase");
-    const container = document.getElementById("custom_phase_container");
-    const btn = document.getElementById("btn_add_custom_phase");
-
-    if (select.value === "__custom__") {
-      showAddCustomPhase();
-    } else {
-      container.classList.add("hidden");
-      btn.classList.add("hidden");
-      select.value = select.options[select.selectedIndex].value;
-    }
-  }
-
-  function showAddCustomPhase() {
-    const container = document.getElementById("custom_phase_container");
-    const input = document.getElementById("custom_phase_input");
-    const select = document.getElementById("fase");
-
-    select.value = "__custom__";
-    container.classList.remove("hidden");
-    input.focus();
-  }
-
-  function saveCustomPhase() {
-    const input = document.getElementById("custom_phase_input");
-    const select = document.getElementById("fase");
-    const phaseName = input.value.trim();
-
-    if (!phaseName) {
-      alert("Silakan masukkan nama fase!");
-      return;
+      alokasiWaktu.value = '';
     }
 
-    const customPhases = getCustomPhases();
-    if (!customPhases.includes(phaseName)) {
-      customPhases.push(phaseName);
-      saveCustomPhasesToStorage(customPhases);
+    renderKegiatanFields();
+  };
 
-      const option = document.createElement("option");
-      option.value = phaseName;
-      option.textContent = phaseName;
-      select.insertBefore(option, select.querySelector('option[value="__custom__"]'));
-    }
+  const handleModelPembelajaranChange = () => {
+    if (!modelPembelajaran) return;
 
-    select.value = phaseName;
-    cancelCustomPhase();
-  }
+    const selectedModelPembelajaran = Array.from(modelPembelajaranOptions)
+      .filter((checkbox) => checkbox.checked)
+      .map((checkbox) => checkbox.value)
+      .filter(Boolean);
 
-  function cancelCustomPhase() {
-    const container = document.getElementById("custom_phase_container");
-    const input = document.getElementById("custom_phase_input");
-    const select = document.getElementById("fase");
+    modelPembelajaran.value = selectedModelPembelajaran.join(', ');
+  };
 
-    container.classList.add("hidden");
-    input.value = "";
-    select.value = "";
-  }
+  const handleElemenCpChange = () => {
+    if (!elemenCp) return;
+
+    const selectedElemenCp = Array.from(elemenCpOptions)
+      .filter((checkbox) => checkbox.checked)
+      .map((checkbox) => checkbox.value)
+      .filter(Boolean);
+
+    elemenCp.value = selectedElemenCp.join(', ');
+  };
+
+  const handleDplChange = () => {
+    if (!dimensiProfilLulusan) return;
+
+    const selectedDpl = Array.from(dplOptions)
+      .map((checkbox) => checkbox.value + (checkbox.checked ? ': true' : ': false'));
+
+    dimensiProfilLulusan.value = selectedDpl.join(',');
+  };
+
+  modelPembelajaranOptions.forEach((checkbox) => {
+    checkbox.addEventListener('change', handleModelPembelajaranChange);
+  });
+
+  elemenCpOptions.forEach((checkbox) => {
+    checkbox.addEventListener('change', handleElemenCpChange);
+  });
+
+  dplOptions.forEach((checkbox) => {
+    checkbox.addEventListener('change', handleDplChange);
+  });
+
+  alokasiWaktu1?.addEventListener('input', handleAlokasiWaktuChange);
+  alokasiWaktu2?.addEventListener('input', handleAlokasiWaktuChange);
+
+  window.handleAlokasiWaktuChange = handleAlokasiWaktuChange;
+
+  handleAlokasiWaktuChange();
+  handleModelPembelajaranChange();
+  handleElemenCpChange();
+  handleDplChange();
 </script>

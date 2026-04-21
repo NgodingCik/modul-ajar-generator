@@ -1,439 +1,419 @@
-<div class="w-screen h-screen p-2">
-  <div
-    class="w-full h-full p-3 flex flex-col border-2 rounded-md border-mist-700 bg-mist-800 overflow-clip"
-  >
-    <h1 class="text-2xl font-bold mb-4 text-white">
-      Selamat Datang di
-      <span class="bg-blue-500 px-2 py-1 rounded"><%= APP_NAME %></span>!
-    </h1>
+<main class="container mx-auto px-4 py-7">
+  <h1 class="font-bold text-lg md:text-2xl lg:text-3xl">Buat Modul Ajar secara cepat dan efisien<br/>dengan bantuan teknologi berbasis AI (Akal Imitasi)</h1>
+  <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia atque modi praesentium, itaque ex, fugiat similique ducimus labore expedita a ipsum culpa, eaque sint? Dicta similique at eius a natus!</p>
 
-    <div class="h-full flex flex-col md:flex-row gap-0">
-      <div class="flex-1 overflow-scroll px-2 md:p-2 w-full md:min-h-0 md:shrink-0 pb-14" style="width: 100%; max-width: 100%;" id="form_container">
-        <p class="text-base md:text-lg text-gray-300 mb-4 md:mb-6">
-          Silakan lengkapi formulir di bawah ini untuk membuat RPP.
-        </p>
+  <div class="mt-10 border-2 md:border-4 border-dashed p-5">
+    <b>Gunakan template dibawah ini untuk mempermudah proses pembuatan modul ajar:</b>
+    <div class="flex" id="templateButtonsContainer">
 
-        <form
-          id="form-rpp"
-          class="grid gap-4 md:grid-cols-2 bg-white/10 px-3 md:p-6 py-4 md:py-6 rounded-lg border border-gray-600 text-white"
-        >
-          <!-- Document Type Selection -->
-          <div class="flex flex-col gap-2 mb-2 md:col-span-2">
-            <label class="font-medium text-gray-200">Jenis Dokumen RPP</label>
-            <div class="flex gap-4">
-              <button
-                type="button"
-                id="btn_rpph"
-                onclick="pilihTipeRPP('rpph')"
-                class="flex-1 py-2 px-4 rounded font-semibold transition-colors bg-blue-500 text-white border border-blue-500 hover:bg-blue-600 focus:outline-none"
-              >
-                RPPH
-              </button>
-              <button
-                type="button"
-                id="btn_rppm"
-                onclick="pilihTipeRPP('rppm')"
-                class="flex-1 py-2 px-4 rounded font-semibold transition-colors bg-gray-700 text-gray-300 border border-gray-600 hover:bg-gray-600 focus:outline-none hover:cursor-not-allowed"
-                disabled
-              >
-                RPPM
-              </button>
-            </div>
-            <input type="hidden" id="rpp_type" name="RPP_TYPE" value="HARIAN" />
-            <input type="hidden" id="initial_type" name="INITIAL_TYPE" value="H" />
-          </div>
-
-          <!-- Satuan Pendidikan -->
-          <div class="flex flex-col gap-1">
-            <label for="nama_sekolah" class="font-medium text-gray-200"
-              >Satuan Pendidikan</label
-            >
-            <input
-              type="text"
-              id="nama_sekolah"
-              name="SCHOOL_NAME"
-              placeholder="Masukkan nama sekolah"
-              class="p-2 rounded bg-black/20 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <!-- Tema/Sub-Tema -->
-          <div class="flex flex-col gap-1">
-            <label for="tema_subtema" class="font-medium text-gray-200"
-              >Tema/Sub-Tema</label
-            >
-            <input
-              type="text"
-              id="tema_subtema"
-              name="THEME_SUBTHEME"
-              placeholder="Misal: Diriku / Tubuhku"
-              class="p-2 rounded bg-black/20 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <!-- Fase -->
-          <div class="flex flex-col gap-1">
-            <label for="fase" class="font-medium text-gray-200">Fase</label>
-            <div class="flex gap-2">
-              <select
-                id="fase"
-                name="PHASE"
-                class="flex-1 p-2 rounded bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                onchange="handlePhaseChange()"
-              >
-                <option value="">-- Pilih Fase --</option>
-                <option value="Fondasi">Fase Fondasi (PAUD)</option>
-                <option value="A">Fase A (Kelas I-II SD/MI)</option>
-                <option value="B">Fase B (Kelas III-IV SD/MI)</option>
-                <option value="C">Fase C (Kelas V-VI SD/MI)</option>
-                <option value="D">Fase D (Kelas VII-IX SMP/MTs)</option>
-                <option value="E">Fase E (Kelas X SMA/MA)</option>
-                <option value="F">Fase F (Kelas XI-XII SMA/MA)</option>
-                <option value="__custom__">+ Tambah Custom</option>
-              </select>
-              <button
-                type="button"
-                id="btn_add_custom_phase"
-                onclick="showAddCustomPhase()"
-                class="px-4 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white font-semibold transition-colors focus:outline-none hidden"
-                title="Tambah fase custom"
-              >
-                +
-              </button>
-            </div>
-            <div id="custom_phase_container" class="hidden flex gap-2">
-              <input
-                type="text"
-                id="custom_phase_input"
-                placeholder="Masukkan nama fase (mis: Fase G)"
-                class="flex-1 p-2 text-sm rounded bg-black/20 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <button
-                type="button"
-                onclick="saveCustomPhase()"
-                class="px-3 py-2 text-sm rounded bg-green-500 hover:bg-green-600 text-white font-semibold transition-colors focus:outline-none"
-              >
-                Simpan
-              </button>
-              <button
-                type="button"
-                onclick="cancelCustomPhase()"
-                class="px-3 py-2 text-sm rounded bg-gray-600 hover:bg-gray-700 text-white font-semibold transition-colors focus:outline-none"
-              >
-                Batal
-              </button>
-            </div>
-          </div>
-
-          <!-- Hari/Tanggal -->
-          <div class="flex flex-col gap-1">
-            <label for="hari_tanggal" class="font-medium text-gray-200"
-              >Hari/Tanggal</label
-            >
-            <input
-              type="date"
-              id="hari_tanggal"
-              name="DAY_DATE"
-              class="p-2 rounded bg-black/20 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white [color-scheme:dark]"
-            />
-          </div>
-
-          <!-- Semester/Minggu Ke -->
-          <div class="flex flex-col gap-1">
-            <label for="semester" class="font-medium text-gray-200"
-              >Semester/Minggu Ke</label
-            >
-            <input
-              type="text"
-              id="semester"
-              name="SEMESTER_WEEK"
-              placeholder="Misal: 1 / Minggu ke-2"
-              class="p-2 rounded bg-black/20 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <!-- Tahun Ajaran -->
-          <div class="flex flex-col gap-1">
-            <label for="tahun_ajaran" class="font-medium text-gray-200"
-              >Tahun Ajaran</label
-            >
-            <input
-              type="text"
-              id="tahun_ajaran"
-              name="ACADEMIC_YEAR"
-              placeholder="Contoh: 2026/2027"
-              class="p-2 rounded bg-black/20 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <!-- Kelas/Kelompok Usia -->
-          <div class="flex flex-col gap-1">
-            <label for="kelas" class="font-medium text-gray-200"
-              >Kelas/Kelompok Usia</label
-            >
-            <select
-              id="kelas"
-              name="GROUP_AGE"
-              class="p-2 rounded bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">-- Pilih Kelas/Kelompok Usia --</option>
-              <option value="Kelompok A (4-5 Tahun)">
-                Kelompok A (4-5 Tahun)
-              </option>
-              <option value="Kelompok B (5-6 Tahun)">
-                Kelompok B (5-6 Tahun)
-              </option>
-            </select>
-          </div>
-
-          <!-- Alokasi Waktu -->
-          <div class="flex flex-col gap-1">
-            <label for="alokasi_waktu" class="font-medium text-gray-200"
-              >Alokasi Waktu</label
-            >
-            <input
-              type="text"
-              id="alokasi_waktu"
-              name="TIME_ALLOCATION"
-              placeholder="Misal: 40 menit"
-              class="p-2 rounded bg-black/20 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <!-- Model Pembelajaran -->
-          <div class="flex flex-col gap-1">
-            <label for="model_pembelajaran" class="font-medium text-gray-200">Model Pembelajaran</label>
-            <div class="flex gap-2">
-              <select
-                id="model_pembelajaran"
-                name="LEARNING_MODEL"
-                class="flex-1 p-2 rounded bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                onchange="handleModelChange()"
-              >
-                <option value="">-- Pilih Model Pembelajaran --</option>
-                <option value="Project-Based Learning (PjBL)">Project-Based Learning (PjBL)</option>
-                <option value="Problem-Based Learning (PBL)">Problem-Based Learning (PBL)</option>
-                <option value="Inquiry & Discovery Learning">Inquiry & Discovery Learning</option>
-                <option value="Pembelajaran Berdiferensiasi">Pembelajaran Berdiferensiasi</option>
-                <option value="Flipped Classroom">Flipped Classroom</option>
-                <option value="Game-Based Learning & Gamification">Game-Based Learning & Gamification</option>
-                <option value="Cooperative Learning (Jigsaw, TPS)">Cooperative Learning (Jigsaw, TPS)</option>
-                <option value="__custom__">+ Tambah Custom</option>
-              </select>
-              <button
-                type="button"
-                id="btn_add_custom_model"
-                onclick="showAddCustomModel()"
-                class="px-4 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white font-semibold transition-colors focus:outline-none hidden"
-                title="Tambah model custom"
-              >
-                +
-              </button>
-            </div>
-            <div id="custom_model_container" class="hidden flex gap-2">
-              <input
-                type="text"
-                id="custom_model_input"
-                placeholder="Masukkan nama model (mis: Blended Learning)"
-                class="flex-1 p-2 text-sm rounded bg-black/20 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <button
-                type="button"
-                onclick="saveCustomModel()"
-                class="px-3 py-2 text-sm rounded bg-green-500 hover:bg-green-600 text-white font-semibold transition-colors focus:outline-none"
-              >
-                Simpan
-              </button>
-              <button
-                type="button"
-                onclick="cancelCustomModel()"
-                class="px-3 py-2 text-sm rounded bg-gray-600 hover:bg-gray-700 text-white font-semibold transition-colors focus:outline-none"
-              >
-                Batal
-              </button>
-            </div>
-          </div>
-
-          <!-- Tujuan Pembelajaran -->
-          <div class="flex flex-col gap-1 md:col-span-2">
-            <label for="tujuan_pembelajaran" class="font-medium text-gray-200"
-              >Tujuan Pembelajaran</label
-            >
-            <div class="relative w-full">
-              <textarea
-                id="tujuan_pembelajaran"
-                name="LEARNING_OBJECTIVES"
-                rows="4"
-                placeholder="Tuliskan tujuan pembelajaran di sini..."
-                class="w-full p-2 pr-10 rounded bg-black/20 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
-              ></textarea>
-              <button
-                type="button"
-                onclick="requestRecommendation()"
-                class="absolute bottom-2 right-2 p-1.5 text-white rounded outline-none focus:ring-2 focus:ring-blue-400 transition-colors hover:cursor-pointer"
-                title="Generate dengan AI"
-                id="btn_recommendation"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="w-5 h-5"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          <div class="flex flex-col gap-2 mt-2 md:col-span-2">
-            <button
-              type="button"
-              id="btn_toggle_advance"
-              onclick="toggleAdvanceOptions()"
-              class="flex items-center gap-2 text-sm font-medium text-gray-300 hover:text-white transition-colors w-fit focus:outline-none"
-            >
-              <svg
-                id="icon_advance_chevron"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                class="w-5 h-5 transition-transform duration-200"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              Tampilkan Opsi Lanjutan
-            </button>
-            <div
-              id="advance_options_container"
-              class="hidden flex-col gap-4 p-4 mt-2 bg-black/30 rounded-lg border border-gray-700"
-            >
-              <!-- Custom Prompt Section -->
-              <div class="flex flex-col gap-1">
-                <label
-                  for="custom_prompt"
-                  class="font-medium text-gray-200 text-sm"
-                  >Instruksi Tambahan (Opsional AI)</label
-                >
-                <textarea
-                  id="custom_prompt"
-                  name="custom_prompt"
-                  rows="2"
-                  placeholder="Misal: Buatkan juga referensi lagu anak-anak yang cocok."
-                  class="w-full p-2 text-sm rounded bg-black/20 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
-                ></textarea>
-              </div>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            id="btn_generate"
-            class="mt-4 md:col-span-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition duration-200"
-          >
-            Buat RPP
-          </button>
-        </form>
-      </div>
-
-      <!-- Resize Divider (Desktop Only) -->
-      <div
-        id="resize_divider"
-        class="hidden md:flex items-center justify-center h-full m-2 hover:cursor-col-resize"
-        title="Drag to resize preview"
-      >
-        <div class="p-2 bg-gray-900 rounded whitespace-nowrap text-xs text-gray-300 pointer-events-none">
-          <span>⋮</span>
-        </div>
-      </div>
-
-      <!-- Mobile Backdrop Overlay -->
-      <div
-        id="preview_backdrop"
-        class="md:hidden fixed inset-0 bg-black/50 hidden transition-opacity duration-200"
-        style="z-index: 39;"
-        onclick="hidePreview()"
-      ></div>
-
-      <!-- Preview Panel -->
-      <div
-        class="fixed md:relative bottom-0 left-0 right-0 md:right-auto md:bottom-auto w-full md:w-2/5 h-96 md:h-full p-6 rounded-t-lg md:rounded-r-lg border-t md:border-t-0 md:rounded-lg! md:border-l border-gray-600 text-white bg-gray-700 overflow-auto"
-        id="preview_container"
-        style="z-index: 40; max-height: calc(100vh - 100px);"
-      >
-        <!-- Mobile Header Controls -->
-        <div class="flex justify-between items-center mb-4 pb-2 border-b border-gray-600">
-          <h2 class="text-lg font-bold">Preview RPP</h2>
-          <div class="flex gap-2 items-center">
-            <button
-              type="button"
-              id="btn_download"
-              onclick="downloadRPP()"
-              class="hidden px-2 py-1 md:px-4 md:py-1.5 text-xs md:text-base bg-green-500 hover:bg-green-600 text-white font-semibold rounded transition-colors duration-200"
-              title="Download Word (.docx)"
-            >
-              Download Docx
-            </button>
-            <button
-              type="button"
-              id="btn_preview_minimize"
-              onclick="minimizePreview()"
-              class="md:hidden p-1 hover:bg-gray-700 rounded transition-colors"
-              title="Minimize"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5L12 20.25l-7.5-6.75M19.5 6.75L12 13.5l-7.5-6.75" />
-              </svg>
-            </button>
-            <button
-              type="button"
-              id="btn_preview_close"
-              onclick="hidePreview()"
-              class="md:hidden p-1 hover:bg-gray-700 rounded transition-colors"
-              title="Close"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <div class="prose prose-invert" id="preview_content">
-          <p class="text-gray-500">
-            Isi formulir untuk melihat preview RPP di sini.
-          </p>
-        </div>
-      </div>
-
-      <!-- Mobile Preview Toggle Button (Floating) - Outside preview_container -->
-      <button
-        type="button"
-        id="btn_preview_toggle"
-        onclick="togglePreviewMobile()"
-        class="md:hidden fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg transition-all flex items-center justify-center"
-        style="z-index: 35; background-color: rgb(59, 130, 246);"
-        title="Toggle preview"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-white" id="preview_toggle_icon">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-      </button>
     </div>
   </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js"></script>
+  <div class="mt-10 border-2 md:border-4 border-dashed p-5">
+    <div class="text-gray-700">
+      <p>Tolong isi beberapa kolom dibawah ini untuk membantu AI membuat dokumen.</p>
+      
+      <div class="flex flex-wrap items-center gap-1 font-bold mt-1">
+        Gunakan tombol
+        <span class="inline-flex items-center justify-center bg-gray-400 border border-gray-500 p-1 rounded">
+          <%- include('components/icons/bsstars.ejs', {width: "16px", height: "16px"}) %>
+        </span>
+        untuk menyempurnakan kalimat dengan bantuan AI.
+      </div>
+    </div>
 
-<%- include('js/home') %>
+    <form action="/api/generate" method="post" class="mt-5">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 w-full">
+
+        <label class="group block cursor-pointer" for="namaSekolah">
+          <p class="font-semibold text-sky-800">Satuan Pendidikan</p>
+          <small class="text-gray-500">Boleh dikosongkan</small>
+          
+          <input type="text" name="namaSekolah" id="namaSekolah" 
+            class="w-full border-2 border-sky-800/50 rounded-md p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-sky-800 focus:border-transparent" 
+            placeholder="Contoh: SDN 1 Cibodas">
+        </label>
+
+        <label class="group block cursor-pointer" for="namaPenyusun">
+          <p class="font-semibold text-green-800">Nama Penyusun</p>
+          <small class="text-gray-500">Boleh dikosongkan</small>
+          
+          <input type="text" name="namaPenyusun" id="namaPenyusun" 
+            class="w-full border-2 border-green-800/50 rounded-md p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent" 
+            placeholder="Contoh: Budi Santoso">
+        </label>
+
+        <label class="group block cursor-pointer" for="nip">
+          <p class="font-semibold text-amber-800">NIP</p>
+          <small class="text-gray-500">Boleh dikosongkan</small>
+          
+          <input type="text" name="nip" id="nip" 
+            class="w-full border-2 border-amber-800/50 rounded-md p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-amber-800 focus:border-transparent" 
+            placeholder="Contoh: 1234567890">
+        </label>
+
+        <label class="group block cursor-pointer" for="fase">
+          <p class="font-semibold text-orange-800">Fase</p>
+          <small class="text-gray-500">Pilih Fase yang sesuai</small>
+          
+          <select name="fase" id="fase" 
+            class="w-full border-2 border-orange-800/50 rounded-md p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-orange-800 focus:border-transparent appearance-none cursor-pointer" required>
+            <option value="Fondasi" selected>Fondasi</option>
+          </select>
+        </label>
+
+        <label class="group block cursor-pointer" for="semester">
+          <p class="font-semibold text-red-800">Semester</p>
+          <small class="text-gray-500">Semester saat ini</small>
+          
+          <input type="number" name="semester" id="semester" 
+            class="w-full border-2 border-red-800/50 rounded-md p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-red-800 focus:border-transparent" 
+            placeholder="Contoh: 2" min="1" max="14" required>
+        </label>
+
+        <label class="group block cursor-pointer" for="bulan">
+          <p class="font-semibold text-pink-800">Bulan</p>
+          <small class="text-gray-500">Pilih bulan pelaksanaan</small>
+          
+          <select name="bulan" id="bulan" 
+            class="w-full border-2 border-pink-800/50 rounded-md p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-pink-800 focus:border-transparent appearance-none cursor-pointer" required>
+            <option value="Januari" selected>Januari</option>
+            <option value="Februari">Februari</option>
+            <option value="Maret">Maret</option>
+            <option value="April">April</option>
+            <option value="Mei">Mei</option>
+            <option value="Juni">Juni</option>
+            <option value="Juli">Juli</option>
+            <option value="Agustus">Agustus</option>
+            <option value="September">September</option>
+            <option value="Oktober">Oktober</option>
+            <option value="November">November</option>
+            <option value="Desember">Desember</option>
+          </select>
+        </label>
+
+        <label class="group block cursor-pointer" for="mingguKe">
+          <p class="font-semibold text-purple-800">Minggu Ke</p>
+          <small class="text-gray-500">Minggu ke berapa dalam pembelajaran kali ini</small>
+          
+          <input type="number" name="mingguKe" id="mingguKe" 
+            class="w-full border-2 border-purple-800/50 rounded-md p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-purple-800 focus:border-transparent" 
+            placeholder="Contoh: 2" min="1" max="4" required>
+        </label>
+
+        <label class="group block cursor-pointer" for="kelas">
+          <p class="font-semibold text-violet-800">Kelas</p>
+          <small class="text-gray-500">Pilih Kelas yang sesuai</small>
+          
+          <select name="kelas" id="kelas" 
+            class="w-full border-2 border-violet-800/50 rounded-md p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-violet-800 focus:border-transparent appearance-none cursor-pointer" required>
+            <option value="Kelompok A (4-5 tahun)" selected>Kelompok A (4-5 tahun)</option>
+            <option value="Kelompok B (5-6 tahun)">Kelompok B (5-6 tahun)</option>
+          </select>
+        </label>
+
+        <label class="group block cursor-pointer" for="jumlahAnak">
+          <p class="font-semibold text-indigo-800">Jumlah Anak</p>
+          <small class="text-gray-500">Boleh dikosongkan</small>
+          
+          <input type="number" name="jumlahAnak" id="jumlahAnak" 
+            class="w-full border-2 border-indigo-800/50 rounded-md p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-indigo-800 focus:border-transparent" 
+            placeholder="Contoh: 10">
+        </label>
+
+        <label class="group block cursor-pointer" for="alokasiWaktu1">
+          <p class="font-semibold text-rose-800">Alokasi Waktu</p>
+          <small class="text-gray-500">Hari &times; Jam Pelajaran</small>
+          
+          <div class="flex items-center gap-2">
+            <input type="hidden" name="alokasiWaktu" id="alokasiWaktu" required>
+
+            <input type="number" id="alokasiWaktu1"
+            class="w-10 aspect-square border-2 border-rose-800/50 rounded-md p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-rose-800 focus:border-transparent" 
+            placeholder="5" oninput="handleAlokasiWaktuChange()" required>
+            <span>&times;</span>
+            <input type="number" id="alokasiWaktu2" 
+            class="w-10 aspect-square border-2 border-rose-800/50 rounded-md p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-rose-800 focus:border-transparent" 
+            placeholder="10" oninput="handleAlokasiWaktuChange()" required>
+            <span class="font-semibold mt-2 text-rose-800">JP</span>
+          </div>
+          
+        </label>
+
+        <div class="group block">
+          <label for="temaSubtema" class="cursor-pointer">
+            <p class="font-semibold text-sky-800">Tema/Subtema</p>
+            <small class="block text-gray-500">Tema dan Subtema yang akan diajarkan</small>
+          </label>
+
+          <div class="relative mt-2 flex items-center border-2 border-sky-800/50 rounded-md transition-all focus-within:border-sky-800 focus-within:ring-2 focus-within:ring-sky-800/50">
+            <input 
+              type="text" 
+              name="temaSubtema" 
+              id="temaSubtema"
+              class="w-full border-none bg-transparent p-2.5 text-gray-700 placeholder:text-gray-400 focus:ring-0 focus:outline-none" 
+              placeholder="Contoh: Keluarga / Keluargaku Sayang" required>
+
+            <div class="flex items-center pr-3">
+              <%- include('components/ai.ejs', { type: "ai.temaSubtema" }) %>
+            </div>
+          </div>
+        </div>
+
+        <div class="group block cursor-pointer">
+          <p class="font-semibold text-orange-800">Model Pembelajaran</p>
+          <small class="text-gray-500">Pilih satu atau lebih pendekatan yang sesuai</small>
+
+          <input type="hidden" name="modelPembelajaran" id="modelPembelajaran">
+
+          <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <label class="flex items-center gap-2 rounded-md border-2 border-orange-800/20 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-orange-50">
+              <input type="checkbox" id="modelPembelajaranKolaboratif" class="model-pembelajaran-option accent-orange-800" value="Kolaboratif">
+              <span>Kolaboratif</span>
+            </label>
+
+            <label class="flex items-center gap-2 rounded-md border-2 border-orange-800/20 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-orange-50">
+              <input type="checkbox" id="modelPembelajaranEksperimental" class="model-pembelajaran-option accent-orange-800" value="Eksperimental">
+              <span>Eksperimental</span>
+            </label>
+
+            <label class="flex items-center gap-2 rounded-md border-2 border-orange-800/20 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-orange-50">
+              <input type="checkbox" id="modelPembelajaranBermainPeran" class="model-pembelajaran-option accent-orange-800" value="Bermain Peran">
+              <span>Bermain Peran</span>
+            </label>
+
+            <label class="flex items-center gap-2 rounded-md border-2 border-orange-800/20 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-orange-50">
+              <input type="checkbox" id="modelPembelajaranDiscoveryLearning" class="model-pembelajaran-option accent-orange-800" value="Discovery Learning">
+              <span>Discovery Learning</span>
+            </label>
+
+            <label class="flex items-center gap-2 rounded-md border-2 border-orange-800/20 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-orange-50 sm:col-span-2">
+              <input type="checkbox" id="modelPembelajaranPjBL" class="model-pembelajaran-option accent-orange-800" value="Project-Based Learning (PjBL)">
+              <span>Project-Based Learning (PjBL)</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="group block cursor-pointer">
+          <p class="font-semibold text-green-800">Pilih Elemen CP</p>
+          <small class="text-gray-500">Pilih satu atau lebih elemen Capaian Pembelajaran Fase Fondasi</small>
+
+          <input type="hidden" name="elemenCp" id="elemenCp">
+
+          <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <label class="flex items-center gap-2 rounded-md border-2 border-green-800/20 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-green-50">
+              <input type="checkbox" id="elemenCpAgama" class="elemen-cp-option accent-green-800" value="Nilai Agama dan Budi Pekerti">
+              <span>Nilai Agama dan Budi Pekerti</span>
+            </label>
+
+            <label class="flex items-center gap-2 rounded-md border-2 border-green-800/20 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-green-50">
+              <input type="checkbox" id="elemenCpJatiDiri" class="elemen-cp-option accent-green-800" value="Jati Diri">
+              <span>Jati Diri</span>
+            </label>
+
+            <label class="flex items-center gap-2 rounded-md border-2 border-green-800/20 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-green-50 sm:col-span-2">
+              <input type="checkbox" id="elemenCpLiterasiSains" class="elemen-cp-option accent-green-800" value="Dasar-dasar Literasi, Matematika, Sains, Teknologi, Rekayasa, dan Seni">
+              <span>Literasi-Sains-Seni</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="group block cursor-pointer">
+          <p class="font-semibold text-purple-800">Dimensi Profil Lulusan</p>
+          <small class="text-gray-500">Pilih dimensi profil lulusan yang relevan</small>
+
+          <input type="hidden" name="dimensiProfilLulusan" id="dimensiProfilLulusan">
+
+          <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <label class="flex items-center gap-2 rounded-md border-2 border-purple-800/20 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-purple-50">
+              <input type="checkbox" id="dpl1" class="dpl-option accent-purple-800" value="DPL1 Keimanan dan Ketakwaan">
+              <span>DPL1 Keimanan dan Ketakwaan</span>
+            </label>
+
+            <label class="flex items-center gap-2 rounded-md border-2 border-purple-800/20 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-purple-50">
+              <input type="checkbox" id="dpl2" class="dpl-option accent-purple-800" value="DPL2 Kewargaan">
+              <span>DPL2 Kewargaan</span>
+            </label>
+
+            <label class="flex items-center gap-2 rounded-md border-2 border-purple-800/20 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-purple-50">
+              <input type="checkbox" id="dpl3" class="dpl-option accent-purple-800" value="DPL3 Penalaran Kritis">
+              <span>DPL3 Penalaran Kritis</span>
+            </label>
+
+            <label class="flex items-center gap-2 rounded-md border-2 border-purple-800/20 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-purple-50">
+              <input type="checkbox" id="dpl4" class="dpl-option accent-purple-800" value="DPL4 Kreativitas">
+              <span>DPL4 Kreativitas</span>
+            </label>
+
+            <label class="flex items-center gap-2 rounded-md border-2 border-purple-800/20 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-purple-50">
+              <input type="checkbox" id="dpl5" class="dpl-option accent-purple-800" value="DPL5 Kolaborasi">
+              <span>DPL5 Kolaborasi</span>
+            </label>
+
+            <label class="flex items-center gap-2 rounded-md border-2 border-purple-800/20 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-purple-50">
+              <input type="checkbox" id="dpl6" class="dpl-option accent-purple-800" value="DPL6 Kemandirian">
+              <span>DPL6 Kemandirian</span>
+            </label>
+
+            <label class="flex items-center gap-2 rounded-md border-2 border-purple-800/20 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-purple-50">
+              <input type="checkbox" id="dpl7" class="dpl-option accent-purple-800" value="DPL7 Kesehatan">
+              <span>DPL7 Kesehatan</span>
+            </label>
+
+            <label class="flex items-center gap-2 rounded-md border-2 border-purple-800/20 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-purple-50">
+              <input type="checkbox" id="dpl8" class="dpl-option accent-purple-800" value="DPL8 Komunikasi">
+              <span>DPL8 Komunikasi</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="group block md:col-span-2">
+          <label for="materiPembelajaran" class="cursor-pointer">
+            <p class="font-semibold text-blue-800">Materi Pembelajaran</p>
+            <small class="block text-gray-500">Deskripsikan dengan singkat materi yang akan diajarkan</small>
+          </label>
+
+          <div class="relative mt-2 rounded-md border-2 border-blue-800/50 transition-all focus-within:border-blue-800 focus-within:ring-2 focus-within:ring-blue-800/50">
+            <textarea
+              name="materiPembelajaran"
+              id="materiPembelajaran"
+              rows="3"
+              class="w-full resize-y border-none bg-transparent p-2.5 pr-12 text-gray-700 placeholder:text-gray-400 focus:ring-0 focus:outline-none"
+              placeholder="Contoh: Anak mampu menyebutkan anggota keluarganya..." required></textarea>
+
+            <div class="absolute right-3 top-3 flex items-center">
+              <%- include('components/ai.ejs', {type: "ai.materiPembelajaran"}) %>
+            </div>
+          </div>
+        </div>
+
+        <div class="group block md:col-span-2">
+          <label for="identifikasiPesertaDidik" class="cursor-pointer">
+            <p class="font-semibold text-blue-800">Identifikasi Peserta Didik</p>
+            <small class="block text-gray-500">Deskripsikan karakteristik dan perkembangan peserta didik</small>
+          </label>
+
+          <div class="relative mt-2 rounded-md border-2 border-blue-800/50 transition-all focus-within:border-blue-800 focus-within:ring-2 focus-within:ring-blue-800/50">
+            <textarea
+              name="identifikasiPesertaDidik"
+              id="identifikasiPesertaDidik"
+              rows="3"
+              class="w-full resize-y border-none bg-transparent p-2.5 pr-12 text-gray-700 placeholder:text-gray-400 focus:ring-0 focus:outline-none"
+              placeholder="Contoh: Anak mampu menyebutkan anggota keluarganya..." required></textarea>
+
+            <div class="absolute right-3 top-3 flex items-center">
+              <%- include('components/ai.ejs', {type: "ai.identifikasiPesertaDidik"}) %>
+            </div>
+          </div>
+        </div>
+
+        <div class="group block md:col-span-2">
+          <label for="tujuanPembelajaran" class="cursor-pointer">
+            <p class="font-semibold text-blue-800">Tujuan Pembelajaran</p>
+            <small class="block text-gray-500">Tulis singkat 1-2 kalimat target pembelajaran</small>
+          </label>
+
+          <div class="relative mt-2 rounded-md border-2 border-blue-800/50 transition-all focus-within:border-blue-800 focus-within:ring-2 focus-within:ring-blue-800/50">
+            <textarea
+              name="tujuanPembelajaran"
+              id="tujuanPembelajaran"
+              rows="3"
+              class="w-full resize-y border-none bg-transparent p-2.5 pr-12 text-gray-700 placeholder:text-gray-400 focus:ring-0 focus:outline-none"
+              placeholder="Contoh: Anak mampu menyebutkan anggota keluarganya..." required></textarea>
+
+            <div class="absolute right-3 top-3 flex items-center">
+              <%- include('components/ai.ejs', {type: "ai.tujuanPembelajaran"}) %>
+            </div>
+          </div>
+        </div>
+
+        <div class="group block">
+          <label for="topikPembelajaran" class="cursor-pointer">
+            <p class="font-semibold text-amber-800">Topik Pembelajaran</p>
+            <small class="block text-gray-500">Topik pendek yang spesifik untuk pekan ini</small>
+          </label>
+
+          <div class="relative mt-2 flex items-center border-2 border-amber-800/50 rounded-md transition-all focus-within:border-amber-800 focus-within:ring-2 focus-within:ring-amber-800/50">
+            <input
+              type="text"
+              name="topikPembelajaran"
+              id="topikPembelajaran"
+              class="w-full border-none bg-transparent p-2.5 text-gray-700 placeholder:text-gray-400 focus:ring-0 focus:outline-none"
+              placeholder="Contoh: Aku dan Lingkungan Sekitarku" required>
+
+            <div class="flex items-center pr-3">
+              <%- include('components/ai.ejs', {type: "ai.topikPembelajaran"}) %>
+            </div>
+          </div>
+        </div>
+
+        <div class="group block md:col-span-2" id="kegiatanDynamicWrapper">
+          <p class="font-semibold text-violet-800">Kegiatan Harian</p>
+          <small class="block text-gray-500">Kolom kegiatan akan otomatis dibuat berdasarkan Hari x JP pada Alokasi Waktu</small>
+
+          <div id="kegiatanDynamicContainer" class="mt-3 grid grid-cols-1 gap-4"></div>
+        </div>
+
+        <template id="kegiatanAiButtonTemplate">
+          <button type="button" class="bg-transparent border-0 p-0 m-0 cursor-pointer" title="AI: Sempurnakan kegiatan">
+            <%- include('components/icons/bsstars.ejs', {width: "16px", height: "16px"}) %>
+            <span class="sr-only">AI: Sempurnakan kegiatan</span>
+          </button>
+        </template>
+
+      </div>
+
+      <button type="submit" class="w-full mt-10 p-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-700 focus:ring-offset-2">
+        <span>Generate Dokumen</span>
+      </button>
+    </form>
+  </div>
+
+<div class="mt-20 grid grid-cols-1 md:grid-cols-2 gap-10 border-t pt-10 border-gray-200">
+    <div>
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Tentang Projek Ini</h2>
+      <p class="text-gray-600 leading-relaxed">
+        <strong><%= APP_NAME %></strong> adalah inisiatif untuk membantu rekan-rekan pendidik, khususnya di jenjang PAUD/TK (Fase Fondasi), dalam menyusun administrasi pembelajaran secara lebih cepat dan efisien.
+      </p>
+      <p class="text-gray-600 mt-3 leading-relaxed">
+        Dengan memanfaatkan teknologi <span class="italic text-green-700 font-medium">Large Language Model</span>, aplikasi ini mampu menghasilkan draf modul ajar yang terstruktur berdasarkan Kurikulum Merdeka hanya dalam hitungan detik.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Credit & Apresiasi</h2>
+      <p class="text-gray-600 mb-4">Pengembangan aplikasi ini tidak lepas dari bimbingan dan masukan berharga dari para ahli di bidang pendidikan:</p>
+      
+      <ul class="space-y-3 flex flex-wrap gap-6">
+        <li class="flex items-start gap-3 w-fit">
+          <div class="bg-sky-100 p-2 rounded-full text-sky-800 mt-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="font-semibold text-gray-800 leading-none">[Nama Guru 1, S.Pd.]</p>
+            <small class="text-gray-500">Konsultan Kurikulum & Materi</small>
+          </div>
+        </li>
+
+        <li class="flex items-start gap-3 w-fit">
+          <div class="bg-green-100 p-2 rounded-full text-green-800 mt-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="font-semibold text-gray-800 leading-none">[Nama Guru 2, S.Pd.]</p>
+            <small class="text-gray-500">Validator Konten & Pedagogi</small>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</main>
+
+<%- include('js/home.ejs') %>
+<%- include('js/dynamic-save-input.ejs') %>
+<%- include('js/home-template') %>
+<%- include('js/home-ai.ejs') %>

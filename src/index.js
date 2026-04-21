@@ -17,6 +17,7 @@ configDotenv();
   const dirname = import.meta.dirname
   app.set('views', path.join(dirname, 'views'))
 
+  app.use(Express.urlencoded({ extended: true }))
   app.use(Express.json())
 
   // Load and register routes

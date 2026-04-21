@@ -2,11 +2,39 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  --foreground: #E2E8CE;
-  --background: #262626;
+  --foreground: #262626;
+  --background: #FAF9F6;
+}
+
+* {
+  transition: all;
+  transition-duration: 0.3s;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
+}
+
+@layer base {
+  button:hover {
+    cursor: pointer;
+    transform: scale(0.95);
+    opacity: 80%;
+  }
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
+  label:has(input[type="checkbox"]) {
+    @apply select-none;
+  }
 }

@@ -27,6 +27,10 @@ const convesation = [
   {
     role: 'system',
     content: 'Fix typo words, and make the sentence more concise and clear, but dont change the main context of the sentence. For example "Barani" should be "Berani" and so on.'
+  },
+  {
+    role: 'system',
+    content: 'Dont embed field like "Tujuan pembelajaran: ", just give the recommendation to improve the sentence, for example "Anak mampu menyebutkan anggota keluarganya dengan benar dan percaya diri."'
   }
 ]
 openai.setContext(convesation)

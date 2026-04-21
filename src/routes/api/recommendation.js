@@ -19,20 +19,31 @@ const convesation = [
   {
     role: 'system',
     content: 'Your task is to improve and perfect, but that doesnt mean you have to change the main structure and context of the requested sentence, especially for teachers who teach their students.'
+  },
+  {
+    role: 'system',
+    content: 'Dont go too far out of context, just improve the language structure, so that it is more professional and easy to understand.'
+  },
+  {
+    role: 'system',
+    content: 'Fix typo words, and make the sentence more concise and clear, but dont change the main context of the sentence. For example "Barani" should be "Berani" and so on.'
   }
 ]
 openai.setContext(convesation)
 
 export const route = new AppRoute('/recommendation', 'post', async (req, res) => {
   try {
-    const { text } = req.body
+    const { text, field } = req.body
 
     // Validation
     if (!text) {
       return res.status(400).json({ error: 'text is required' })
     }
+    if (!field) {
+      return res.status(400).json({ error: 'field is required' })
+    }
 
-    const response = await openai.chat(text)
+    const response = await openai.chat(`Text ini untuk mengisi field ${field} dengan kalimat: ${text}. Berikan rekomendasi untuk menyempurnakan kalimat tersebut agar lebih baik dan profesional, tetapi jangan mengubah konteks utama dari kalimat tersebut.`)
 
     res.json({ result: response })
   } catch (error) {

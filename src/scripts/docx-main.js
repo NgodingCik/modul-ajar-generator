@@ -320,7 +320,8 @@ async function main (credentialVars = {}) { // eslint-disable-line no-unused-var
           { numbering: { level: 0 } }
         )
     )
-    .save('Modul_Ajar_Keluarga_TK_Bintang_Kecil.docx')
+    .toBuffer()
+    // .save('Modul_Ajar_Keluarga_TK_Bintang_Kecil.docx')
 
   console.log('Dokumen berhasil dibuat!')
   return buffer

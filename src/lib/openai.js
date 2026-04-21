@@ -40,6 +40,10 @@ export default class OpenAIWrapper {
     this.mModel = model
   }
 
+  setContext (context) {
+    this.mContexts = context
+  }
+
   get model () {
     return this.mModel
   }

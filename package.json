@@ -13,7 +13,7 @@
     "poc:vm-executor": "node poc/vm-executor.js",
     "poc:vm-docx": "node poc/vm-docx.js",
     "poc:vm-generate-docx": "node poc/vm-generate-docx.js",
-    "poc:ai-request": "node poc/scripts/ai-request.js"
+    "poc:ai-request": "node poc/ai-request.js"
   },
   "keywords": [],
   "author": "",

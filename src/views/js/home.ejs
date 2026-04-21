@@ -26,7 +26,7 @@
     }
 
     const aiButton = kegiatanAiButtonTemplate.content.firstElementChild.cloneNode(true);
-    aiButton.id = `kegiatanHari${dayIndex}Jp${jpIndex}Ai`;
+    aiButton.id = `ai.kegiatanHari${dayIndex}Jp${jpIndex}`;
     aiButton.title = `AI: Sempurnakan kegiatan hari ${dayIndex} JP ${jpIndex}`;
 
     const aiLabel = aiButton.querySelector('.sr-only');
@@ -148,11 +148,9 @@
     if (!dimensiProfilLulusan) return;
 
     const selectedDpl = Array.from(dplOptions)
-      .filter((checkbox) => checkbox.checked)
-      .map((checkbox) => checkbox.value)
-      .filter(Boolean);
+      .map((checkbox) => checkbox.value + (checkbox.checked ? ': true' : ': false'));
 
-    dimensiProfilLulusan.value = selectedDpl.join(', ');
+    dimensiProfilLulusan.value = selectedDpl.join(',');
   };
 
   modelPembelajaranOptions.forEach((checkbox) => {

@@ -11,6 +11,8 @@
   const kegiatanDynamicContainer = document.getElementById('kegiatanDynamicContainer');
   const kegiatanAiButtonTemplate = document.getElementById('kegiatanAiButtonTemplate');
 
+  const savedKegiatanValues = {};
+
   const createAiButton = (dayIndex, jpIndex) => {
     const fallbackButton = document.createElement('button');
     fallbackButton.type = 'button';
@@ -35,7 +37,7 @@
     return aiButton;
   };
 
-  const createKegiatanInput = (dayIndex, jpIndex) => {
+  const createKegiatanInput = (dayIndex, jpIndex, existingValue = '') => {
     const inputWrapper = document.createElement('div');
     inputWrapper.className = 'relative flex items-center rounded-md border-2 border-violet-800/30 transition-all focus-within:border-violet-800 focus-within:ring-2 focus-within:ring-violet-800/40';
 
@@ -43,8 +45,13 @@
     input.type = 'text';
     input.name = `kegiatanHari${dayIndex}Jp${jpIndex}`;
     input.id = `kegiatanHari${dayIndex}Jp${jpIndex}`;
+    input.value = existingValue;
     input.className = 'w-full border-none bg-transparent p-2.5 text-gray-700 placeholder:text-gray-400 focus:ring-0 focus:outline-none';
     input.placeholder = `Kegiatan hari ${dayIndex} - JP ${jpIndex}`;
+
+    input.addEventListener('input', (e) => {
+      savedKegiatanValues[e.target.id] = e.target.value;
+    });
 
     const aiWrapper = document.createElement('div');
     aiWrapper.className = 'flex items-center pr-3';
@@ -58,6 +65,11 @@
 
   const renderKegiatanFields = () => {
     if (!kegiatanDynamicContainer) return;
+
+    const existingInputs = kegiatanDynamicContainer.querySelectorAll('input[type="text"]');
+    existingInputs.forEach((input) => {
+      savedKegiatanValues[input.id] = input.value;
+    });
 
     const totalDays = Number.parseInt(alokasiWaktu1?.value, 10);
     const totalJp = Number.parseInt(alokasiWaktu2?.value, 10);
@@ -88,7 +100,9 @@
       dayGrid.className = 'mt-3 grid grid-cols-1 gap-2';
 
       for (let jpIndex = 1; jpIndex <= totalJp; jpIndex += 1) {
-        dayGrid.appendChild(createKegiatanInput(dayIndex, jpIndex));
+        const inputId = `kegiatanHari${dayIndex}Jp${jpIndex}`;
+        const existingValue = savedKegiatanValues[inputId] || '';
+        dayGrid.appendChild(createKegiatanInput(dayIndex, jpIndex, existingValue));
       }
 
       dayBlock.appendChild(heading);

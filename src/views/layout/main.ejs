@@ -7,7 +7,8 @@
 
   <%- include('../metadata', {APP_NAME, TITLE}) %>
 </head>
-<body>
+<body class="">
+  <%- include('../components/navbar.ejs', {APP_NAME}) %>
   <%- include('../' + VIEW) %>
 </body>
 </html>

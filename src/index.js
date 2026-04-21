@@ -26,8 +26,4 @@ app.use(router)
 // Serving static files
 app.use(Express.static('public'))
 
-app.listen(3000, '0.0.0.0', () => {
-  console.log('Server is running on http://localhost:3000')
-})
-
 export default app

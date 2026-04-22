@@ -10,7 +10,13 @@
           "src/**",
           "context/**",
           "public/**",
-          "assets/**"
+          "assets/**",
+          "node_modules/openai/**",
+          "node_modules/consola/**",
+          "node_modules/dotenv/**",
+          "node_modules/express/**",
+          "node_modules/ejs/**",
+          "node_modules/docx/**"
         ]
       }
     }

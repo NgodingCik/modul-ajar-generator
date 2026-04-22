@@ -1,6 +1,6 @@
 import { AppRoute } from '../index.js'
 import OpenAIWrapper from '../../lib/openai.js'
-import { extractCodeFromMarkdownFence } from '../../utils/utils.js'
+import { extractCodeFromMarkdownFence, validateBodyParams } from '../../utils/utils.js'
 import generateDocxInVM from '../../lib/vm-generate-docx.js'
 import consola from 'consola'
 
@@ -23,6 +23,12 @@ const FILTER_KEYS = [
   'identifikasiPesertaDidik',
   'tujuanPembelajaran',
   'topikPembelajaran'
+]
+const OPTIONAL_KEYS = [
+  'namaSekolah',
+  'namaPenyusun',
+  'nip',
+  'jumlahAnak'
 ]
 
 /**
@@ -96,6 +102,14 @@ export const route = new AppRoute('/generate', 'post', async (req, res) => {
   const body = req.body
   const kegiatanKeys = Object.keys(req.body).filter(key => !FILTER_KEYS.includes(key))
 
+  const validate = validateBodyParams(body, ...FILTER_KEYS.filter(key => !OPTIONAL_KEYS.includes(key)), kegiatanKeys)
+  if (!validate) {
+    return res.status(400).json({ status: false, message: 'Missing required parameters', buffer: null })
+  }
+  if (validate.status === false) {
+    return res.status(400).json({ status: false, message: validate.message, buffer: null })
+  }
+
   const { totalHari, kegiatanPerHari } = parseAlokasiWaktu(body.alokasiWaktu)
 
   // Build Rencana Kegiatan section dynamically from received kegiatan data
@@ -161,6 +175,6 @@ ${rencanaKegiatan}
     return res.status(200).send(docxBuffer)
   } else {
     consola.error('Failed to generate document: No buffer returned from VM')
-    return res.status(500).json({ status: false, error: 'Failed to generate document', buffer: null })
+    return res.status(500).json({ status: false, message: 'Failed to generate document', buffer: null })
   }
 })

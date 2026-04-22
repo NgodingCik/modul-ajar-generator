@@ -4,9 +4,9 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "dev": "node src/server.js --watch",
+    "dev": "cross-env NODE_ENV=development node src/server.js --watch",
     "test": "standard",
-    "debug": "DEBUG=* npm run dev",
+    "debug": "DEBUG=* NODE_ENV=development node src/server.js",
     "standard:fix": "standard --fix",
     "start": "node src/index.js",
     "tailwindcss": "npx @tailwindcss/cli -i ./src/main.css -o ./public/css/main.css --watch",
@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.2.2",
+    "cross-env": "^10.1.0",
     "standard": "^17.1.2"
   },
   "standard": {

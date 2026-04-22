@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { encoding_for_model } from '@dqbd/tiktoken' // eslint-disable-line camelcase
+import consola from 'consola'
 
 export function parseMarkdownToObject (markdown) {
   const lines = markdown.split('\n')
@@ -140,4 +141,45 @@ export function numTokensFromString (message, model = 'gpt-5') {
   const tokens = encoder.encode(message)
   encoder.free()
   return tokens.length
+}
+
+/**
+ * Validates that all required parameters are present in the request body.
+ * @param {Object} body - The request body
+ * @param  {...any} requiredParams - The required parameter names
+ * @returns {{ status: boolean, message: string | null }} - An object containing a boolean indicating validity and an error message (if applicable)
+ */
+export function validateBodyParams (body, ...requiredParams) {
+  consola.debug('Validating request body parameters:', { body, requiredParams })
+
+  if (!body || typeof body !== 'object') {
+    return { status: false, message: 'Request body must be a valid JSON object' }
+  }
+
+  const isMissing = (param) => {
+    const value = body[param]
+    return !(param in body) || value === null || value === undefined || value === ''
+  }
+
+  const missingParams = []
+
+  for (const param of requiredParams) {
+    if (Array.isArray(param)) {
+      // Validate each param inside the nested array individually
+      for (const p of param) {
+        if (isMissing(p)) missingParams.push(p)
+      }
+    } else {
+      if (isMissing(param)) missingParams.push(param)
+    }
+  }
+
+  if (missingParams.length > 0) {
+    return {
+      status: false,
+      message: `Missing or empty required parameters: ${missingParams.join(', ')}`
+    }
+  }
+
+  return { status: true, message: null }
 }

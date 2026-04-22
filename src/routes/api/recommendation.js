@@ -1,6 +1,7 @@
 import { AppRoute } from '../index.js'
 import OpenAIWrapper from '../../lib/openai.js'
 import consola from 'consola'
+import { validateBodyParams } from '../../utils/utils.js'
 
 const openai = new OpenAIWrapper(true)
 
@@ -40,12 +41,20 @@ export const route = new AppRoute('/recommendation', 'post', async (req, res) =>
   try {
     const { text, field } = req.body
 
+    const validate = validateBodyParams(req.body, 'text', 'field')
+    if (!validate) {
+      return res.status(400).json({ status: false, message: 'Missing required parameters' })
+    }
+    if (validate.status === false) {
+      return res.status(400).json({ status: false, message: validate.message })
+    }
+
     // Validation
     if (!text) {
-      return res.status(400).json({ error: 'text is required' })
+      return res.status(400).json({ status: false, message: 'text is required' })
     }
     if (!field) {
-      return res.status(400).json({ error: 'field is required' })
+      return res.status(400).json({ status: false, message: 'field is required' })
     }
 
     const response = await openai.chat(`Text ini untuk mengisi field ${field} dengan kalimat: ${text}. Berikan rekomendasi untuk menyempurnakan kalimat tersebut agar lebih baik dan profesional, tetapi jangan mengubah konteks utama dari kalimat tersebut.`)
@@ -53,6 +62,6 @@ export const route = new AppRoute('/recommendation', 'post', async (req, res) =>
     res.json({ result: response })
   } catch (error) {
     consola.error('Error generating recommendation:', error)
-    res.status(500).json({ error: 'Failed to generate recommendation' })
+    res.status(500).json({ status: false, message: 'Failed to generate recommendation' })
   }
 })

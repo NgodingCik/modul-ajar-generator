@@ -24,9 +24,9 @@
     <br />
     <a href="https://www.modul-ajar.web.id">Kunjungi Situs</a>
     &middot;
-    <a href="../../issues/new?labels=bug&template=bug-report---.md">Laporkan Bug</a>
+    <a href="issues/new?labels=bug&template=bug-report---.md">Laporkan Bug</a>
     &middot;
-    <a href="../../issues/new?labels=enhancement&template=feature-request---.md">Ajukan Fitur</a>
+    <a href="issues/new?labels=enhancement&template=feature-request---.md">Ajukan Fitur</a>
     &middot;
     <a href="https://discord.gg/nA3xMhm5Nk">Gabung Komunitas</a>
   </p>

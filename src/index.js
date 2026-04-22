@@ -5,7 +5,7 @@ import Express from 'express'
 import ejs from 'ejs' // eslint-disable-line no-unused-vars
 
 import { loadRoutes } from './routes/index.js'
-configDotenv()
+configDotenv({ override: true })
 
 const app = Express()
 

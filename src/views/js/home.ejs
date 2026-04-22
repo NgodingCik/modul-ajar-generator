@@ -48,6 +48,7 @@
     input.value = existingValue;
     input.className = 'w-full border-none bg-transparent p-2.5 text-gray-700 placeholder:text-gray-400 focus:ring-0 focus:outline-none';
     input.placeholder = `Kegiatan hari ${dayIndex} - JP ${jpIndex}`;
+    input.required = true;
 
     input.addEventListener('input', (e) => {
       savedKegiatanValues[e.target.id] = e.target.value;

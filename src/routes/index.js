@@ -1,6 +1,7 @@
 import path from 'node:path'
 import fs from 'node:fs/promises'
 import Express from 'express'
+import consola from 'consola'
 
 export class AppRoute {
   constructor (path, method, handler) {
@@ -62,7 +63,7 @@ export async function loadRoutes () {
       let finalPath = prefix + (normalizedRoutePath === '/' ? '' : normalizedRoutePath)
       if (finalPath === '') finalPath = '/'
 
-      console.log(`Registering route: [${route.method.toUpperCase()}] ${finalPath} from file ${file}`)
+      consola.debug(`Registering route: [${route.method.toUpperCase()}] ${finalPath} from file ${file}`)
 
       switch (route.method.toLowerCase()) {
         case 'get':
@@ -81,10 +82,10 @@ export async function loadRoutes () {
           router.patch(finalPath, route.handler)
           break
         default:
-          console.warn(`Unsupported HTTP method: ${route.method} in file ${file}`)
+          consola.warn(`Unsupported HTTP method: ${route.method} in file ${file}`)
       }
     } else {
-      console.warn(`No valid route found in file: ${file}`)
+      consola.warn(`No valid route found in file: ${file}`)
     }
   }
 

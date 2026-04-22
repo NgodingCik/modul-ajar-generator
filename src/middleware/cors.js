@@ -1,4 +1,5 @@
 const APP_ORIGIN_URL = process.env.APP_ORIGIN_URL || 'http://localhost:3000'
+const APP_ORIGIN_HOST = new URL(APP_ORIGIN_URL).host
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 if (!APP_ORIGIN_URL) {
@@ -6,15 +7,7 @@ if (!APP_ORIGIN_URL) {
 }
 
 const isHostAllowed = (host) => {
-  try {
-    const requestHost = new URL(host).host
-    const allowedHost = new URL(APP_ORIGIN_URL).host
-    console.log('Request Host:', requestHost)
-    console.log('Allowed Host:', allowedHost)
-    return requestHost === allowedHost
-  } catch {
-    return false
-  }
+  return host === APP_ORIGIN_HOST
 }
 
 const isOriginAllowed = (origin) => {
@@ -22,18 +15,11 @@ const isOriginAllowed = (origin) => {
     return isDevelopment
   }
 
-  try {
-    const requestOrigin = new URL(origin).origin
-    const allowedOrigin = new URL(APP_ORIGIN_URL).origin
-
-    return requestOrigin === allowedOrigin
-  } catch {
-    return false
-  }
+  return origin === APP_ORIGIN_HOST
 }
 
 const cors = (req, res, next) => {
-  const origin = req.headers.origin || ''
+  const origin = req.headers.origin || req.headers.host || ''
 
   res.header('Vary', 'Origin')
 

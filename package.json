@@ -11,6 +11,7 @@
     "start": "cross-env NODE_ENV=production node src/server.js --production",
     "tailwindcss": "npx @tailwindcss/cli -i ./src/main.css -o ./public/css/main.css --watch",
     "build:tailwindcss": "npx @tailwindcss/cli -i ./src/main.css -o ./public/css/main.css --minify",
+    "docs": "typedoc --tsconfig jsconfig.json --entryPointStrategy expand src --plugin typedoc-plugin-markdown --out docs",
     "cli:docx": "node src/cli/read-docx.js",
     "poc:vm-executor": "node poc/vm-executor.js",
     "poc:vm-docx": "node poc/vm-docx.js",
@@ -37,7 +38,9 @@
   "devDependencies": {
     "@tailwindcss/cli": "^4.2.2",
     "cross-env": "^10.1.0",
-    "standard": "^17.1.2"
+    "standard": "^17.1.2",
+    "typedoc": "^0.28.19",
+    "typedoc-plugin-markdown": "^4.11.0"
   },
   "standard": {
     "ignore": [

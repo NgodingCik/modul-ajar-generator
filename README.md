@@ -19,7 +19,7 @@
   <p align="center">
     Aplikasi web berbasis AI untuk membantu guru menyusun modul ajar dengan cepat dan efisien.
     <br />
-    <a href="docs"><strong>Buka Dokumentasi »</strong></a>
+    <a href="docs"><strong>Buka Dokumentassi »</strong></a>
     <br />
     <br />
     <a href="https://www.modul-ajar.web.id">Kunjungi Situs</a>

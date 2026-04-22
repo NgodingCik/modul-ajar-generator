@@ -1,8 +1,18 @@
+/**
+ * This file contains utility functions for handling some common operations in the application.
+ */
+
 import fs from 'fs'
 import path from 'path'
 import { encoding_for_model } from '@dqbd/tiktoken' // eslint-disable-line camelcase
 import consola from 'consola'
 
+/**
+ * Parses a markdown string into an object with keys and values extracted from the markdown.
+ *
+ * @param {string} markdown - The markdown string to parse
+ * @returns {Object} - The parsed object
+ */
 export function parseMarkdownToObject (markdown) {
   const lines = markdown.split('\n')
   const result = {}
@@ -29,6 +39,14 @@ export function parseMarkdownToObject (markdown) {
   return result
 }
 
+/**
+ * Extracts keys and their descriptions from a markdown string.
+ *
+ * @example <!-- {KEY_NAME} This is the description for KEY_NAME --!> will return { KEY_NAME: "This is the description for KEY_NAME" }
+ *
+ * @param {string} markdown - The markdown string to parse
+ * @returns {Object} - An object with keys and their descriptions
+ */
 export function getKeysDescriptionFromMarkdown (markdown) {
   const result = {}
   const regex = /<!--\s*\{([A-Z_]+)\}\s+([\s\S]{0,2000}?)\s*-->/g
@@ -41,6 +59,12 @@ export function getKeysDescriptionFromMarkdown (markdown) {
   return result
 }
 
+/**
+ * Removes HTML comments from a markdown string.
+ *
+ * @param {string} markdown - The markdown string to parse
+ * @returns {string} - The markdown string with comments removed
+ */
 export function removeCommentsFromMarkdown (markdown) {
   return markdown
     .replace(/<!--(?!-?>)(?:(?!-->)[\s\S]){0,50000}?-->/g, '')
@@ -48,6 +72,12 @@ export function removeCommentsFromMarkdown (markdown) {
     .trim()
 }
 
+/**
+ * Removes import require, and export statements from a string.
+ *
+ * @param {string} content - The string to parse
+ * @returns {string} - The string with import, require, and export statements removed
+ */
 export function removeImportRequire (content) {
   return content
   // Multi-line static import ... from '...' (PREVENT crossing into next import)
@@ -65,8 +95,9 @@ export function removeImportRequire (content) {
 
 /**
  * This function loads all Markdown files from a specified directory, reads their content, and constructs an object where each key is derived from the filename (converted to uppercase and underscores) and the value is the file's content. This allows for easy access to the content of multiple Markdown files in a structured format.
- * @param {*} dir - Content directory path
- * @returns {Object} - An object where keys are derived from filenames and values are file contents
+ *
+ * @param {string} dir - Content directory path
+ * @returns {Object{ [key: string]: string }} - An object where keys are derived from filenames and values are file contents
  */
 export function loadContexts (dir) {
   const context = {}
@@ -89,6 +120,7 @@ export function loadContexts (dir) {
  * Removes markdown code blocks and inline code from a markdown string.
  * Note: This removes MARKDOWN code blocks (e.g., from markdown with embedded code),
  * NOT pure code files. If the entire content is a code block, will return empty string.
+ *
  * @param {string} markdown - Markdown content with embedded code blocks
  * @returns {string} - Markdown with code blocks removed
  */
@@ -104,6 +136,7 @@ export function removeCodeBlocksFromMarkdown (markdown) {
  * Cleans code extracted from markdown code blocks.
  * Removes the enclosing backticks while preserving inner content.
  * Use this when the entire input is a markdown code block.
+ *
  * @param {string} code - Code wrapped in markdown fences (```...```)
  * @returns {string} - Code content without fence markers
  */
@@ -116,6 +149,7 @@ export function extractCodeFromMarkdownFence (code) {
 
 /**
  * Converts a number to its Roman numeral representation.
+ *
  * @param {number} num - The number to convert
  * @returns {string} - The Roman numeral representation of the number
  */
@@ -131,6 +165,7 @@ export function convertNumToRoman (num) {
 
 /**
  * Counts the number of tokens in a string using the specified model's tokenizer.
+ *
  * @param {string} message - The string to count tokens for
  * @param {TiktokenModel} model - The OpenAI model to use for tokenization (e.g., "gpt-3.5-turbo")
  * @returns {number} - The number of tokens in the string
@@ -145,6 +180,7 @@ export function numTokensFromString (message, model = 'gpt-5') {
 
 /**
  * Validates that all required parameters are present in the request body.
+ *
  * @param {Object} body - The request body
  * @param  {...any} requiredParams - The required parameter names
  * @returns {{ status: boolean, message: string | null }} - An object containing a boolean indicating validity and an error message (if applicable)

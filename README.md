@@ -19,14 +19,14 @@
   <p align="center">
     Aplikasi web berbasis AI untuk membantu guru menyusun modul ajar dengan cepat dan efisien.
     <br />
-    <a href="https://github.com/NgodingWok/modul-ajar-generator/tree/main/docs"><strong>Buka Dokumentasi »</strong></a>
+    <a href="docs"><strong>Buka Dokumentasi »</strong></a>
     <br />
     <br />
     <a href="https://www.modul-ajar.web.id">Kunjungi Situs</a>
     &middot;
-    <a href="https://github.com/NgodingWok/modul-ajar-generator/issues/new?labels=bug">Laporkan Bug</a>
+    <a href="issues/new?labels=bug&template=bug-report---.md">Laporkan Bug</a>
     &middot;
-    <a href="https://github.com/NgodingWok/modul-ajar-generator/issues/new?labels=enhancement">Ajukan Fitur</a>
+    <a href="issues/new?labels=enhancement&template=feature-request---.md">Ajukan Fitur</a>
     &middot;
     <a href="https://discord.gg/nA3xMhm5Nk">Gabung Komunitas</a>
   </p>

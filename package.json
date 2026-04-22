@@ -9,6 +9,7 @@
     "standard:fix": "standard --fix",
     "start": "node src/index.js",
     "tailwindcss": "npx @tailwindcss/cli -i ./src/main.css -o ./public/css/main.css --watch",
+    "build:tailwindcss": "npx @tailwindcss/cli -i ./src/main.css -o ./public/css/main.css --minify",
     "cli:docx": "node src/cli/read-docx.js",
     "poc:vm-executor": "node poc/vm-executor.js",
     "poc:vm-docx": "node poc/vm-docx.js",

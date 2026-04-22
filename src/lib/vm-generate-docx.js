@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import vm from 'vm'
+import consola from 'consola'
 import * as docx from 'docx'
 import { removeImportRequire, convertNumToRoman, extractCodeFromMarkdownFence } from '../utils/utils.js'
 import * as docxConfig from '../scripts/docx-config.js'
@@ -26,7 +27,7 @@ export default function generateDocxInVM (credentialVars = {}, predefinedVars) {
 
   const code = `${predefinedCode};\n${removeImportRequire(mainCode)};\nmain(credentialVars)`
 
-  console.debug('Executing VM code:\n', code)
+  consola.debug('Executing VM code:\n', code)
 
   const context = {
     console,
@@ -48,16 +49,16 @@ export default function generateDocxInVM (credentialVars = {}, predefinedVars) {
     if (result && typeof result.then === 'function') {
       return result
         .catch((err) => {
-          console.error('Error in async code within VM:', err)
+          consola.error('Error in async code within VM:', err)
           throw err
         })
     } else {
       return result
     }
   } catch (err) {
-    console.error('Error executing VM code:', err)
+    consola.error('Error executing VM code:', err)
     throw err
   } finally {
-    console.log('Finished executing VM code.')
+    consola.log('Finished executing VM code.')
   }
 }

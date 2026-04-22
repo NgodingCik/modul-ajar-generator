@@ -8,7 +8,7 @@
     "test": "standard",
     "debug": "DEBUG=* NODE_ENV=development node src/server.js",
     "standard:fix": "standard --fix",
-    "start": "node src/index.js",
+    "start": "cross-env NODE_ENV=production node src/server.js --production",
     "tailwindcss": "npx @tailwindcss/cli -i ./src/main.css -o ./public/css/main.css --watch",
     "build:tailwindcss": "npx @tailwindcss/cli -i ./src/main.css -o ./public/css/main.css --minify",
     "cli:docx": "node src/cli/read-docx.js",

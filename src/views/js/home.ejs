@@ -1,35 +1,103 @@
 <script>
-  const alokasiWaktu1 = document.getElementById('alokasiWaktu1');
-  const alokasiWaktu2 = document.getElementById('alokasiWaktu2');
-  const alokasiWaktu = document.getElementById('alokasiWaktu');
-  const modelPembelajaran = document.getElementById('modelPembelajaran');
-  const modelPembelajaranOptions = document.querySelectorAll('.model-pembelajaran-option');
-  const elemenCp = document.getElementById('elemenCp');
-  const elemenCpOptions = document.querySelectorAll('.elemen-cp-option');
-  const dimensiProfilLulusan = document.getElementById('dimensiProfilLulusan');
-  const dplOptions = document.querySelectorAll('.dpl-option');
-  const kegiatanDynamicContainer = document.getElementById('kegiatanDynamicContainer');
-  const kegiatanAiButtonTemplate = document.getElementById('kegiatanAiButtonTemplate');
+  const alokasiWaktu1 = document.getElementById("alokasiWaktu1");
+  const alokasiWaktu2 = document.getElementById("alokasiWaktu2");
+  const alokasiWaktu = document.getElementById("alokasiWaktu");
+  const modelPembelajaran = document.getElementById("modelPembelajaran");
+  const modelPembelajaranOptions = document.querySelectorAll(
+    ".model-pembelajaran-option",
+  );
+  const elemenCp = document.getElementById("elemenCp");
+  const elemenCpOptions = document.querySelectorAll(".elemen-cp-option");
+  const dimensiProfilLulusan = document.getElementById("dimensiProfilLulusan");
+  const dplOptions = document.querySelectorAll(".dpl-option");
+  const kegiatanDynamicContainer = document.getElementById(
+    "kegiatanDynamicContainer",
+  );
+  const kegiatanAiButtonTemplate = document.getElementById(
+    "kegiatanAiButtonTemplate",
+  );
+  const form = document.getElementById("rppForm");
+  const submitButton = document.getElementById("rppFormSubmitBtn");
+  const loadingText = document.getElementById("loading");
+  const loadingIndicator = document.getElementById("loadingIndicator");
+
+  // Dummy loading message
+  const loadingMessage = [
+    {
+      message: "Menganalisis kurikulum dan tujuan pembelajaran...",
+      class: "text-gray-500",
+      delay: 10000, // 10s
+    },
+    {
+      message: "Mengidentifikasi kebutuhan dan karakteristik siswa...",
+      class: "text-gray-500",
+      delay: 10000, // 10s
+    },
+    {
+      message: "Merancang strategi pembelajaran aktif...",
+      class: "text-blue-500",
+      delay: 15000, // 15s
+    },
+    {
+      message: "Menyusun materi inti dan referensi konten...",
+      class: "text-blue-500",
+      delay: 20000, // 20s
+    },
+    {
+      message: "Menyiapkan asesmen formatif dan sumatif...",
+      class: "text-indigo-500",
+      delay: 15000, // 15s
+    },
+    {
+      message: "Mengintegrasikan profil pelajar Pancasila...",
+      class: "text-indigo-500",
+      delay: 15000, // 15s
+    },
+    {
+      message: "Membangun struktur dokumen dan media pendukung...",
+      class: "text-cyan-600",
+      delay: 15000, // 15s
+    },
+    {
+      message: "Melakukan validasi AI terhadap standar modul ajar...",
+      class: "text-amber-600",
+      delay: 10000, // 10s
+    },
+    {
+      message: "Finalisasi format dokumen (DOCX/PDF)...",
+      class: "text-emerald-600",
+      delay: 10000, // 10s
+    },
+    {
+      message: "Mengirim dokumen, mohon bersabar!",
+      class: "text-green-600",
+      delay: 2000, // Selesai
+    },
+  ];
+
+  // State variables
+  let isGeneratingDocx = false;
 
   const savedKegiatanValues = {};
 
   const createAiButton = (dayIndex, jpIndex) => {
-    const fallbackButton = document.createElement('button');
-    fallbackButton.type = 'button';
-    fallbackButton.className = 'bg-transparent border-0 p-0 m-0 cursor-pointer';
+    const fallbackButton = document.createElement("button");
+    fallbackButton.type = "button";
+    fallbackButton.className = "bg-transparent border-0 p-0 m-0 cursor-pointer";
     fallbackButton.title = `AI: Sempurnakan kegiatan hari ${dayIndex} JP ${jpIndex}`;
     fallbackButton.id = `kegiatanHari${dayIndex}Jp${jpIndex}Ai`;
 
     if (!kegiatanAiButtonTemplate) {
-      fallbackButton.textContent = 'AI';
+      fallbackButton.textContent = "AI";
       return fallbackButton;
     }
 
-    const aiButton = kegiatanAiButtonTemplate.content.firstElementChild.cloneNode(true);
+    const aiButton =
+      kegiatanAiButtonTemplate.content.firstElementChild.cloneNode(true);
     aiButton.id = `ai.kegiatanHari${dayIndex}Jp${jpIndex}`;
     aiButton.title = `AI: Sempurnakan kegiatan hari ${dayIndex} JP ${jpIndex}`;
 
-    const aiLabel = aiButton.querySelector('.sr-only');
+    const aiLabel = aiButton.querySelector(".sr-only");
     if (aiLabel) {
       aiLabel.textContent = `AI: Sempurnakan kegiatan hari ${dayIndex} JP ${jpIndex}`;
     }
@@ -37,25 +105,27 @@
     return aiButton;
   };
 
-  const createKegiatanInput = (dayIndex, jpIndex, existingValue = '') => {
-    const inputWrapper = document.createElement('div');
-    inputWrapper.className = 'relative flex items-center rounded-md border-2 border-violet-800/30 transition-all focus-within:border-violet-800 focus-within:ring-2 focus-within:ring-violet-800/40';
+  const createKegiatanInput = (dayIndex, jpIndex, existingValue = "") => {
+    const inputWrapper = document.createElement("div");
+    inputWrapper.className =
+      "relative flex items-center rounded-md border-2 border-violet-800/30 transition-all focus-within:border-violet-800 focus-within:ring-2 focus-within:ring-violet-800/40";
 
-    const input = document.createElement('input');
-    input.type = 'text';
+    const input = document.createElement("input");
+    input.type = "text";
     input.name = `kegiatanHari${dayIndex}Jp${jpIndex}`;
     input.id = `kegiatanHari${dayIndex}Jp${jpIndex}`;
     input.value = existingValue;
-    input.className = 'w-full border-none bg-transparent p-2.5 text-gray-700 placeholder:text-gray-400 focus:ring-0 focus:outline-none';
+    input.className =
+      "w-full border-none bg-transparent p-2.5 text-gray-700 placeholder:text-gray-400 focus:ring-0 focus:outline-none";
     input.placeholder = `Kegiatan hari ${dayIndex} - JP ${jpIndex}`;
     input.required = true;
 
-    input.addEventListener('input', (e) => {
+    input.addEventListener("input", (e) => {
       savedKegiatanValues[e.target.id] = e.target.value;
     });
 
-    const aiWrapper = document.createElement('div');
-    aiWrapper.className = 'flex items-center pr-3';
+    const aiWrapper = document.createElement("div");
+    aiWrapper.className = "flex items-center pr-3";
     aiWrapper.appendChild(createAiButton(dayIndex, jpIndex));
 
     inputWrapper.appendChild(input);
@@ -67,7 +137,8 @@
   const renderKegiatanFields = () => {
     if (!kegiatanDynamicContainer) return;
 
-    const existingInputs = kegiatanDynamicContainer.querySelectorAll('input[type="text"]');
+    const existingInputs =
+      kegiatanDynamicContainer.querySelectorAll('input[type="text"]');
     existingInputs.forEach((input) => {
       savedKegiatanValues[input.id] = input.value;
     });
@@ -75,35 +146,43 @@
     const totalDays = Number.parseInt(alokasiWaktu1?.value, 10);
     const totalJp = Number.parseInt(alokasiWaktu2?.value, 10);
 
-    kegiatanDynamicContainer.innerHTML = '';
+    kegiatanDynamicContainer.innerHTML = "";
 
-    if (!Number.isFinite(totalDays) || totalDays <= 0 || !Number.isFinite(totalJp) || totalJp <= 0) {
-      const emptyHint = document.createElement('p');
-      emptyHint.className = 'text-sm text-gray-500';
-      emptyHint.textContent = 'Isi Hari dan JP pada Alokasi Waktu untuk membuat kolom kegiatan otomatis.';
+    if (
+      !Number.isFinite(totalDays) ||
+      totalDays <= 0 ||
+      !Number.isFinite(totalJp) ||
+      totalJp <= 0
+    ) {
+      const emptyHint = document.createElement("p");
+      emptyHint.className = "text-sm text-gray-500";
+      emptyHint.textContent =
+        "Isi Hari dan JP pada Alokasi Waktu untuk membuat kolom kegiatan otomatis.";
       kegiatanDynamicContainer.appendChild(emptyHint);
       return;
     }
 
     for (let dayIndex = 1; dayIndex <= totalDays; dayIndex += 1) {
-      const dayBlock = document.createElement('div');
-      dayBlock.className = 'rounded-md border-2 border-violet-800/20 p-3';
+      const dayBlock = document.createElement("div");
+      dayBlock.className = "rounded-md border-2 border-violet-800/20 p-3";
 
-      const heading = document.createElement('h3');
-      heading.className = 'font-semibold text-violet-800';
+      const heading = document.createElement("h3");
+      heading.className = "font-semibold text-violet-800";
       heading.textContent = `Hari ${dayIndex}`;
 
-      const helper = document.createElement('small');
-      helper.className = 'block text-sm text-gray-500 mt-1';
-      helper.textContent = `Isi ${totalJp} kegiatan untuk hari ke-${dayIndex}.`; 
+      const helper = document.createElement("small");
+      helper.className = "block text-sm text-gray-500 mt-1";
+      helper.textContent = `Isi ${totalJp} kegiatan untuk hari ke-${dayIndex}.`;
 
-      const dayGrid = document.createElement('div');
-      dayGrid.className = 'mt-3 grid grid-cols-1 gap-2';
+      const dayGrid = document.createElement("div");
+      dayGrid.className = "mt-3 grid grid-cols-1 gap-2";
 
       for (let jpIndex = 1; jpIndex <= totalJp; jpIndex += 1) {
         const inputId = `kegiatanHari${dayIndex}Jp${jpIndex}`;
-        const existingValue = savedKegiatanValues[inputId] || '';
-        dayGrid.appendChild(createKegiatanInput(dayIndex, jpIndex, existingValue));
+        const existingValue = savedKegiatanValues[inputId] || "";
+        dayGrid.appendChild(
+          createKegiatanInput(dayIndex, jpIndex, existingValue),
+        );
       }
 
       dayBlock.appendChild(heading);
@@ -117,7 +196,7 @@
     if (alokasiWaktu1?.value && alokasiWaktu2?.value) {
       alokasiWaktu.value = `${alokasiWaktu1.value} x ${alokasiWaktu2.value} JP`;
     } else {
-      alokasiWaktu.value = '';
+      alokasiWaktu.value = "";
     }
 
     renderKegiatanFields();
@@ -131,7 +210,7 @@
       .map((checkbox) => checkbox.value)
       .filter(Boolean);
 
-    modelPembelajaran.value = selectedModelPembelajaran.join(', ');
+    modelPembelajaran.value = selectedModelPembelajaran.join(", ");
   };
 
   const handleElemenCpChange = () => {
@@ -142,32 +221,33 @@
       .map((checkbox) => checkbox.value)
       .filter(Boolean);
 
-    elemenCp.value = selectedElemenCp.join(', ');
+    elemenCp.value = selectedElemenCp.join(", ");
   };
 
   const handleDplChange = () => {
     if (!dimensiProfilLulusan) return;
 
-    const selectedDpl = Array.from(dplOptions)
-      .map((checkbox) => checkbox.value + (checkbox.checked ? ': true' : ': false'));
+    const selectedDpl = Array.from(dplOptions).map(
+      (checkbox) => checkbox.value + (checkbox.checked ? ": true" : ": false"),
+    );
 
-    dimensiProfilLulusan.value = selectedDpl.join(',');
+    dimensiProfilLulusan.value = selectedDpl.join(",");
   };
 
   modelPembelajaranOptions.forEach((checkbox) => {
-    checkbox.addEventListener('change', handleModelPembelajaranChange);
+    checkbox.addEventListener("change", handleModelPembelajaranChange);
   });
 
   elemenCpOptions.forEach((checkbox) => {
-    checkbox.addEventListener('change', handleElemenCpChange);
+    checkbox.addEventListener("change", handleElemenCpChange);
   });
 
   dplOptions.forEach((checkbox) => {
-    checkbox.addEventListener('change', handleDplChange);
+    checkbox.addEventListener("change", handleDplChange);
   });
 
-  alokasiWaktu1?.addEventListener('input', handleAlokasiWaktuChange);
-  alokasiWaktu2?.addEventListener('input', handleAlokasiWaktuChange);
+  alokasiWaktu1?.addEventListener("input", handleAlokasiWaktuChange);
+  alokasiWaktu2?.addEventListener("input", handleAlokasiWaktuChange);
 
   window.handleAlokasiWaktuChange = handleAlokasiWaktuChange;
 
@@ -175,4 +255,45 @@
   handleModelPembelajaranChange();
   handleElemenCpChange();
   handleDplChange();
+
+  if (Swal) {
+    console.debug("SweetAlert2 is loaded and ready to use!");
+  } else {
+    console.error("SweetAlert2 failed to load.");
+  }
+
+  // Event handler
+  submitButton.addEventListener("click", () => {
+    console.log("Submit button clicked");
+    if (isGeneratingDocx) {
+      e.preventDefault();
+      return;
+    }
+
+    isGeneratingDocx = true;
+
+    Swal.fire({
+      icon: "warning",
+      title: "Tetap fokus di halaman ini!",
+      text: "Jangan meninggalkan, menutup, merefresh, maupun membuka aplikasi lain selama proses pembuatan berlangsung untuk menghindari kegagalan pembuatan dokumen.",
+    });
+
+    submitButton.disabled = true;
+    submitButton.textContent = "Generating...";
+    submitButton.classList.add("cursor-not-allowed", "opacity-50");
+
+    loadingIndicator.classList.remove("hidden");
+    loadingIndicator.classList.add("flex");
+
+    let actualDelay = 0;
+
+    loadingMessage.forEach(({ message, class: messageClass, delay }, index) => {
+      setTimeout(() => {
+        loadingText.textContent =
+          message + ` (${index + 1}/${loadingMessage.length})`;
+        loadingText.className = messageClass;
+      }, actualDelay);
+      actualDelay += delay;
+    });
+  });
 </script>

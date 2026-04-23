@@ -151,6 +151,7 @@ ASAP
 ## Developer
 
 Para pengembang yang telah berkontribusi dalam proyek ini:
+
 <a href="https://github.com/NgodingWok/modul-ajar-generator/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=NgodingWok/modul-ajar-generator" alt="Gambar contrib.rocks" />
 </a>

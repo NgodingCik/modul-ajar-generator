@@ -15,7 +15,7 @@ const helmetMiddleware = helmet({
       'frame-ancestors': ["'self'", ...CORS_TRUSTED_HOSTS],
       'script-src': ["'self'", "'unsafe-inline'", ...CORS_TRUSTED_CDN_HOSTS],
       'style-src': ["'self'", "'unsafe-inline'", ...CORS_TRUSTED_CDN_HOSTS],
-      'img-src': ["'self'", 'data:', ...CORS_TRUSTED_CDN_HOSTS],
+      'img-src': ["'self'", 'data:', 'https://contrib.rocks', ...CORS_TRUSTED_CDN_HOSTS],
       'font-src': ["'self'", ...CORS_TRUSTED_CDN_HOSTS]
     }
   },

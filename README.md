@@ -119,14 +119,6 @@ Setiap tambahan dan perbaikan dari para kontributor dalam proyek _open source_ i
 > [!IMPORTANT]
 > Jangan lupa untuk memperbarui dokumentasi dengan cara menjalankan `npm run docs` setelah melakukan perubahan pada kode yang mempengaruhi dokumentasi, serta jalankan `npm run test` untuk memastikan kualitas kode sebelum melakukan _Pull Request_.
 
-### Daftar Kontributor Utama:
-
-Orang-orang hebat yang telah memberikan kontribusi signifikan untuk proyek ini:
-
-<a href="https://github.com/NgodingWok/modul-ajar-generator/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=NgodingWok/modul-ajar-generator" alt="Gambar contrib.rocks" />
-</a>
-
 <p align="right">(<a href="#readme-top">Kembali ke Atas</a>)</p>
 
 
@@ -150,13 +142,21 @@ Tautan Proyek Utama: [https://github.com/NgodingWok/modul-ajar-generator](https:
 <!--ACKNOWLEDGMENTS-->
 ## Ucapan Terima Kasih
 
-Banyak terima kasih khususnya untuk basis referensi unggulan berikut yang memberi sumbangsih operasional proyek ini:
+Terimakasih untuk orang-orang hebat yang telah memberikan kontribusi, baik dalam bentuk kode, ide, maupun dukungan moral untuk proyek ini. Tanpa kalian, proyek ini tidak akan pernah terwujud.
 
-* [Express.js](https://expressjs.com)
-* [Tailwind CSS](https://tailwindcss.com)
-* [docx (JavaScript library)](https://docx.js.org/)
-* [OpenAI Node/JS SDK API](https://github.com/openai/openai-node)
-* [Img Shields](https://shields.io)
+### Konsultan & Auditor
+
+ASAP
+
+## Developer
+
+Para pengembang yang telah berkontribusi dalam proyek ini:
+
+<a href="https://github.com/NgodingWok/modul-ajar-generator/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=NgodingWok/modul-ajar-generator" alt="Gambar contrib.rocks" />
+</a>
+
+
 
 <p align="right">(<a href="#readme-top">Kembali ke Atas</a>)</p>
 

@@ -263,7 +263,7 @@
   }
 
   // Event handler
-  submitButton.addEventListener("click", () => {
+  form.addEventListener("submit", (e) => {
     console.log("Submit button clicked");
     if (isGeneratingDocx) {
       e.preventDefault();
@@ -276,6 +276,20 @@
       icon: "warning",
       title: "Tetap fokus di halaman ini!",
       text: "Jangan meninggalkan, menutup, merefresh, maupun membuka aplikasi lain selama proses pembuatan berlangsung untuk menghindari kegagalan pembuatan dokumen.",
+    });
+
+    const formData = new FormData(form);
+
+    fetch('/api/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(Object.fromEntries(formData.entries()))
+    }).then(response => {
+      console.log('Server response:', response);
+    }).catch(error => {
+      console.error('Error sending initiation signal:', error);
     });
 
     submitButton.disabled = true;

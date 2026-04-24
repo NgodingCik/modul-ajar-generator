@@ -28,7 +28,7 @@
     &middot;
     <a href="https://github.com/NgodingWok/modul-ajar-generator/issues/new?labels=enhancement&template=feature-request---.md">Ajukan Fitur</a>
     &middot;
-    <a href="https://discord.gg/nA3xMhm5Nk">Gabung Komunitas</a>
+    <a href="https://discord.ngodingcik.my.id">Gabung Komunitas</a>
   </p>
 </div>
 

@@ -16,6 +16,8 @@
       temaSubtema: 'Identitas / Diriku (Aku Istimewa: Ayo Kita Berkenalan)',
       tujuanPembelajaran: '- Anak mampu mengenal identitas dirinya sebagai bagian dari keluarga dan menyebutkan namanya sendiri sambil melakukan gerakan sederhana seperti melambai atau bertepuk tangan.',
       topikPembelajaran: 'Aku Istimewa: Ayo Kita Berkenalan',
+      materiPembelajaran: 'Materi pengenalan diri sendiri, nama panggilan, ciri-ciri fisik, keluarga inti, dan teman di sekitar.',
+      identifikasiPesertaDidik: 'Sebagian besar anak sudah dapat menyebutkan nama panggilannya, namun masih ada yang malu-malu. Beberapa anak mulai menunjukkan minat bermain bersama teman.',
       alokasiHari: 5,
       alokasiJp: 3,
       modelPembelajaran: ['Kolaboratif', 'Eksperimental'],
@@ -55,6 +57,8 @@
       temaSubtema: 'Tanah Air / Indonesia (Aku Cinta Indonesia: Negeri Seribu Pulau)',
       tujuanPembelajaran: 'Anak mengenal negara Indonesia, mulai dari bendera merah putih hingga keberagaman suku.',
       topikPembelajaran: 'Aku Cinta Indonesia: Negeri Seribu Pulau',
+      materiPembelajaran: 'Pengenalan bendera merah putih, lambang negara Garuda Pancasila, keanekaragaman suku dan budaya, serta kesenian tradisional Indonesia.',
+      identifikasiPesertaDidik: 'Anak-anak menunjukkan rasa ingin tahu tinggi terhadap warna bendera dan lambang garuda. Beberapa anak sudah pernah mendengar lagu nasional sederhana.',
       alokasiHari: 5,
       alokasiJp: 3,
       modelPembelajaran: ['Kolaboratif', 'Eksplorasi'],
@@ -93,6 +97,8 @@
       temaSubtema: 'Tanah Air / Kebinekaan',
       tujuanPembelajaran: 'Menumbuhkan rasa cinta sesama serta kemampuan berkolaborasi dan saling menghargai antarteman.',
       topikPembelajaran: 'Kita Indonesia Sesungguhnya',
+      materiPembelajaran: 'Mengenal perbedaan karakteristik teman, belajar berbagi, kolaborasi dalam tugas kelompok, dan merayakan keberagaman yang ada di kelas.',
+      identifikasiPesertaDidik: 'Hampir seluruh anak senang bermain bersama, namun beberapa anak kadang masih kesulitan untuk mau berbagi mainan atau alat gambar.',
       alokasiHari: 5,
       alokasiJp: 3,
       modelPembelajaran: ['Kolaboratif', 'Eksplorasi'],
@@ -131,6 +137,8 @@
       temaSubtema: 'Aku Cinta Indonesia / Hari Merdeka',
       tujuanPembelajaran: 'Berani mengeksplorasi kegiatan bertema merah putih sebagai wujud merayakan kemerdekaan.',
       topikPembelajaran: 'Merayakan Kemerdekaan: Bermain dengan Warna Merah Putih',
+      materiPembelajaran: 'Makna kemerdekaan, mengenal warna merah putih, berbagi bersama, serta semangat perayaan melalui karya seni dan permainan sederhana.',
+      identifikasiPesertaDidik: 'Anak-anak sangat antusias jika melihat ornamen bendera dan balon. Beberapa anak mulai menyadari kemeriahan di sekeliling saat bulan kemerdekaan.',
       alokasiHari: 5,
       alokasiJp: 3,
       modelPembelajaran: ['Projek Kolaboratif'],
@@ -169,6 +177,8 @@
       temaSubtema: 'Lingkunganku / Hidup Bersih dan Sehat',
       tujuanPembelajaran: 'Membiasakan anak untuk menjaga kebersihan diri serta kepedulian terhadap lingkungan sekitar.',
       topikPembelajaran: 'Tubuhku Sehat, Hatiku Gembira',
+      materiPembelajaran: 'Cara mandi yang benar, pentingnya mencuci tangan, memotong kuku, sikat gigi, serta tata cara menjaga kebersihan barang dan sekitar.',
+      identifikasiPesertaDidik: 'Hampir semua anak sudah menggosok gigi namun belum memahami teknik yang tepat. Beberapa enggan memotong kuku karena takut.',
       alokasiHari: 5,
       alokasiJp: 3,
       modelPembelajaran: ['Eksperimental', 'Kolaboratif'],
@@ -207,6 +217,8 @@
       temaSubtema: 'Lingkunganku / Rumahku',
       tujuanPembelajaran: 'Anak mendeskripsikan bangunan dan bagian rumah serta fungsinya sebagai tempat berlindung.',
       topikPembelajaran: 'Rumahku yang Indah',
+      materiPembelajaran: 'Bagian-bagian dari sebuah rumah (atap, dinding, pintu, jendela), fungsi berbagai ruangan, serta mengenali letak dan peran rumah.',
+      identifikasiPesertaDidik: 'Sebagian besar anak sudah dapat menunjukkan pintu atau atap rumah aslinya. Beberapa suka permainan balok menyusun menjadi struktur bangunan.',
       alokasiHari: 5,
       alokasiJp: 3,
       modelPembelajaran: ['PjBL', 'Kolaboratif'],
@@ -290,6 +302,8 @@
         setFieldValue('temaSubtema', tpl.temaSubtema);
         setFieldValue('tujuanPembelajaran', tpl.tujuanPembelajaran);
         setFieldValue('topikPembelajaran', tpl.topikPembelajaran);
+        if (tpl.materiPembelajaran) setFieldValue('materiPembelajaran', tpl.materiPembelajaran);
+        if (tpl.identifikasiPesertaDidik) setFieldValue('identifikasiPesertaDidik', tpl.identifikasiPesertaDidik);
 
         // ── Alokasi waktu ──────────────────────────────────────────────────────────
         // Set the two numeric inputs first, then trigger the combined handler.

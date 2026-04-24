@@ -175,3 +175,75 @@ Potongan kode diatas, aneh, karenah setelah hari ke 7, kembali lagi ke hari ke-5
 
 Output diatas tidak membuat variable secara lengkap, pastikan divalidasi ulang sebelum dikirim ke user.
 Tolong diingat bahwa alokasi waktu itu berbeda setiap request, jadi diatas hanyalah contoh output yang tidak diinginkan, pastikan untuk memvalidasi ulang setiap output yang dihasilkan oleh AI untuk memastikan bahwa variabel yang dihasilkan sesuai dengan kebutuhan dan tidak mengandung informasi yang tidak relevan atau berlebihan.
+---
+```js
+const rencanaPelaksanaanAwal = [
+  ['Pembuka dari proses pembelajaran yang bertujuan untuk mempersiapkan peserta didik sebelum memasuki inti pembelajaran.'],
+  ['Kegiatan dalam tahap ini meliputi orientasi yang bermakna, apersepsi yang kontekstual, dan motivasi yang menggembirakan:', [
+    'Salam dan doa pembuka untuk menciptakan suasana tenang dan fokus.',
+    'Menyanyikan lagu "Hari Merdeka" untuk membangun semangat nasionalisme.'
+  ]],
+  ['Kegiatan pemantik dengan tayangan gambar bendera merah putih dan berbagai jenis tumbuhan di Indonesia.'],
+  ['Permainan konsentrasi sederhana "Cari Pasangan Warna" untuk memusatkan perhatian anak.'],
+  ['Pertanyaan pemantik untuk mengembangkan berbagai aspek:', [
+    '"Mengapa kita harus bersyukur atas tumbuhan yang Tuhan ciptakan?" (Keimanan dan Ketakwaan.)',
+    '"Apa yang bisa kita lakukan untuk menjaga lingkungan sekolah?" (Kewargaan.)',
+    '"Bagaimana perasaanmu saat melihat bendera merah putih?" (Kesehatan.)',
+    '"Siapa yang pernah merayakan hari kemerdekaan di rumah?" (Kolaborasi.)',
+    '"Apa karyamu yang bisa mewakili semangat merdeka?" (Kreativitas.)',
+    '"Bagaimana cara kita menjaga persatuan seperti ranting pohon yang saling menopang?" (Kewargaan.)',
+    '"Bagaimana cara menjelaskan ke teman tentang pentingnya merawat tumbuhan?" (Komunikasi.)',
+    '"Mengapa kita harus mandiri dalam merawat lingkungan?" (Kemandirian.)'
+  ]]
+]
+const rencanaPelaksanaanInti = 'Pada tahap ini, anak aktif terlibat dalam pengalaman belajar memahami, mengaplikasi, dan merefleksi. Guru menerapkan prinsip pembelajaran berkesadaran, bermakna, menggembirakan untuk mencapai tujuan pembelajaran.'
+const rencanaPelaksanaanIntiTable = [
+  {
+    title: 'MEMAHAMI',
+    rows: [
+      ['<b>Hari</b>', '<b>Uraian Kegiatan</b>'],
+      [
+        '1',
+        'Kegiatan 1: Merah Putih Bersama Tumbuhan (Keimanan dan Ketakwaan, Kewargaan, Kreativitas, Kolaborasi, Kemandirian, Kesehatan, Komunikasi). Alat dan Bahan: Pohon atau tanaman kecil di pot, cat air merah dan putih, kuas, kertas karton besar, foto bendera merah putih, stiker bintang, musik kebangsaan. Cara Bermain: Anak-anak diajak berdiri mengelilingi tanaman. Guru memulai dengan menyanyikan lagu kebangsaan, lalu menjelaskan bahwa merah putih adalah warna bendera Indonesia yang melambangkan keberanian dan kemurnian. Anak-anak kemudian menghias pot tanaman dengan cat merah putih, membuat pola seperti bendera atau bintang. Selanjutnya, mereka menyiram tanaman bersama-sama sambil menyanyikan lagu "Maju Tak Gentar". Kegiatan diakhiri dengan anak menempelkan stiker bintang di kertas karton besar sebagai simbol harapan untuk Indonesia.'
+      ]
+    ]
+  },
+  {
+    title: 'MENGAPLIKASI (BERKESADARAN, BERMAKNA)',
+    rows: [
+      ['<b>Hari</b>', '<b>Uraian Kegiatan</b>'],
+      [
+        '1',
+        'Kegiatan 1: Merah Putih Bersama Tumbuhan (Keimanan dan Ketakwaan, Kewargaan, Kreativitas, Kolaborasi, Kemandirian, Kesehatan, Komunikasi). Alat dan Bahan: Pohon atau tanaman kecil di pot, cat air merah dan putih, kuas, kertas karton besar, foto bendera merah putih, stiker bintang, musik kebangsaan. Cara Bermain: Anak-anak diajak berdiri mengelilingi tanaman. Guru memulai dengan menyanyikan lagu kebangsaan, lalu menjelaskan bahwa merah putih adalah warna bendera Indonesia yang melambangkan keberanian dan kemurnian. Anak-anak kemudian menghias pot tanaman dengan cat merah putih, membuat pola seperti bendera atau bintang. Selanjutnya, mereka menyiram tanaman bersama-sama sambil menyanyikan lagu "Maju Tak Gentar". Kegiatan diakhiri dengan anak menempelkan stiker bintang di kertas karton besar sebagai simbol harapan untuk Indonesia.'
+      ]
+    ]
+  },
+  {
+    title: 'MEREFLEKSI',
+    rows: [
+      ['<b>Hari</b>', '<b>Uraian Kegiatan</b>'],
+      [
+        '1',
+        'Kegiatan 1: Merah Putih Bersama Tumbuhan (Keimanan dan Ketakwaan, Kewargaan, Kreativitas, Kolaborasi, Kemandirian, Kesehatan, Komunikasi). Alat dan Bahan: Pohon atau tanaman kecil di pot, cat air merah dan putih, kuas, kertas karton besar, foto bendera merah putih, stiker bintang, musik kebangsaan. Cara Bermain: Anak-anak diajak berdiri mengelilingi tanaman. Guru memulai dengan menyanyikan lagu kebangsaan, lalu menjelaskan bahwa merah putih adalah warna bendera Indonesia yang melambangkan keberanian dan kemurnian. Anak-anak kemudian menghias pot tanaman dengan cat merah putih, membuat pola seperti bendera atau bintang. Selanjutnya, mereka menyiram tanaman bersama-sama sambil menyanyikan lagu "Maju Tak Gentar". Kegiatan diakhiri dengan anak menempelkan stiker bintang di kertas karton besar sebagai simbol harapan untuk Indonesia.'
+      ]
+    ]
+  }
+]
+```
+
+User hanya meminta 1 hari dengan 1 kegiatan (1 x 1 JP.) namun output diatas membuat 3 hari (1 hari diulang sebanyak 3 kali) dengan 1 kegiatan yang sama, sehingga total kegiatan menjadi 3 kegiatan. Output ini perlu divalidasi ulang untuk memastikan bahwa variabel yang dihasilkan sesuai dengan kebutuhan dan tidak mengandung informasi yang tidak relevan atau berlebihan.
+
+Seharusnya output yang dihasilkan adalah seperti berikut:
+```js
+const rencanaPelaksanaanIntiTable = [
+  {
+    title: 'MEMAHAMI - MENGAPLIKASI - MEREFLEKSI',
+    rows: [
+      ['<b>Hari</b>', '<b>Uraian Kegiatan</b>'],
+      [
+        '1',
+        'Kegiatan 1: Merah Putih Bersama Tumbuhan (Keimanan dan Ketakwaan, Kewargaan, Kreativitas, Kolaborasi, Kemandirian, Kesehatan, Komunikasi). Alat dan Bahan: Pohon atau tanaman kecil di pot, cat air merah dan putih, kuas, kertas karton besar, foto bendera merah putih, stiker bintang, musik kebangsaan. Cara Bermain: Anak-anak diajak berdiri mengelilingi tanaman. Guru memulai dengan menyanyikan lagu kebangsaan, lalu menjelaskan bahwa merah putih adalah warna bendera Indonesia yang melambangkan keberanian dan kemurnian. Anak-anak kemudian menghias pot tanaman dengan cat merah putih, membuat pola seperti bendera atau bintang. Selanjutnya, mereka menyiram tanaman bersama-sama sambil menyanyikan lagu "Maju Tak Gentar". Kegiatan diakhiri dengan anak menempelkan stiker bintang di kertas karton besar sebagai simbol harapan untuk Indonesia.'
+      ]
+    ]
+  }
+]

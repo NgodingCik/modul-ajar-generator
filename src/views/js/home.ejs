@@ -1,4 +1,48 @@
 <script>
+  const FILTER_KEYS = [
+    "namaSekolah",
+    "namaPenyusun",
+    "nip",
+    "fase",
+    "semester",
+    "bulan",
+    "mingguKe",
+    "kelas",
+    "jumlahAnak",
+    "alokasiWaktu",
+    "temaSubtema",
+    "modelPembelajaran",
+    "elemenCp",
+    "dimensiProfilLulusan",
+    "materiPembelajaran",
+    "identifikasiPesertaDidik",
+    "tujuanPembelajaran",
+    "topikPembelajaran",
+  ];
+  const OPTIONAL_KEYS = ["namaSekolah", "namaPenyusun", "nip", "jumlahAnak"];
+  const REQUIRED_KEYS = FILTER_KEYS.filter((key) => !OPTIONAL_KEYS.includes(key));
+
+  const requiredEl = [];
+  REQUIRED_KEYS.forEach((key) => {
+    const el = document.getElementById(key);
+    if (el) {
+      requiredEl.push(el);
+    } else {
+      console.warn(`Element with id "${key}" not found in the DOM.`);
+    }
+  });
+
+  const isRequiredFilled = () => {
+    return requiredEl.every((el) => el.value.trim() !== "");
+  };
+
+  const getUnfilledRequiredFields = () => {
+    return requiredEl
+      .filter((el) => el.value.trim() === "")
+      .map((el) => el.id);
+  };
+</script>
+<script>
   const alokasiWaktu1 = document.getElementById("alokasiWaktu1");
   const alokasiWaktu2 = document.getElementById("alokasiWaktu2");
   const alokasiWaktu = document.getElementById("alokasiWaktu");
@@ -18,8 +62,9 @@
   );
   const form = document.getElementById("rppForm");
   const submitButton = document.getElementById("rppFormSubmitBtn");
-  const loadingText = document.getElementById("loading");
-  const loadingIndicator = document.getElementById("loadingIndicator");
+
+  // Loading indicator elements
+  const templateLoadingGenerateWrapper = document.getElementById("loadingGenerateWrapper");
 
   // Dummy loading message
   const loadingMessage = [
@@ -71,8 +116,8 @@
     {
       message: "Mengirim dokumen, mohon bersabar!",
       class: "text-green-600",
-      delay: 2000, // Selesai
-    },
+      delay: 2000, // 2s
+    }
   ];
 
   // State variables
@@ -264,50 +309,128 @@
 
   // Event handler
   form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
     console.log("Submit button clicked");
     if (isGeneratingDocx) {
+      return;
+    }
+
+    if(!isRequiredFilled()) {
       e.preventDefault();
+      Swal.fire({
+        icon: "error",
+        title: "Form belum lengkap",
+        text: "Pastikan semua field yang wajib diisi sudah terisi dengan benar.",
+        footer: '<div class="flex items-center justify-center gap-3">' + getUnfilledRequiredFields().map((fieldId) => `<a id="fix.${fieldId}" href="#${fieldId}Wrapper">Perbaiki <span class="text-blue-500">${fieldId}</span></a>`).join("") + '</div>',
+        heightAuto: false,
+        scrollbarPadding: false,
+        focusConfirm: false,
+        returnFocus: false
+      });
+
       return;
     }
 
     isGeneratingDocx = true;
 
-    Swal.fire({
-      icon: "warning",
-      title: "Tetap fokus di halaman ini!",
-      text: "Jangan meninggalkan, menutup, merefresh, maupun membuka aplikasi lain selama proses pembuatan berlangsung untuk menghindari kegagalan pembuatan dokumen.",
-    });
-
     const formData = new FormData(form);
-
-    fetch('/api/generate', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(Object.fromEntries(formData.entries()))
-    }).then(response => {
-      console.log('Server response:', response);
-    }).catch(error => {
-      console.error('Error sending initiation signal:', error);
-    });
 
     submitButton.disabled = true;
     submitButton.textContent = "Generating...";
     submitButton.classList.add("cursor-not-allowed", "opacity-50");
 
-    loadingIndicator.classList.remove("hidden");
-    loadingIndicator.classList.add("flex");
+    const swalInstance = Swal.fire({
+      icon: "warning",
+      title: "Sedang membuat dokumen...",
+      text: "Jangan meninggalkan, menutup, merefresh, maupun membuka aplikasi lain selama proses pembuatan berlangsung untuk menghindari kegagalan pembuatan dokumen.",
+      footer: templateLoadingGenerateWrapper.innerHTML,
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => {
+        const footerElement = Swal.getFooter();
+        if (footerElement) {
+          const updateableText = footerElement.querySelector("#loading-generate-text");
+          let actualDelay = 0;
 
-    let actualDelay = 0;
+          loadingMessage.forEach(({ message, class: messageClass, delay }, index) => {
+            setTimeout(() => {
+              if (!isGeneratingDocx) return;
 
-    loadingMessage.forEach(({ message, class: messageClass, delay }, index) => {
-      setTimeout(() => {
-        loadingText.textContent =
-          message + ` (${index + 1}/${loadingMessage.length})`;
-        loadingText.className = messageClass;
-      }, actualDelay);
-      actualDelay += delay;
+              if (updateableText) {
+                updateableText.textContent =
+                  message + ` (${index + 1}/${loadingMessage.length})`;
+                updateableText.className = messageClass;
+              }
+            }, actualDelay);
+            actualDelay += delay;
+          });
+        }
+      }
     });
+
+    fetch("/api/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(Object.fromEntries(formData.entries())),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Server responded with status ${response.status}`);
+        }
+
+        isGeneratingDocx = false;
+
+        const footerElement = Swal.getFooter();
+        const updateableText = footerElement?.querySelector("#loading-generate-text");
+        if (updateableText) {
+          updateableText.textContent = "Dokumen selesai dibuat, terima kasih sudah menunggu!";
+        }
+
+        submitButton.disabled = false;
+        submitButton.textContent = "Buat Dokumen";
+        submitButton.classList.remove("cursor-not-allowed", "opacity-50");
+
+        // Close the Swal alert if it's still open
+        if (Swal.isVisible()) {
+          setTimeout(() => {
+            Swal.close();
+          }, 3000);
+        }
+
+        // Extract filename from Content-Disposition header
+        const contentDisposition = response.headers.get('Content-Disposition');
+        let filename = 'Modul_Ajar.docx';
+        if (contentDisposition) {
+          const filenameMatch = contentDisposition.match(/filename="(.+?)"/);
+          if (filenameMatch) {
+            filename = filenameMatch[1];
+          }
+        }
+
+        return response.blob().then((blob) => ({ blob, filename }));
+      })
+      .then(({ blob, filename }) => {
+        // Auto-download the document
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      })
+      .catch((error) => {
+        console.error("Error during document generation:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Gagal membuat dokumen",
+          text: "Terjadi kesalahan saat membuat dokumen. Silakan coba lagi nanti.",
+        });
+      });
   });
 </script>

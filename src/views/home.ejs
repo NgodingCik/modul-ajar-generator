@@ -160,11 +160,11 @@
           </div>
         </div>
 
-        <div class="group block cursor-pointer">
+        <div class="group block cursor-pointer" id="modelPembelajaranWrapper">
           <p class="font-semibold text-orange-800">Model Pembelajaran</p>
           <small class="text-gray-500">Pilih satu atau lebih pendekatan yang sesuai</small>
 
-          <input type="hidden" name="modelPembelajaran" id="modelPembelajaran">
+          <input type="hidden" name="modelPembelajaran" id="modelPembelajaran" required>
 
           <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
             <label class="flex items-center gap-2 rounded-md border-2 border-orange-800/20 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-orange-50">
@@ -363,22 +363,18 @@
 
       </div>
 
-      <!-- Warning to focus with current tab/web -->
-      <div class="mt-5 text-yellow-600">
-        <b class="text-yellow-700">Warning: </b> <u>Jangan meningalkan halaman ini</u> selama proses pembuatan berlangsung!!!!
-      </div>
-      <!-- Loading Indicator (Append with JS) -->
-      <div class="items-center gap-3 animate-pulse mt-2 hidden" id="loadingIndicator">
-        <div id="loading-animation">
-          <img src="/images/loading-generate.gif" alt="Loading Animation" class="w-10 h-8">
-        </div>
-        <span id="loading"></span>
-      </div>
-      <button id="rppFormSubmitBtn" type="submit" class="w-full mt-3 p-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-700 focus:ring-offset-2">
-        <span>Generate Dokumen</span>
+      <button id="rppFormSubmitBtn" type="submit" class="w-full mt-5 p-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-700 focus:ring-offset-2">
+        <span>Buat Dokumen</span>
       </button>
     </form>
   </div>
+
+  <template id="loadingGenerateWrapper">
+    <div class="items-center gap-3 animate-pulse mt-2 flex">
+      <img src="/images/loading-generate.gif" alt="Loading Animation" class="w-10 h-8">
+      <span id="loading-generate-text"></span>
+    </div>
+  </template>
 </main>
 
 <%- include('js/home.ejs') %>

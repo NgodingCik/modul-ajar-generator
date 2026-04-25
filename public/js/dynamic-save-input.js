@@ -1,9 +1,14 @@
+const preInjectKey = ['alokasiWaktu', 'alokasiWaktu1', 'alokasiWaktu2']
+
+// State vars
+let isRestored = false
+
 /**
-   * Dynamic Save to LocalStorage System (Single JSON Key)
-   * - Auto restore values from localStorage JSON on page load
-   * - Auto save all input changes every 5 seconds as single JSON object
-   * - Supports: text, number, textarea, select, checkbox, radio
-   */
+ * Dynamic Save to LocalStorage System (Single JSON Key)
+ * - Auto restore values from localStorage JSON on page load
+ * - Auto save all input changes every 5 seconds as single JSON object
+ * - Supports: text, number, textarea, select, checkbox, radio
+ */
 const initDynamicSaveInput = () => {
   const STORAGE_KEY = 'formData'
 
@@ -21,25 +26,72 @@ const initDynamicSaveInput = () => {
       if (!savedData) return
 
       const formData = JSON.parse(savedData)
-      const inputs = getFormInputs()
+      let inputs = getFormInputs()
 
-      inputs.forEach((input) => {
-        const key = input.id
-        if (!key || !(key in formData)) return
+      if (!inputs.length) {
+        isRestored = true
+        return
+      }
 
-        const value = formData[key]
+      // Pre-inject value
+      preInjectKey.forEach((key) => {
+        if (key in formData) {
+          const input = document.getElementById(key)
+          if (!input) return
 
-        // Handle different input types
-        if (input.type === 'checkbox' || input.type === 'radio') {
-          input.checked = value === true || value === 'true'
-          // Trigger change event to update dependent fields
-          input.dispatchEvent(new Event('change', { bubbles: true }))
-        } else {
-          input.value = value !== null ? value : ''
-          // Trigger input event for text fields
-          input.dispatchEvent(new Event('input', { bubbles: true }))
+          const value = formData[key] || ''
+
+          // Handle different input types
+          if (input.type === 'checkbox' || input.type === 'radio') {
+            input.checked = value === true || value === 'true'
+            // Trigger change event to update dependent fields
+            input.dispatchEvent(new Event('change', { bubbles: true }))
+          } else {
+            input.value = value !== null ? value : ''
+            // Trigger input event for text fields
+            input.dispatchEvent(new Event('input', { bubbles: true }))
+          }
         }
       })
+
+      setTimeout(() => {
+        inputs = getFormInputs()
+        console.debug(`Restoring form data for ${inputs.length} inputs...`)
+        console.debug(inputs)
+
+        if (!inputs.length) {
+          isRestored = true
+          return
+        }
+
+        inputs.forEach((input) => {
+          // Skip if already pre-injected
+          if (preInjectKey.includes(input.id)) return
+
+          const key = input.id
+          console.debug(`Restoring input with id: ${key}`)
+          if (!key || !(key in formData)) return
+          console.debug(`Found saved value for key "${key}":`, formData[key])
+
+          const value = formData[key]
+          console.debug(`Restoring value for key "${key}":`, value)
+
+          // Handle different input types
+          if (input.type === 'checkbox' || input.type === 'radio') {
+            input.checked = value === true || value === 'true'
+            // Trigger change event to update dependent fields
+            input.dispatchEvent(new Event('change', { bubbles: true }))
+          } else {
+            input.value = value !== null ? value : ''
+            console.debug(`Set value for input "${key}":`, input.value)
+            // Trigger input event for text fields
+            input.dispatchEvent(new Event('input', { bubbles: true }))
+          }
+        })
+
+        // Update state
+        isRestored = true
+      }, 500)
     } catch (error) {
       console.warn('Failed to restore form data from localStorage:', error.message)
     }
@@ -49,6 +101,8 @@ const initDynamicSaveInput = () => {
      * Save all input values to localStorage as single JSON object
      */
   const saveValuesToStorage = () => {
+    if (!isRestored) return
+
     try {
       const inputs = getFormInputs()
       const formData = {}

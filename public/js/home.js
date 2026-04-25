@@ -1,0 +1,512 @@
+const FILTER_KEYS = [
+  'namaSekolah',
+  'namaPenyusun',
+  'nip',
+  'fase',
+  'semester',
+  'bulan',
+  'mingguKe',
+  'kelas',
+  'jumlahAnak',
+  'alokasiWaktu',
+  'temaSubtema',
+  'modelPembelajaran',
+  'elemenCp',
+  'dimensiProfilLulusan',
+  'materiPembelajaran',
+  'identifikasiPesertaDidik',
+  'tujuanPembelajaran',
+  'topikPembelajaran'
+]
+const OPTIONAL_KEYS = ['namaSekolah', 'namaPenyusun', 'nip', 'jumlahAnak']
+const REQUIRED_KEYS = FILTER_KEYS.filter((key) => !OPTIONAL_KEYS.includes(key))
+
+const requiredEl = []
+REQUIRED_KEYS.forEach((key) => {
+  const el = document.getElementById(key)
+  if (el) {
+    requiredEl.push(el)
+  } else {
+    console.warn(`Element with id "${key}" not found in the DOM.`)
+  }
+})
+
+const isRequiredFilled = () => {
+  return requiredEl.every((el) => el.value.trim() !== '')
+}
+
+const getUnfilledRequiredFields = () => {
+  return requiredEl
+    .filter((el) => el.value.trim() === '')
+    .map((el) => el.id)
+}
+
+const alokasiWaktu1 = document.getElementById('alokasiWaktu1')
+const alokasiWaktu2 = document.getElementById('alokasiWaktu2')
+const alokasiWaktu = document.getElementById('alokasiWaktu')
+const modelPembelajaran = document.getElementById('modelPembelajaran')
+const modelPembelajaranOptions = document.querySelectorAll(
+  '.model-pembelajaran-option'
+)
+const elemenCp = document.getElementById('elemenCp')
+const elemenCpOptions = document.querySelectorAll('.elemen-cp-option')
+const dimensiProfilLulusan = document.getElementById('dimensiProfilLulusan')
+const dplOptions = document.querySelectorAll('.dpl-option')
+const kegiatanDynamicContainer = document.getElementById(
+  'kegiatanDynamicContainer'
+)
+const kegiatanAiButtonTemplate = document.getElementById(
+  'kegiatanAiButtonTemplate'
+)
+const form = document.getElementById('rppForm')
+const submitButton = document.getElementById('rppFormSubmitBtn')
+
+// Loading indicator elements
+const templateLoadingGenerateWrapper = document.getElementById('loadingGenerateWrapper')
+
+// Dummy loading message
+const loadingMessage = [
+  {
+    message: 'Menganalisis kurikulum dan tujuan pembelajaran...',
+    class: 'text-gray-500',
+    delay: 10000 // 10s
+  },
+  {
+    message: 'Mengidentifikasi kebutuhan dan karakteristik siswa...',
+    class: 'text-gray-500',
+    delay: 10000 // 10s
+  },
+  {
+    message: 'Merancang strategi pembelajaran aktif...',
+    class: 'text-blue-500',
+    delay: 15000 // 15s
+  },
+  {
+    message: 'Menyusun materi inti dan referensi konten...',
+    class: 'text-blue-500',
+    delay: 20000 // 20s
+  },
+  {
+    message: 'Menyiapkan asesmen formatif dan sumatif...',
+    class: 'text-indigo-500',
+    delay: 15000 // 15s
+  },
+  {
+    message: 'Mengintegrasikan profil pelajar Pancasila...',
+    class: 'text-indigo-500',
+    delay: 15000 // 15s
+  },
+  {
+    message: 'Membangun struktur dokumen dan media pendukung...',
+    class: 'text-cyan-600',
+    delay: 15000 // 15s
+  },
+  {
+    message: 'Melakukan validasi AI terhadap standar modul ajar...',
+    class: 'text-amber-600',
+    delay: 10000 // 10s
+  },
+  {
+    message: 'Finalisasi format dokumen (DOCX/PDF)...',
+    class: 'text-emerald-600',
+    delay: 10000 // 10s
+  },
+  {
+    message: 'Mengirim dokumen, mohon bersabar!',
+    class: 'text-green-600',
+    delay: 2000 // 2s
+  }
+]
+
+// State variables
+let isGeneratingDocx = false
+let focusedAreaId = null
+
+const savedKegiatanValues = {}
+
+const createAiButton = (dayIndex, jpIndex) => {
+  const fallbackButton = document.createElement('button')
+  fallbackButton.type = 'button'
+  fallbackButton.className = 'bg-transparent border-0 p-0 m-0 cursor-pointer'
+  fallbackButton.title = `AI: Sempurnakan kegiatan hari ${dayIndex} JP ${jpIndex}`
+  fallbackButton.id = `kegiatanHari${dayIndex}Jp${jpIndex}Ai`
+
+  if (!kegiatanAiButtonTemplate) {
+    fallbackButton.textContent = 'AI'
+    return fallbackButton
+  }
+
+  const aiButton =
+      kegiatanAiButtonTemplate.content.firstElementChild.cloneNode(true)
+  aiButton.id = `ai.kegiatanHari${dayIndex}Jp${jpIndex}`
+  aiButton.title = `AI: Sempurnakan kegiatan hari ${dayIndex} JP ${jpIndex}`
+
+  const aiLabel = aiButton.querySelector('.sr-only')
+  if (aiLabel) {
+    aiLabel.textContent = `AI: Sempurnakan kegiatan hari ${dayIndex} JP ${jpIndex}`
+  }
+
+  return aiButton
+}
+
+const createKegiatanInput = (dayIndex, jpIndex, existingValue = '') => {
+  const inputWrapper = document.createElement('div')
+  inputWrapper.className =
+      'relative flex items-center rounded-md border-2 border-violet-800/30 transition-all focus-within:border-violet-800 focus-within:ring-2 focus-within:ring-violet-800/40'
+
+  const input = document.createElement('input')
+  input.type = 'text'
+  input.name = `kegiatanHari${dayIndex}Jp${jpIndex}`
+  input.id = `kegiatanHari${dayIndex}Jp${jpIndex}`
+  input.value = existingValue
+  input.className =
+      'w-full border-none bg-transparent p-2.5 text-gray-700 placeholder:text-gray-400 focus:ring-0 focus:outline-none'
+  input.placeholder = `Kegiatan hari ${dayIndex} - JP ${jpIndex}`
+  input.required = true
+
+  input.addEventListener('input', (e) => {
+    savedKegiatanValues[e.target.id] = e.target.value
+  })
+
+  const aiWrapper = document.createElement('div')
+  aiWrapper.className = 'flex items-center pr-3'
+  aiWrapper.appendChild(createAiButton(dayIndex, jpIndex))
+
+  inputWrapper.appendChild(input)
+  inputWrapper.appendChild(aiWrapper)
+
+  return inputWrapper
+}
+
+const renderKegiatanFields = () => {
+  if (!kegiatanDynamicContainer) return
+
+  const existingInputs =
+      kegiatanDynamicContainer.querySelectorAll('input[type="text"]')
+  existingInputs.forEach((input) => {
+    savedKegiatanValues[input.id] = input.value
+  })
+
+  const totalDays = Number.parseInt(alokasiWaktu1?.value, 10)
+  const totalJp = Number.parseInt(alokasiWaktu2?.value, 10)
+
+  kegiatanDynamicContainer.innerHTML = ''
+
+  if (
+    !Number.isFinite(totalDays) ||
+      totalDays <= 0 ||
+      !Number.isFinite(totalJp) ||
+      totalJp <= 0
+  ) {
+    const emptyHint = document.createElement('p')
+    emptyHint.className = 'text-sm text-gray-500'
+    emptyHint.textContent =
+        'Isi Hari dan JP pada Alokasi Waktu untuk membuat kolom kegiatan otomatis.'
+    kegiatanDynamicContainer.appendChild(emptyHint)
+    return
+  }
+
+  for (let dayIndex = 1; dayIndex <= totalDays; dayIndex += 1) {
+    const dayBlock = document.createElement('div')
+    dayBlock.className = 'rounded-md border-2 border-violet-800/20 p-3'
+
+    const heading = document.createElement('h3')
+    heading.className = 'font-semibold text-violet-800'
+    heading.textContent = `Hari ${dayIndex}`
+
+    const helper = document.createElement('small')
+    helper.className = 'block text-sm text-gray-500 mt-1'
+    helper.textContent = `Isi ${totalJp} kegiatan untuk hari ke-${dayIndex}.`
+
+    const dayGrid = document.createElement('div')
+    dayGrid.className = 'mt-3 grid grid-cols-1 gap-2'
+
+    for (let jpIndex = 1; jpIndex <= totalJp; jpIndex += 1) {
+      const inputId = `kegiatanHari${dayIndex}Jp${jpIndex}`
+      const existingValue = savedKegiatanValues[inputId] || ''
+      dayGrid.appendChild(
+        createKegiatanInput(dayIndex, jpIndex, existingValue)
+      )
+    }
+
+    dayBlock.appendChild(heading)
+    dayBlock.appendChild(helper)
+    dayBlock.appendChild(dayGrid)
+    kegiatanDynamicContainer.appendChild(dayBlock)
+  }
+}
+
+const handleAlokasiWaktuChange = () => {
+  if (alokasiWaktu1?.value && alokasiWaktu2?.value) {
+    alokasiWaktu.value = `${alokasiWaktu1.value} x ${alokasiWaktu2.value} JP`
+  } else {
+    alokasiWaktu.value = ''
+  }
+
+  renderKegiatanFields()
+}
+
+const handleModelPembelajaranChange = () => {
+  if (!modelPembelajaran) return
+
+  const selectedModelPembelajaran = Array.from(modelPembelajaranOptions)
+    .filter((checkbox) => checkbox.checked)
+    .map((checkbox) => checkbox.value)
+    .filter(Boolean)
+
+  modelPembelajaran.value = selectedModelPembelajaran.join(', ')
+}
+
+const handleElemenCpChange = () => {
+  if (!elemenCp) return
+
+  const selectedElemenCp = Array.from(elemenCpOptions)
+    .filter((checkbox) => checkbox.checked)
+    .map((checkbox) => checkbox.value)
+    .filter(Boolean)
+
+  elemenCp.value = selectedElemenCp.join(', ')
+}
+
+const handleDplChange = () => {
+  if (!dimensiProfilLulusan) return
+
+  const selectedDpl = Array.from(dplOptions).map(
+    (checkbox) => checkbox.value + (checkbox.checked ? ': true' : ': false')
+  )
+
+  dimensiProfilLulusan.value = selectedDpl.join(',')
+}
+
+modelPembelajaranOptions.forEach((checkbox) => {
+  checkbox.addEventListener('change', handleModelPembelajaranChange)
+})
+
+elemenCpOptions.forEach((checkbox) => {
+  checkbox.addEventListener('change', handleElemenCpChange)
+})
+
+dplOptions.forEach((checkbox) => {
+  checkbox.addEventListener('change', handleDplChange)
+})
+
+alokasiWaktu1?.addEventListener('input', handleAlokasiWaktuChange)
+alokasiWaktu2?.addEventListener('input', handleAlokasiWaktuChange)
+
+window.handleAlokasiWaktuChange = handleAlokasiWaktuChange
+
+handleAlokasiWaktuChange()
+handleModelPembelajaranChange()
+handleElemenCpChange()
+handleDplChange()
+
+if (Swal) { // eslint-disable-line no-undef
+  console.debug('SweetAlert2 is loaded and ready to use!')
+} else {
+  console.error('SweetAlert2 failed to load.')
+}
+
+// Event handler
+form.addEventListener('submit', (e) => {
+  e.preventDefault()
+
+  console.log('Submit button clicked')
+  if (isGeneratingDocx) {
+    return
+  }
+
+  if (!isRequiredFilled()) {
+    const unfilledFields = getUnfilledRequiredFields()
+    const generateLinks = (unfilledFields_) => {
+      return '<span>Perbaiki ' + unfilledFields_.map((fieldId) => `<a id="fix.${fieldId}" href="#${fieldId}Wrapper"><span class="text-blue-500">${fieldId}</span></a>`).join(', ') + '</span>'
+    }
+
+    Swal.fire({ // eslint-disable-line no-undef
+      title: "<span class='text-red-500'>Form belum lengkap</span>",
+      html: generateLinks(unfilledFields),
+      position: 'bottom-end',
+      backdrop: false,
+      showConfirmButton: false,
+      heightAuto: false,
+      scrollbarPadding: false,
+      focusConfirm: false,
+      returnFocus: false
+    })
+
+    unfilledFields.forEach((fieldId, index) => {
+      const fixLink = document.getElementById(`fix.${fieldId}`)
+      console.debug(`Adding click listener to fix link for field: ${fieldId}, link element:`, fixLink)
+      if (fixLink) {
+        if (index === 0) {
+          setTimeout(() => {
+            const fieldWrapper = document.getElementById(`${fieldId}Wrapper`)
+            if (fieldWrapper) {
+              focusedAreaId = fieldId
+              console.debug(`Initially focusing on first unfilled field: ${fieldId}, wrapper:`, fieldWrapper)
+              fieldWrapper.classList.add('focused-area')
+              fieldWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            }
+          }, 500)
+        }
+
+        console.debug(`Found fix link for field: ${fieldId}, element:`, fixLink)
+        fixLink.addEventListener('click', () => {
+          const fieldWrapper = document.getElementById(`${fieldId}Wrapper`)
+          console.debug(`Clicked fix link for field: ${fieldId}, corresponding wrapper:`, fieldWrapper)
+          if (fieldWrapper) {
+            console.debug(`Focusing on field: ${fieldId}, wrapper:`, fieldWrapper)
+            if (focusedAreaId) {
+              const previousFocusedWrapper = document.getElementById(`${focusedAreaId}Wrapper`)
+              if (previousFocusedWrapper) {
+                previousFocusedWrapper.classList.remove('focused-area')
+              }
+            }
+
+            focusedAreaId = fieldId
+            console.debug(`Focusing on field: ${fieldId}, wrapper: ${fieldWrapper.id}`)
+            fieldWrapper.classList.add('focused-area')
+          }
+        })
+      }
+    })
+
+    const checkInterval = setInterval(() => {
+      const getUnfilledFields = getUnfilledRequiredFields()
+      console.debug('Checking unfilled required fields:', getUnfilledFields)
+
+      document.getElementById('swal2-html-container')?.querySelectorAll('span>a').forEach((link) => {
+        const fieldId = link.id.replace('fix.', '')
+        if (!getUnfilledFields.includes(fieldId)) {
+          console.debug(`Field ${fieldId} is now filled. Removing corresponding fix link.`)
+          setTimeout(() => {
+            document.getElementById(`${fieldId}Wrapper`)?.classList.remove('focused-area')
+          }, 1000)
+          link.remove()
+
+          // Jump to the next unfilled field if the currently focused field is now filled
+          if (focusedAreaId === fieldId && getUnfilledFields.length > 0) {
+            const nextFieldId = getUnfilledFields[0]
+            const nextFieldWrapper = document.getElementById(`${nextFieldId}Wrapper`)
+            if (nextFieldWrapper) {
+              focusedAreaId = nextFieldId
+              nextFieldWrapper.classList.add('focused-area')
+
+              // Jump to section
+              nextFieldWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            }
+          }
+        }
+      })
+
+      if (getUnfilledRequiredFields().length === 0) {
+        Swal.close() // eslint-disable-line no-undef
+        document.getElementById(`${focusedAreaId}Wrapper`)?.classList.remove('focused-area')
+        focusedAreaId = null
+        clearInterval(checkInterval)
+      }
+    }, 1000)
+
+    return
+  }
+
+  isGeneratingDocx = true
+
+  const formData = new FormData(form)
+
+  submitButton.disabled = true
+  submitButton.textContent = 'Generating...'
+  submitButton.classList.add('cursor-not-allowed', 'opacity-50')
+
+  Swal.fire({ // eslint-disable-line no-undef
+    icon: 'warning',
+    title: 'Sedang membuat dokumen...',
+    text: 'Jangan meninggalkan, menutup, merefresh, maupun membuka aplikasi lain selama proses pembuatan berlangsung untuk menghindari kegagalan pembuatan dokumen.',
+    footer: templateLoadingGenerateWrapper.innerHTML,
+    showConfirmButton: false,
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    didOpen: () => {
+      const footerElement = Swal.getFooter() // eslint-disable-line no-undef
+      if (footerElement) {
+        const updateableText = footerElement.querySelector('#loading-generate-text')
+        let actualDelay = 0
+
+        loadingMessage.forEach(({ message, class: messageClass, delay }, index) => {
+          setTimeout(() => {
+            if (!isGeneratingDocx) return
+
+            if (updateableText) {
+              updateableText.textContent =
+                  message + ` (${index + 1}/${loadingMessage.length})`
+              updateableText.className = messageClass
+            }
+          }, actualDelay)
+          actualDelay += delay
+        })
+      }
+    }
+  })
+
+  fetch('/api/generate', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(Object.fromEntries(formData.entries()))
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Server responded with status ${response.status}`)
+      }
+
+      isGeneratingDocx = false
+
+      const footerElement = Swal.getFooter() // eslint-disable-line no-undef
+      const updateableText = footerElement?.querySelector('#loading-generate-text')
+      if (updateableText) {
+        updateableText.textContent = 'Dokumen selesai dibuat, terima kasih sudah menunggu!'
+      }
+
+      submitButton.disabled = false
+      submitButton.textContent = 'Buat Dokumen'
+      submitButton.classList.remove('cursor-not-allowed', 'opacity-50')
+
+      // Close the Swal alert if it's still open
+      if (Swal.isVisible()) { // eslint-disable-line no-undef
+        setTimeout(() => {
+          Swal.close() // eslint-disable-line no-undef
+        }, 3000)
+      }
+
+      // Extract filename from Content-Disposition header
+      const contentDisposition = response.headers.get('Content-Disposition')
+      let filename = 'Modul_Ajar.docx'
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="(.+?)"/)
+        if (filenameMatch) {
+          filename = filenameMatch[1]
+        }
+      }
+
+      return response.blob().then((blob) => ({ blob, filename }))
+    })
+    .then(({ blob, filename }) => {
+      // Auto-download the document
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      URL.revokeObjectURL(url)
+    })
+    .catch((error) => {
+      console.error('Error during document generation:', error)
+      Swal.fire({ // eslint-disable-line no-undef
+        icon: 'error',
+        title: 'Gagal membuat dokumen',
+        text: 'Terjadi kesalahan saat membuat dokumen. Silakan coba lagi nanti.'
+      })
+    })
+})

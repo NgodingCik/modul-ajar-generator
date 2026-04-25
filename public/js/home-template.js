@@ -634,17 +634,6 @@ const loadExternalTemplates = () => {
   } catch (e) {}
 }
 
-const initializeTemplateModule = () => {
-  loadExternalTemplates()
-  renderTemplateButtons()
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initializeTemplateModule)
-} else {
-  initializeTemplateModule()
-}
-
 // Expose applyTemplate globally (useful for testing or external calls)
 window.applyModulTemplate = applyTemplate
 
@@ -845,4 +834,15 @@ const exportTemplate = () => { // eslint-disable-line no-unused-vars
   a.click()
   document.body.removeChild(a)
   URL.revokeObjectURL(url)
+}
+
+const initializeTemplateModule = () => {
+  loadExternalTemplates()
+  renderTemplateButtons()
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeTemplateModule)
+} else {
+  initializeTemplateModule()
 }

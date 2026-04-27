@@ -155,7 +155,7 @@
               placeholder="Contoh: Keluarga / Keluargaku Sayang" required>
 
             <div class="flex items-center pr-3">
-              <%- include('components/ai.ejs', { type: "ai.temaSubtema" }) %>
+              <%- include('components/ai.ejs', { type: "ai.temaSubtema", prompt: "Tulis tema dan subtema yang akan diajarkan. Contoh: Diriku/Identitasku" }) %>
             </div>
           </div>
         </div>
@@ -282,7 +282,7 @@
               placeholder="Contoh: Materi pengenalan anggota keluarga mencakup ..." required></textarea>
 
             <div class="absolute right-3 top-3 flex items-center">
-              <%- include('components/ai.ejs', {type: "ai.materiPembelajaran"}) %>
+              <%- include('components/ai.ejs', {type: "ai.materiPembelajaran", prompt: "Deskripsikan dengan singkat materi yang akan diajarkan"}) %>
             </div>
           </div>
         </div>
@@ -302,7 +302,7 @@
               placeholder="Contoh: Anak memiliki kemampuan ..." required></textarea>
 
             <div class="absolute right-3 top-3 flex items-center">
-              <%- include('components/ai.ejs', {type: "ai.identifikasiPesertaDidik"}) %>
+              <%- include('components/ai.ejs', {type: "ai.identifikasiPesertaDidik", prompt: "Deskripsikan karakteristik dan perkembangan peserta didik"}) %>
             </div>
           </div>
         </div>
@@ -322,7 +322,7 @@
               placeholder="Contoh: Anak mampu menyebutkan anggota keluarganya..." required></textarea>
 
             <div class="absolute right-3 top-3 flex items-center">
-              <%- include('components/ai.ejs', {type: "ai.tujuanPembelajaran"}) %>
+              <%- include('components/ai.ejs', {type: "ai.tujuanPembelajaran", prompt: "Tulis apa yang ingin dicapai dalam pembelajaran ini?"}) %>
             </div>
           </div>
         </div>
@@ -342,7 +342,7 @@
               placeholder="Contoh: Aku dan Lingkungan Sekitarku" required>
 
             <div class="flex items-center pr-3">
-              <%- include('components/ai.ejs', {type: "ai.topikPembelajaran"}) %>
+              <%- include('components/ai.ejs', {type: "ai.topikPembelajaran", prompt: "Tulis topik pembelajaran yang spesifik untuk pekan ini"}) %>
             </div>
           </div>
         </div>
@@ -391,7 +391,7 @@
 
   <script src="/js/loading-indicator.js"></script>
   <script src="/js/home.js"></script>
-  <script src="/js/home-ai.js"></script>
   <script src="/js/home-template.js"></script>
   <script src="/js/dynamic-save-input.js"></script>
+  <script src="/js/ai-auto-fill.js"></script>
 </main>

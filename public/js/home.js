@@ -63,7 +63,6 @@ const submitButton = document.getElementById('rppFormSubmitBtn')
 
 // State variables
 let isGeneratingDocx = false
-let focusedAreaId = null
 
 const savedKegiatanValues = {}
 
@@ -266,90 +265,16 @@ form.addEventListener('submit', (e) => {
       return '<span>Perbaiki ' + unfilledFields_.map((fieldId) => `<a id="fix.${fieldId}" href="#${fieldId}Wrapper"><span class="text-blue-500">${fieldId}</span></a>`).join(', ') + '</span>'
     }
 
-    Swal.fire({ // eslint-disable-line no-undef
+    SwalValidationWrapper.autoNextFocus(true).showValidationToast({ // eslint-disable-line no-undef
       title: "<span class='text-red-500'>Form belum lengkap</span>",
       html: generateLinks(unfilledFields),
-      position: 'bottom-end',
-      backdrop: false,
-      showConfirmButton: false,
-      heightAuto: false,
-      scrollbarPadding: false,
-      focusConfirm: false,
-      returnFocus: false
-    })
-
-    unfilledFields.forEach((fieldId, index) => {
-      const fixLink = document.getElementById(`fix.${fieldId}`)
-      console.debug(`Adding click listener to fix link for field: ${fieldId}, link element:`, fixLink)
-      if (fixLink) {
-        if (index === 0) {
-          setTimeout(() => {
-            const fieldWrapper = document.getElementById(`${fieldId}Wrapper`)
-            if (fieldWrapper) {
-              focusedAreaId = fieldId
-              console.debug(`Initially focusing on first unfilled field: ${fieldId}, wrapper:`, fieldWrapper)
-              fieldWrapper.classList.add('focused-area')
-              fieldWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' })
-            }
-          }, 500)
-        }
-
-        console.debug(`Found fix link for field: ${fieldId}, element:`, fixLink)
-        fixLink.addEventListener('click', () => {
-          const fieldWrapper = document.getElementById(`${fieldId}Wrapper`)
-          console.debug(`Clicked fix link for field: ${fieldId}, corresponding wrapper:`, fieldWrapper)
-          if (fieldWrapper) {
-            console.debug(`Focusing on field: ${fieldId}, wrapper:`, fieldWrapper)
-            if (focusedAreaId) {
-              const previousFocusedWrapper = document.getElementById(`${focusedAreaId}Wrapper`)
-              if (previousFocusedWrapper) {
-                previousFocusedWrapper.classList.remove('focused-area')
-              }
-            }
-
-            focusedAreaId = fieldId
-            console.debug(`Focusing on field: ${fieldId}, wrapper: ${fieldWrapper.id}`)
-            fieldWrapper.classList.add('focused-area')
-          }
-        })
+      unfilledFields,
+      getLinkElement: (fieldId) => document.getElementById(`fix.${fieldId}`),
+      isFieldFilled: (fieldId) => {
+        const el = document.getElementById(fieldId)
+        return el && el.value.trim() !== ''
       }
     })
-
-    const checkInterval = setInterval(() => {
-      const getUnfilledFields = getUnfilledRequiredFields()
-      console.debug('Checking unfilled required fields:', getUnfilledFields)
-
-      document.getElementById('swal2-html-container')?.querySelectorAll('span>a').forEach((link) => {
-        const fieldId = link.id.replace('fix.', '')
-        if (!getUnfilledFields.includes(fieldId)) {
-          console.debug(`Field ${fieldId} is now filled. Removing corresponding fix link.`)
-          setTimeout(() => {
-            document.getElementById(`${fieldId}Wrapper`)?.classList.remove('focused-area')
-          }, 1000)
-          link.remove()
-
-          // Jump to the next unfilled field if the currently focused field is now filled
-          if (focusedAreaId === fieldId && getUnfilledFields.length > 0) {
-            const nextFieldId = getUnfilledFields[0]
-            const nextFieldWrapper = document.getElementById(`${nextFieldId}Wrapper`)
-            if (nextFieldWrapper) {
-              focusedAreaId = nextFieldId
-              nextFieldWrapper.classList.add('focused-area')
-
-              // Jump to section
-              nextFieldWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' })
-            }
-          }
-        }
-      })
-
-      if (getUnfilledRequiredFields().length === 0) {
-        Swal.close() // eslint-disable-line no-undef
-        document.getElementById(`${focusedAreaId}Wrapper`)?.classList.remove('focused-area')
-        focusedAreaId = null
-        clearInterval(checkInterval)
-      }
-    }, 1000)
 
     return
   }

@@ -73,6 +73,7 @@ const createAiButton = (dayIndex, jpIndex) => {
   fallbackButton.className = 'bg-transparent border-0 p-0 m-0 cursor-pointer'
   fallbackButton.title = `AI: Sempurnakan kegiatan hari ${dayIndex} JP ${jpIndex}`
   fallbackButton.id = `kegiatanHari${dayIndex}Jp${jpIndex}Ai`
+  fallbackButton.dataset.aiPrompt = `Sempurnakan kegiatan hari ${dayIndex} JP ${jpIndex} dengan memberikan rekomendasi yang lebih baik berdasarkan konteks kegiatan yang sudah diisi. Pastikan rekomendasi tersebut jelas, mudah dipahami, dan dapat langsung diterapkan untuk meningkatkan kualitas kegiatan pembelajaran.`
 
   if (!kegiatanAiButtonTemplate) {
     fallbackButton.textContent = 'AI'
@@ -83,6 +84,7 @@ const createAiButton = (dayIndex, jpIndex) => {
       kegiatanAiButtonTemplate.content.firstElementChild.cloneNode(true)
   aiButton.id = `ai.kegiatanHari${dayIndex}Jp${jpIndex}`
   aiButton.title = `AI: Sempurnakan kegiatan hari ${dayIndex} JP ${jpIndex}`
+  aiButton.dataset.aiPrompt = `Sempurnakan kegiatan hari ${dayIndex} JP ${jpIndex} dengan memberikan rekomendasi yang lebih baik berdasarkan konteks kegiatan yang sudah diisi. Pastikan rekomendasi tersebut jelas, mudah dipahami, dan dapat langsung diterapkan untuk meningkatkan kualitas kegiatan pembelajaran.`
 
   const aiLabel = aiButton.querySelector('.sr-only')
   if (aiLabel) {

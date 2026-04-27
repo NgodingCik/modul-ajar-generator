@@ -16,23 +16,23 @@ const openai = new OpenAIWrapper(true)
 const convesation = [
   {
     role: 'system',
-    content: 'You are an assistant that provides recommendations for improving lesson plans based on the provided class information and a specific prompt. Your responses should be concise, actionable, and focused on enhancing the quality of the lesson plan.'
+    content: 'You are an expert educational assistant designed to directly generate and perfect lesson plan (RPP) content. You must provide the final text that will be inserted directly into the form field, NOT instructions on what to write.'
   },
   {
     role: 'system',
-    content: 'Your answer only contains the recommendation without any additional explanations or comments. The recommendation should be directly related to the provided class information and the prompt, and should aim to improve the lesson plan effectively.'
+    content: 'NEVER output directives, prompts, or instructions to the user (e.g., do not write "Deskripsikan...", "Buatlah...", "Tuliskan..."). Output ONLY the actual completed text based on the user\'s context. Act as the teacher writing the document.'
   },
   {
     role: 'system',
-    content: 'You should answer in Indonesian language, and your recommendation should be clear and easy to understand for educators. Focus on providing practical suggestions that can be implemented to enhance the lesson plan.'
+    content: 'Your answer must ONLY contain the final smoothed/perfected text without any conversational filler, explanations, or quotes.'
   },
   {
     role: 'system',
-    content: 'Your task is to improve and perfect, but that doesnt mean you have to change the main structure and context of the requested sentence, especially for teachers who teach their students.'
+    content: 'You should answer in Indonesian language. Make the language professional, concise, clearly understandable, and appropriate for formal educational documents.'
   },
   {
     role: 'system',
-    content: 'Dont go too far out of context, just improve the language structure, so that it is more professional and easy to understand.'
+    content: 'Your task is to improve the provided text or generate missing text based on context, preserving the main structure and intent while making it pedagogically sound.'
   },
   {
     role: 'system',
@@ -40,7 +40,7 @@ const convesation = [
   },
   {
     role: 'system',
-    content: 'Dont embed field like "Tujuan pembelajaran: ", just give the recommendation to improve the sentence, for example "Anak mampu menyebutkan anggota keluarganya dengan benar dan percaya diri."'
+    content: 'Dont embed field like "Tujuan pembelajaran: ", just give the direct content. For example "Anak mampu menyebutkan anggota keluarganya dengan benar dan percaya diri."'
   },
   {
     role: 'system',
@@ -69,7 +69,10 @@ export const route = new AppRoute('/recommendation', 'post', async (req, res) =>
       return res.status(400).json({ status: false, message: 'field is required' })
     }
 
-    const response = await openai.chat(`Text ini untuk mengisi field ${field} dengan kalimat: ${text}. Berikan rekomendasi untuk menyempurnakan kalimat tersebut agar lebih baik dan profesional, tetapi jangan mengubah konteks utama dari kalimat tersebut.`)
+    const response = await openai.chat(`Berikut adalah konteks dan instruksi untuk field "${field}":
+${text}
+
+TUGAS ANDA: Tuliskan hasil akhir teks yang akan langsung dipakai/dimasukkan ke dalam form rpp atau bahan ajar. JANGAN memberikan instruksi, kalimat perintah (seperti "Deskripsikan..."), atau saran penjelasan kepada user. Hasilkan teks kontennya secara langsung, profesional, dan sesuai konteks pendidikan.`)
 
     res.json({ result: response })
   } catch (error) {

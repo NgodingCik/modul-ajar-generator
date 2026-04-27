@@ -7,6 +7,34 @@ const SwalValidationWrapper = { // eslint-disable-line no-unused-vars
   focusedAreaId: null,
   autoNextFocusEnabled: false,
 
+  isAvailable: function () {
+    return typeof Swal !== 'undefined' // eslint-disable-line no-undef
+  },
+
+  fire: function (...args) {
+    if (!this.isAvailable()) {
+      return Promise.resolve({ isDismissed: true, dismiss: 'swal-unavailable' })
+    }
+
+    return Swal.fire(...args) // eslint-disable-line no-undef
+  },
+
+  isVisible: function () {
+    return this.isAvailable() && Swal.isVisible() // eslint-disable-line no-undef
+  },
+
+  closeSwal: function () {
+    if (this.isVisible()) {
+      Swal.close() // eslint-disable-line no-undef
+    }
+  },
+
+  showValidationMessage: function (message) {
+    if (this.isAvailable()) {
+      Swal.showValidationMessage(message) // eslint-disable-line no-undef
+    }
+  },
+
   autoNextFocus: function (enabled = true) {
     this.autoNextFocusEnabled = enabled
     return this
@@ -37,7 +65,7 @@ const SwalValidationWrapper = { // eslint-disable-line no-unused-vars
   showValidationToast: function ({ title, html, unfilledFields, isFieldFilled, getLinkElement, onAllFilled, checkDelay = 1000 }) {
     this.close()
 
-    Swal.fire({ // eslint-disable-line no-undef
+    this.fire({
       title,
       html,
       position: 'bottom-end',
@@ -129,8 +157,6 @@ const SwalValidationWrapper = { // eslint-disable-line no-unused-vars
       this.focusedAreaId = null
     }
 
-    if (typeof Swal !== 'undefined' && Swal.isVisible()) { // eslint-disable-line no-undef
-      Swal.close() // eslint-disable-line no-undef
-    }
+    this.closeSwal()
   }
 }

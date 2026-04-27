@@ -6,6 +6,10 @@ import { AppRoute } from '../index.js'
 import OpenAIWrapper from '../../lib/openai.js'
 import consola from 'consola'
 import { validateBodyParams } from '../../utils/utils.js'
+import fs from 'fs'
+import path from 'path'
+
+const __dirname = import.meta.dirname
 
 const openai = new OpenAIWrapper(true)
 
@@ -37,6 +41,10 @@ const convesation = [
   {
     role: 'system',
     content: 'Dont embed field like "Tujuan pembelajaran: ", just give the recommendation to improve the sentence, for example "Anak mampu menyebutkan anggota keluarganya dengan benar dan percaya diri."'
+  },
+  {
+    role: 'system',
+    content: fs.readFileSync(path.join(__dirname, '../../../context/10-contoh-tema-dan-subtema.md'), 'utf-8')
   }
 ]
 openai.setContext(convesation)

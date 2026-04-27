@@ -1,3 +1,5 @@
+/* global SwalValidationWrapper */
+
 /**
  * Home Template Script
  * Template dibuat berdasarkan contoh Modul Ajar yang tersedia secara publik di laman PAUD Jateng (https://www.paud.id/)
@@ -301,7 +303,7 @@ const applyTemplate = (templateId) => {
   const tpl = MODUL_TEMPLATES.find((t) => t.id === templateId)
   if (!tpl) return
 
-  Swal.fire({ // eslint-disable-line no-undef
+  SwalValidationWrapper.fire({
     title: 'Terapkan Template?',
     text: 'Peringatan: Isian Anda saat ini akan ditimpa oleh template baru. Lanjutkan?',
     icon: 'warning',
@@ -491,7 +493,7 @@ const renderTemplateButtons = () => {
   grid.appendChild(importBtn)
 
   importBtn.addEventListener('click', () => {
-    Swal.fire({ // eslint-disable-line no-undef
+    SwalValidationWrapper.fire({ // eslint-disable-line no-undef
       title: 'Impor Template',
       html: '<div class="text-sm text-gray-500 mb-2">Pilih file <span class="font-bold text-violet-700">JSON</span> yang berisi data template khusus Anda.</div>',
       input: 'file',
@@ -509,7 +511,7 @@ const renderTemplateButtons = () => {
       cancelButtonText: 'Batal',
       preConfirm: (file) => {
         if (!file) {
-          Swal.showValidationMessage('Silakan pilih file terlebih dahulu.') // eslint-disable-line no-undef
+          SwalValidationWrapper.showValidationMessage('Silakan pilih file terlebih dahulu.')
           return false
         }
         return new Promise((resolve) => {
@@ -519,13 +521,13 @@ const renderTemplateButtons = () => {
               const parsed = JSON.parse(e.target.result)
               // Validasi properti minimum (id, emoji, sublabel) sesuai renderTemplateButtons[]
               if (!parsed || !parsed.id || !parsed.emoji || !parsed.sublabel) {
-                Swal.showValidationMessage('Struktur JSON tidak valid (harus memiliki id, emoji, sublabel).') // eslint-disable-line no-undef
+                SwalValidationWrapper.showValidationMessage('Struktur JSON tidak valid (harus memiliki id, emoji, sublabel).') // eslint-disable-line no-undef
                 resolve(false)
               } else {
                 resolve(parsed)
               }
             } catch (err) {
-              Swal.showValidationMessage('Gagal mem-parsing JSON. Pastikan format benar.') // eslint-disable-line no-undef
+              SwalValidationWrapper.showValidationMessage('Gagal mem-parsing JSON. Pastikan format benar.') // eslint-disable-line no-undef
               resolve(false)
             }
           }
@@ -564,7 +566,7 @@ const renderTemplateButtons = () => {
         applyTemplate(importedTpl.id)
         renderTemplateButtons() // Re-render buttons to include new template
 
-        Swal.fire('Berhasil', 'Template berhasil diimpor.', 'success') // eslint-disable-line no-undef
+        SwalValidationWrapper.fire('Berhasil', 'Template berhasil diimpor.', 'success')
       }
     })
   })
@@ -580,7 +582,7 @@ const CLEARABLE_IDS = [
 ]
 
 const clearAllFields = () => {
-  Swal.fire({ // eslint-disable-line no-undef
+  SwalValidationWrapper.fire({
     title: 'Kosongkan Semua?',
     text: 'Apakah Anda yakin ingin mengosongkan semua isian form?',
     icon: 'warning',
@@ -608,7 +610,7 @@ const clearAllFields = () => {
         window.handleAlokasiWaktuChange()
       }
 
-      Swal.fire('Berhasil', 'Semua isian form telah dikosongkan.', 'success') // eslint-disable-line no-undef
+      SwalValidationWrapper.fire('Berhasil', 'Semua isian form telah dikosongkan.', 'success')
     }
   })
 }
@@ -640,17 +642,17 @@ window.applyModulTemplate = applyTemplate
 // Handle delete of external templates
 const deleteExternalTemplate = () => { // eslint-disable-line no-unused-vars
   if (!selectedTemplateId) {
-    Swal.fire('Gagal', 'Tidak ada template yang dipilih untuk dihapus.', 'error') // eslint-disable-line no-undef
+    SwalValidationWrapper.fire('Gagal', 'Tidak ada template yang dipilih untuk dihapus.', 'error')
     return
   }
 
   // Dont allow deleting system templates (those in MODUL_TEMPLATES_SYSTEM)
   if (MODUL_TEMPLATES_SYSTEM.some((t) => t.id === selectedTemplateId)) {
-    Swal.fire('Gagal', 'Template bawaan tidak dapat dihapus.', 'error') // eslint-disable-line no-undef
+    SwalValidationWrapper.fire('Gagal', 'Template bawaan tidak dapat dihapus.', 'error')
     return
   }
 
-  Swal.fire({ // eslint-disable-line no-undef
+  SwalValidationWrapper.fire({
     title: 'Hapus Template?',
     text: 'Apakah Anda yakin ingin menghapus template ini? Tindakan ini tidak dapat dibatalkan.',
     icon: 'warning',
@@ -694,7 +696,7 @@ const deleteExternalTemplate = () => { // eslint-disable-line no-unused-vars
         // Re-render buttons
         renderTemplateButtons()
 
-        Swal.fire('Berhasil', 'Template berhasil dihapus.', 'success') // eslint-disable-line no-undef
+        SwalValidationWrapper.fire('Berhasil', 'Template berhasil dihapus.', 'success')
       }
     }
   })
@@ -706,11 +708,11 @@ const saveExternalTemplate = () => { // eslint-disable-line no-unused-vars
 
   // Dont allow saving system templates (those in MODUL_TEMPLATES_SYSTEM)
   if (!isNew && MODUL_TEMPLATES_SYSTEM.some((t) => t.id === selectedTemplateId)) {
-    Swal.fire('Gagal', 'Template bawaan tidak dapat disimpan.', 'error') // eslint-disable-line no-undef
+    SwalValidationWrapper.fire('Gagal', 'Template bawaan tidak dapat disimpan.', 'error')
     return
   }
 
-  Swal.fire({ // eslint-disable-line no-undef
+  SwalValidationWrapper.fire({
     title: isNew ? 'Simpan Template Baru?' : 'Simpan Perubahan?',
     text: isNew ? 'Masukkan nama untuk template baru ini:' : 'Simpan semua isian form saat ini ke template yang dipilih?',
     icon: 'question',
@@ -723,7 +725,7 @@ const saveExternalTemplate = () => { // eslint-disable-line no-unused-vars
     cancelButtonText: 'Batal',
     preConfirm: (inputValue) => {
       if (isNew && !inputValue) {
-        Swal.showValidationMessage('Nama template tidak boleh kosong') // eslint-disable-line no-undef
+        SwalValidationWrapper.showValidationMessage('Nama template tidak boleh kosong')
         return false
       }
       return inputValue
@@ -803,7 +805,7 @@ const saveExternalTemplate = () => { // eslint-disable-line no-unused-vars
         renderTemplateButtons() // Tampilkan tombol untuk template yg baru
       }
 
-      Swal.fire('Berhasil', isNew ? 'Template baru berhasil dibuat dan disimpan.' : 'Perubahan template berhasil disimpan.', 'success') // eslint-disable-line no-undef
+      SwalValidationWrapper.fire('Berhasil', isNew ? 'Template baru berhasil dibuat dan disimpan.' : 'Perubahan template berhasil disimpan.', 'success')
     }
   })
 }
@@ -811,13 +813,13 @@ const saveExternalTemplate = () => { // eslint-disable-line no-unused-vars
 // Export template and auto download as JSON file
 const exportTemplate = () => { // eslint-disable-line no-unused-vars
   if (!selectedTemplateId) {
-    Swal.fire('Gagal', 'Tidak ada template yang dipilih untuk diekspor.', 'error') // eslint-disable-line no-undef
+    SwalValidationWrapper.fire('Gagal', 'Tidak ada template yang dipilih untuk diekspor.', 'error')
     return
   }
 
   // Dont allow exporting system templates (those in MODUL_TEMPLATES_SYSTEM)
   if (MODUL_TEMPLATES_SYSTEM.some((t) => t.id === selectedTemplateId)) {
-    Swal.fire('Gagal', 'Template bawaan tidak dapat diekspor.', 'error') // eslint-disable-line no-undef
+    SwalValidationWrapper.fire('Gagal', 'Template bawaan tidak dapat diekspor.', 'error')
     return
   }
 

@@ -244,12 +244,6 @@ handleModelPembelajaranChange()
 handleElemenCpChange()
 handleDplChange()
 
-if (Swal) { // eslint-disable-line no-undef
-  console.debug('SweetAlert2 is loaded and ready to use!')
-} else {
-  console.error('SweetAlert2 failed to load.')
-}
-
 // Event handler
 form.addEventListener('submit', (e) => {
   e.preventDefault()
@@ -289,7 +283,7 @@ form.addEventListener('submit', (e) => {
 
   const loadingIndicator = loadingIndicatorInit() // eslint-disable-line no-undef
 
-  Swal.fire({ // eslint-disable-line no-undef
+  SwalValidationWrapper.fire({ // eslint-disable-line no-undef
     icon: 'warning',
     title: 'Sedang membuat dokumen...',
     text: 'Jangan meninggalkan, menutup, merefresh, maupun membuka aplikasi lain selama proses pembuatan berlangsung untuk menghindari kegagalan pembuatan dokumen.',
@@ -328,9 +322,9 @@ form.addEventListener('submit', (e) => {
       submitButton.classList.remove('cursor-not-allowed', 'opacity-50')
 
       // Close the Swal alert if it's still open
-      if (Swal.isVisible()) { // eslint-disable-line no-undef
+      if (SwalValidationWrapper.isVisible()) { // eslint-disable-line no-undef
         setTimeout(() => {
-          Swal.close() // eslint-disable-line no-undef
+          SwalValidationWrapper.closeSwal() // eslint-disable-line no-undef
         }, 3000)
       }
 
@@ -359,7 +353,7 @@ form.addEventListener('submit', (e) => {
     })
     .catch((error) => {
       console.error('Error during document generation:', error)
-      Swal.fire({ // eslint-disable-line no-undef
+      SwalValidationWrapper.fire({ // eslint-disable-line no-undef
         icon: 'error',
         title: 'Gagal membuat dokumen',
         text: 'Terjadi kesalahan saat membuat dokumen. Silakan coba lagi nanti.'

@@ -18,6 +18,7 @@ import { loadRoutes } from './routes/index.js'
 import limiter from './middleware/ratelimit.js'
 import cors from './middleware/cors.js'
 import helmetMiddleware from './middleware/helmet.js'
+import stripConsoleMiddleware from './middleware/stripconsole.js'
 configDotenv({ override: true })
 
 /**
@@ -43,6 +44,7 @@ app.use(Express.json())
 app.use(limiter)
 app.use(helmetMiddleware)
 app.use(cors)
+app.use(stripConsoleMiddleware)
 
 // Load and register routes
 const router = await loadRoutes()

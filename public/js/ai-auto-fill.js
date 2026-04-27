@@ -14,8 +14,8 @@ const INDEX_KEYS = [
   'tujuanPembelajaran'
 ]
 
-/** @var {string} - The prompt for AI auto fill */
-let autoFillPrompt = 'Isi kolom berdasarkan informasi dibawah ini:\n\n'
+/** @var {string} - Base prompt for AI auto fill */
+const AUTO_FILL_PROMPT_BASE = 'Isi kolom berdasarkan informasi dibawah ini:\n\n'
 
 const EMPTY_DPL_VALUE = 'DPL1 Keimanan dan Ketakwaan: false,DPL2 Kewargaan: false,DPL3 Penalaran Kritis: false,DPL4 Kreativitas: false,DPL5 Kolaborasi: false,DPL6 Kemandirian: false,DPL7 Kesehatan: false,DPL8 Komunikasi: false'
 
@@ -54,7 +54,7 @@ const getKegiatanInputIdsInOrder = () => {
     .map((item) => item.id)
 }
 
-const getFieldWrapper = (id) => {
+const getFieldWrapper = (id) => { // eslint-disable-line no-unused-vars
   const wrapperById = document.getElementById(`${id}Wrapper`)
   if (wrapperById) return wrapperById
 
@@ -72,6 +72,147 @@ const getFieldLabel = (id) => {
   if (!parsedKegiatan) return id
 
   return `Kegiatan hari ${parsedKegiatan.day} JP ${parsedKegiatan.jp}`
+}
+
+const getKegiatanSectionsContext = (kegiatanIds, currentFieldId) => {
+  const lines = kegiatanIds.map((id) => {
+    const value = document.getElementById(id)?.value?.trim() || ''
+    if (!value) {
+      return `${id}: [KOSONG]`
+    }
+
+    const compact = value.replace(/\s+/g, ' ').trim()
+    return `${id}: ${compact}`
+  })
+
+  return [
+    'Konteks section kegiatan yang tersedia (gunakan sebagai referensi konsistensi):',
+    ...lines,
+    `Section target prioritas utama yang HARUS diisi sekarang: ${currentFieldId}`
+  ].join('\n')
+}
+
+const getPreviousKegiatanContext = (kegiatanIds, currentKegiatanIndex) => {
+  if (currentKegiatanIndex <= 0) {
+    return 'Riwayat kegiatan terisi sebelum target: [BELUM ADA]'
+  }
+
+  const previousFilled = kegiatanIds
+    .slice(0, currentKegiatanIndex)
+    .map((id) => {
+      const value = document.getElementById(id)?.value?.trim() || ''
+      if (!value) return null
+      return `${id}: ${value.replace(/\s+/g, ' ').trim()}`
+    })
+    .filter(Boolean)
+
+  if (previousFilled.length === 0) {
+    return 'Riwayat kegiatan terisi sebelum target: [BELUM ADA]'
+  }
+
+  return [
+    'Riwayat kegiatan terisi sebelum target (pakai sebagai acuan kesinambungan):',
+    ...previousFilled
+  ].join('\n')
+}
+
+const buildKegiatanFlowInstruction = (kegiatanIds, currentFieldId) => {
+  const parsedCurrent = parseKegiatanFieldId(currentFieldId)
+  if (!parsedCurrent) return ''
+
+  const sameDay = kegiatanIds
+    .map((id) => ({ id, parsed: parseKegiatanFieldId(id) }))
+    .filter((item) => item.parsed && item.parsed.day === parsedCurrent.day)
+    .sort((a, b) => a.parsed.jp - b.parsed.jp)
+
+  const totalJpInDay = sameDay.length
+  const currentPos = sameDay.findIndex((item) => item.id === currentFieldId) + 1
+
+  let role = 'inti'
+  if (totalJpInDay <= 1) {
+    role = 'utuh'
+  } else if (currentPos === 1) {
+    role = 'pembuka'
+  } else if (currentPos === totalJpInDay) {
+    role = 'penutup'
+  }
+
+  let roleGuidance = 'Buat aktivitas inti yang melanjutkan kegiatan sebelumnya dan menyiapkan transisi ke sesi berikutnya.'
+  if (role === 'pembuka') {
+    roleGuidance = 'Buat aktivitas pembuka singkat (misalnya doa, absensi, apersepsi) yang mengantar ke inti pembelajaran hari ini.'
+  } else if (role === 'penutup') {
+    roleGuidance = 'Buat aktivitas penutup/refleksi singkat yang merangkum inti, memberi umpan balik, dan menyiapkan kelanjutan hari berikutnya.'
+  } else if (role === 'utuh') {
+    roleGuidance = 'Buat alur mini utuh dalam satu sesi: pembuka sangat singkat, inti utama, lalu penutup/refleksi singkat.'
+  }
+
+  const previousInDay = sameDay[currentPos - 2]?.id || '-'
+  const nextInDay = sameDay[currentPos]?.id || '-'
+
+  return [
+    'Aturan kesinambungan kegiatan (WAJIB diikuti):',
+    `- Hari ke-${parsedCurrent.day}, JP ke-${parsedCurrent.jp} dari total ${totalJpInDay} JP pada hari ini.`,
+    `- Peran sesi saat ini: ${role}.`,
+    `- ${roleGuidance}`,
+    `- Hubungkan isi dengan sesi sebelumnya pada hari yang sama jika ada (${previousInDay}) tanpa mengulang penuh.`,
+    `- Sisipkan transisi alami ke sesi berikutnya jika ada (${nextInDay}).`,
+    '- Semua sesi dalam hari yang sama harus terasa sebagai rangkaian yang nyambung, bukan aktivitas yang berdiri sendiri.',
+    '- Jika ini hari berikutnya, lanjutkan progres dari hasil hari sebelumnya secara bertahap dan konsisten.'
+  ].join('\n')
+}
+
+const extractSectionByFieldLabel = (text, fieldId) => {
+  const escapedFieldId = fieldId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const targetLabelRegex = new RegExp(`(?:\\*\\*)?${escapedFieldId}(?:\\*\\*)?\\s*:`, 'i')
+  const targetMatch = targetLabelRegex.exec(text)
+  if (!targetMatch) return text
+
+  const startIndex = targetMatch.index + targetMatch[0].length
+  const afterTarget = text.slice(startIndex).trimStart()
+  const nextKegiatanLabelRegex = /(?:\*\*)?(?:kegiatanHari\d+Jp\d+|kegiatanH\d+JP\d+)(?:\*\*)?\s*:/gi
+  const nextMatch = nextKegiatanLabelRegex.exec(afterTarget)
+
+  if (!nextMatch) return afterTarget.trim()
+  return afterTarget.slice(0, nextMatch.index).trim()
+}
+
+const compactKegiatanContent = (text) => {
+  if (!text) return ''
+
+  const sentences = text
+    .replace(/\s+/g, ' ')
+    .trim()
+    .split(/(?<=[.!?])\s+/)
+    .filter(Boolean)
+
+  const maxSentences = 3
+  const maxWords = 90
+  const pickedSentences = sentences.slice(0, maxSentences)
+  const limitedWords = pickedSentences.join(' ').split(/\s+/).slice(0, maxWords).join(' ').trim()
+
+  if (!limitedWords) return ''
+  if (/[.!?]$/.test(limitedWords)) return limitedWords
+  return `${limitedWords}.`
+}
+
+const sanitizeAiResult = (result, fieldId) => {
+  if (!result) return ''
+
+  let cleaned = String(result).replace(/\r\n/g, '\n').trim()
+  cleaned = extractSectionByFieldLabel(cleaned, fieldId)
+
+  cleaned = cleaned
+    .replace(/^"|"$/g, '')
+    .replace(/^'|'$/g, '')
+    .replace(/^\s*[-*]\s+/, '')
+    .replace(/^\s*(?:\*\*)?(?:kegiatanHari\d+Jp\d+|kegiatanH\d+JP\d+)(?:\*\*)?\s*:\s*/i, '')
+    .trim()
+
+  if (parseKegiatanFieldId(fieldId)) {
+    cleaned = compactKegiatanContent(cleaned)
+  }
+
+  return cleaned
 }
 
 /**
@@ -159,7 +300,6 @@ document.addEventListener('click', async (e) => {
       return !isFieldFilled(value)
     })
     let isPrerequisiteFilled = true
-    let focusedAreaId = null
 
     const generateLinks = (keys) => {
       if (keys.length === 0) return '<p class="text-green-500">Semua form sebelumnya sudah terisi. Silakan klik tombol lagi untuk mendapatkan ide.</p>'
@@ -190,93 +330,44 @@ document.addEventListener('click', async (e) => {
     console.debug('List of unfilled prerequisites:', listUnfilled)
 
     if ((isIndexedField || isKegiatanField) && !isPrerequisiteFilled) {
-      Swal.fire({ // eslint-disable-line no-undef
+      SwalValidationWrapper.autoNextFocus(false).showValidationToast({ // eslint-disable-line no-undef
         title: "<span class='text-red-500'>Lengkapi form sebelumnya untuk memberi AI sebuah gambaran</span>",
         html: generateLinks(listUnfilled),
-        position: 'bottom-end',
-        backdrop: false,
-        showConfirmButton: false,
-        heightAuto: false,
-        scrollbarPadding: false,
-        focusConfirm: false,
-        returnFocus: false
+        unfilledFields: listUnfilled,
+        getLinkElement: (id) => document.querySelector(`.swal2-container a[href="#${id}"]`),
+        isFieldFilled: (id) => {
+          const value = document.getElementById(id)?.value ?? indexVals[id] ?? ''
+          return isFieldFilled(value)
+        },
+        checkDelay: 2000
       })
-
-      if (listUnfilled.length > 0) {
-        focusedAreaId = listUnfilled[0]
-        const initialFocusedWrapper = getFieldWrapper(focusedAreaId)
-        if (initialFocusedWrapper) {
-          initialFocusedWrapper.classList.add('focused-area')
-          console.debug(`Initially focusing on first unfilled field: ${focusedAreaId}, wrapper:`, initialFocusedWrapper)
-          initialFocusedWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        }
-      }
-
-      // Add click event listeners to the generated links
-      document.querySelectorAll('.swal2-container a').forEach((link, index) => {
-        link.addEventListener('click', (event) => {
-          event.preventDefault()
-          const targetId = link.getAttribute('href').substring(1)
-          const targetElement = document.getElementById(targetId)
-          const fieldWrapper = getFieldWrapper(targetId)
-
-          if (targetElement && fieldWrapper) {
-            if (focusedAreaId) {
-              const previousFocusedWrapper = getFieldWrapper(focusedAreaId)
-              if (previousFocusedWrapper) {
-                previousFocusedWrapper.classList.remove('focused-area')
-              }
-            }
-            focusedAreaId = targetId
-            console.debug(`Focusing on clicked unfilled field: ${targetId}, wrapper:`, fieldWrapper)
-            fieldWrapper.classList.add('focused-area')
-
-            targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
-            targetElement.focus()
-          }
-        })
-      })
-
-      // Remove focus highlight and move to next field when the empty field is filled with 10 sec delay to give user time to read the alert and find the field
-      const checkInterval = setInterval(() => {
-        if (!focusedAreaId) {
-          clearInterval(checkInterval)
-          return
-        }
-
-        const currentValue = document.getElementById(focusedAreaId)?.value
-        const currentWrapper = getFieldWrapper(focusedAreaId)
-
-        if (isFieldFilled(currentValue)) {
-          if (listUnfilled.indexOf(focusedAreaId) === listUnfilled.length - 1) {
-            focusedAreaId = null
-            Swal.close() // eslint-disable-line no-undef
-            currentWrapper?.classList.remove('focused-area')
-          }
-          const swalUrl = document.querySelector('.swal2-container a[href="#' + focusedAreaId + '"]')
-          if (swalUrl) {
-            swalUrl.remove()
-          }
-        }
-
-        if (focusedAreaId === null) {
-          clearInterval(checkInterval)
-        }
-      }, 2000)
 
       return
     }
 
     try {
+      let autoFillPrompt = AUTO_FILL_PROMPT_BASE
+
       Object.keys(indexVals).forEach(key => {
         if (isFieldFilled(indexVals[key])) {
           autoFillPrompt += `${key}: ${indexVals[key]}\n`
         }
       })
 
-      autoFillPrompt += `\nBerdasarkan informasi diatas, isi kolom "${fieldId}". Jangan berikan penjelasan, cukup isi kolom tersebut, jangan menjawah seperti "Tema dan subtema disusun berdasarkan elemen Capaian Pembelajaran (CP) meliputi Dasar-dasar Literasi, Matematika, Sains, Teknologi, Rekayasa, dan Seni." tapi misalnya seperti ini "Diriku/Tubuhku" seperti contoh yang sudah ada sebelumnya`
+      if (isKegiatanField) {
+        autoFillPrompt += `\n${getPreviousKegiatanContext(kegiatanIds, currentKegiatanIndex)}\n`
+        autoFillPrompt += `\n${getKegiatanSectionsContext(kegiatanIds, fieldId)}\n`
+        autoFillPrompt += `\n${buildKegiatanFlowInstruction(kegiatanIds, fieldId)}\n`
+        autoFillPrompt += '\nBatasan durasi: 1 JP = 30 menit, jadi konten harus ringkas dan realistis untuk satu sesi singkat.'
+        autoFillPrompt += '\nFormat isi kegiatan menyesuaikan peran sesi (pembuka/inti/penutup) secara dinamis berdasarkan posisi JP.'
+        autoFillPrompt += '\nBatas panjang: maksimal 2-3 kalimat dan maksimal 90 kata.'
+      }
 
-      autoFillPrompt += '\nPilih salahsatu jawaban, jangan seperti ini "Diriku/Tubuhku, Keluargaku/Anggota Keluargaku, Lingkunganku/Rumahku, Binatang/Binatang di Darat, Tanaman/Tanaman Buah, Kendaraan/Kendaraan di Darat, Alam Semesta/Benda-benda Langit, Negaraku/Tanah Air"'
+      autoFillPrompt += `\nBerdasarkan informasi di atas, isi kolom "${fieldId}" dengan hasil akhir yang langsung bisa dipakai pada input form.`
+      autoFillPrompt += '\nFokus utama: isi section target saat ini terlebih dahulu. Section lain hanya sebagai konteks agar tetap konsisten.'
+      autoFillPrompt += `\nJangan berikan penjelasan, jangan gunakan format instruksi, jangan gunakan daftar poin, jangan pakai heading seperti "Kegiatan Hari 1:", dan jangan sertakan nama field atau prefix seperti "${fieldId}:".`
+
+      autoFillPrompt += '\nKeluarkan tepat satu konten final untuk satu field ini saja.'
 
       const response = await fetch('/api/recommendation', {
         method: 'POST',
@@ -295,30 +386,10 @@ document.addEventListener('click', async (e) => {
 
       const data = await response.json()
 
-      // Update the input element with the AI-generated recommendation
-      inputEl.value = data.result
+      // Update input with a cleaned single-field result.
+      inputEl.value = sanitizeAiResult(data.result, fieldId)
     } catch (error) {
       console.error('Error fetching AI recommendation:', error)
     }
   }
-
-  // Otherwise, user want to regenerate the content, so we just trigger the input event to regenerate
-  const response = await fetch('/api/recommendation', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      text: prompt + '\n' + inputEl.value,
-      field: fieldId
-    })
-  })
-
-  if (!response.ok) {
-    console.error(`Server responded with status ${response.status} for regeneration request`)
-    return
-  }
-
-  const data = await response.json()
-  inputEl.value = data.result
 })

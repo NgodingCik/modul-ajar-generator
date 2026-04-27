@@ -392,4 +392,31 @@ document.addEventListener('click', async (e) => {
       console.error('Error fetching AI recommendation:', error)
     }
   }
+
+  // Otherwise, user want optimize existing content
+  try {
+    const response = await fetch('/api/recommendation', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        text: prompt + '\n' + inputEl.value,
+        field: fieldId
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error(`Server responded with status ${response.status}`)
+    }
+
+    const data = await response.json()
+    inputEl.value = sanitizeAiResult(data.result, fieldId)
+  } catch (error) {
+    console.error('Error fetching AI recommendation:', error)
+    SwalValidationWrapper.autoNextFocus(false).showValidationToast({ // eslint-disable-line no-undef
+      title: "<span class='text-red-500'>Error fetching AI recommendation</span>",
+      html: 'Terjadi kesalahan saat mengambil rekomendasi AI. Silakan coba lagi nanti.'
+    })
+  }
 })

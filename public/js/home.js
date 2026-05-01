@@ -296,7 +296,7 @@ form.addEventListener('submit', (e) => {
     }
   })
 
-  fetch('/api/generate', {
+  fetch('/api/generate-docx', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

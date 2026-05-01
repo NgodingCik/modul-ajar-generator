@@ -96,6 +96,19 @@ export default class OpenAIWrapper {
   // Public method
 
   /**
+   * Adds one or more context objects to the existing default context.
+   *
+   * @param  {...{role: string, content: string}} contexts - Context to add to the default context. Each context should be an object with 'role' and 'content' properties.
+   */
+  addContext (...contexts) {
+    consola.debug('[OpenAIWrapper] addContext() called with', contexts.map(c => Object.keys(c)))
+
+    this.#mDefaultContext = Object.assign(this.#mDefaultContext, ...contexts)
+
+    consola.debug('[OpenAIWrapper] Context updated, now has keys:', Object.keys(this.#mDefaultContext))
+  }
+
+  /**
    * Load context(s) from a directory. Each file in the directory will be read and added as a separate context entry with system role.
    *
    * @param {string} pathDir - The path to the directory containing context files. Each file's content will be loaded as a separate context entry.

@@ -3,7 +3,7 @@ import { SectionWrapper, TableWrapper } from './docx-api.js'
 import { properties } from './docx-config.js'
 import fs from 'fs'
 import path from 'path'
-import { convertNumToRoman } from '../utils/utils.js'
+import { convertNumToRoman } from '../../utils/utils.js'
 
 const __dirname = import.meta.dirname
 
@@ -34,7 +34,7 @@ const createCoverPage = (credentialVars = {}) => {
         children: [
           new ImageRun({
             data: fs.readFileSync(
-              path.join(__dirname, '../../assets/tut-wuri-handayani.png')
+              path.join(__dirname, '../../../assets/tut-wuri-handayani.png')
             ),
             transformation: { width: 200, height: 200 }
           })

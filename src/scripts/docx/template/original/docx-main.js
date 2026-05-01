@@ -7,7 +7,7 @@ import {
   parseContentAsParagraphs
 } from './docx-api.js'
 import { properties } from './docx-config.js'
-import { createCoverPage } from './docx-cover-page.js'
+import { createCoverPage } from '../../docx-cover-page.js'
 import { convertNumToRoman } from '../utils/utils.js'
 // import {
 //   identifikasiPesertaDidik,

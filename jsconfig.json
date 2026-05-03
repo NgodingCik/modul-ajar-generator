@@ -1,4 +1,12 @@
 {
-  "compilerOptions": { "allowJs": true, "maxNodeModuleJsDepth": 0 },
-  "include": ["src/**/*"]
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ESNext",
+    "allowJs": true,
+    "checkJs": true,
+    "maxNodeModuleJsDepth": 0
+  },
+  "include": ["packages/**/*", "apps/**/*", "scripts/**/*"],
+  "exclude": ["node_modules", "**/dist/**", "packages/scripts/**/*"]
 }

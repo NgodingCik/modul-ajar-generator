@@ -160,7 +160,7 @@ export function validateBodyParams (body, ...requiredParams) {
 
 /**
  * Gets the path to the .env file, checking both the current working directory and the project root. This allows for flexibility in where the .env file can be located, accommodating different deployment and development setups.
- * 
+ *
  * @param {string} [filename='.env'] - The name of the .env file to look for (default is '.env')
  * @returns {string | null} - The path to the .env file, or null if not found
  */

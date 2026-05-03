@@ -1,53 +1,40 @@
 {
-  "name": "simple-rpp-builder-express",
-  "version": "1.0.0",
-  "description": "",
-  "main": "src/index.js",
-  "scripts": {
-    "dev": "cross-env NODE_ENV=development node src/server.js --watch",
-    "test": "standard; cross-env NODE_OPTIONS=--experimental-vm-modules jest",
-    "debug": "DEBUG=* NODE_ENV=development node src/server.js",
-    "standard:fix": "standard --fix",
-    "start": "cross-env NODE_ENV=production node src/server.js --production",
-    "tailwindcss": "npx @tailwindcss/cli -i ./src/main.css -o ./public/css/main.css --watch",
-    "build:tailwindcss": "npx @tailwindcss/cli -i ./src/main.css -o ./public/css/main.css --minify",
-    "docs": "typedoc --tsconfig jsconfig.json --entryPointStrategy expand src --plugin typedoc-plugin-markdown --out docs",
-    "cli:docx": "node src/cli/read-docx.js",
-    "poc:vm-executor": "node poc/vm-executor.js",
-    "poc:vm-docx": "node poc/vm-docx.js",
-    "poc:vm-generate-docx": "node poc/vm-generate-docx.js",
-    "poc:ai-request": "node poc/ai-request.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "private": true,
   "type": "module",
-  "dependencies": {
-    "@dqbd/tiktoken": "^1.0.22",
-    "@tailwindcss/typography": "^0.5.19",
-    "consola": "^3.4.2",
-    "docx": "^9.6.1",
-    "dotenv": "^17.3.1",
-    "ejs": "^5.0.1",
-    "express": "^5.2.1",
-    "express-rate-limit": "^8.3.2",
-    "helmet": "^8.1.0",
-    "openai": "^6.34.0",
-    "sweetalert2": "^11.26.24",
-    "tailwindcss": "^4.2.2"
+  "workspaces": [
+    "packages/*",
+    "cli/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "test": "standard; jest",
+    "tailwindcss": "npx @tailwindcss/cli -i ./resources/css/main.css -o ./public/css/main.css --watch",
+    "tailwindcss:build": "npx @tailwindcss/cli -i ./resources/css/main.css -o ./public/css/main.css --minify",
+    "docs": "typedoc --tsconfig jsconfig.json --entryPointStrategy packages apps/* packages/* scripts/* --plugin typedoc-plugin-markdown --out docs/api-reference"
   },
   "devDependencies": {
-    "@tailwindcss/cli": "^4.2.2",
-    "cross-env": "^10.1.0",
+    "@tailwindcss/cli": "^4.2.4",
+    "@tailwindcss/typography": "^0.5.19",
     "jest": "^30.3.0",
+    "nodemon": "^3.1.14",
     "standard": "^17.1.2",
+    "tailwindcss": "^4.2.4",
     "typedoc": "^0.28.19",
     "typedoc-plugin-markdown": "^4.11.0"
   },
   "standard": {
-    "ignore": [
-      "src/scripts/docx-example-predefined-var.js",
-      "tests/**/*.js"
+    "globals": [
+      "describe",
+      "test",
+      "it",
+      "expect",
+      "beforeEach",
+      "afterEach",
+      "jest"
+    ],
+    "ignores": [
+      "dist",
+      "packages/scripts/*"
     ]
   }
 }

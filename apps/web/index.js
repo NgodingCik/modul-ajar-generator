@@ -25,6 +25,7 @@ import stripConsoleMiddleware from './middleware/stripconsole.js'
 
 const APP_HOST = process.env.APP_HOST || 'localhost'
 const APP_PORT = Number(process.env.APP_PORT ?? 3000)
+const APP_USE_BUILTIN_API = String(process.env.APP_USE_BUILTIN_API) === 'true'
 
 const app = Express()
 app.disable('x-powered-by')
@@ -48,7 +49,7 @@ app.use(cors)
 app.use(stripConsoleMiddleware)
 
 // Load and register routes
-const router = await loadRoutes()
+const router = await loadRoutes(APP_USE_BUILTIN_API)
 app.use(router)
 
 // Serving static files

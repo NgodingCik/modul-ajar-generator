@@ -31,9 +31,11 @@ export class AppRoute {
  * Scans the current directory recursively for `.js` and `.ts` files, expecting each valid
  * route file to export an instance of `AppRoute` under the name `route`.
  *
+ * @param {boolean} [withApi=true] - Whether to include API routes (those with paths starting with '/api') when registering routes. If false, API routes will be skipped.
+ *
  * @returns {Promise<import('express').Router>} A promise that resolves to the configured Express Router.
  */
-export async function loadRoutes () {
+export async function loadRoutes (withApi = true) {
   // Variables for filtering files (easy to modify if needed)
   const ignoreFiles = ['index.ts', 'index.js']
   const allowedExtensions = ['.ts', '.js']
@@ -79,6 +81,13 @@ export async function loadRoutes () {
   for (const filePath of filteredFiles) {
     const file = path.relative(routesDir, filePath)
     const routeModule = await import(filePath)
+
+    // Don't register the route if withApi is false and the route is an API route (path starts with /api)
+    if (!withApi && routeModule.route instanceof AppRoute && file.startsWith('api/')) {
+      consola.debug(`Skipping API route ${routeModule.route.path} from file ${file} because withApi is false`)
+      continue
+    }
+
     if (routeModule.route instanceof AppRoute) {
       const route = routeModule.route
 

@@ -12,6 +12,16 @@
   <script src="/sweetalert2.js"></script>
 
   <%- include('../metadata', {APP_NAME, TITLE}) %>
+  <script>
+    (function() {
+      const rawData = '<%- JSON.stringify(META || {}) %>';
+      const metaData = JSON.parse(rawData);
+
+      for (const [key, value] of Object.entries(metaData)) {
+        window[key] = value;
+      }
+    })();
+  </script>
 </head>
 <body class="">
   <%- include('../components/navbar.ejs', {APP_NAME}) %>

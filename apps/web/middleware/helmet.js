@@ -19,8 +19,8 @@ const helmetMiddleware = helmet({
       'font-src': ["'self'", ...CORS_TRUSTED_CDN_HOSTS]
     }
   },
-  frameguard: false, // Diperlukan agar frame-ancestors bekerja
-  referrerPolicy: { policy: 'strict-origin-when-cross-origin' }, // Lebih baik diatur daripada false
+  frameguard: false,
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
   xPoweredBy: false
 })
 

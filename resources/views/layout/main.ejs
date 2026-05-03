@@ -13,14 +13,7 @@
 
   <%- include('../metadata', {APP_NAME, TITLE}) %>
   <script>
-    (function() {
-      const rawData = '<%- JSON.stringify(META || {}) %>';
-      const metaData = JSON.parse(rawData);
-
-      for (const [key, value] of Object.entries(metaData)) {
-        window[key] = value;
-      }
-    })();
+    window.__APP__ = <%- JSON.stringify(META || {}).replace(/</g, "\\u003c") %>
   </script>
 </head>
 <body class="">

@@ -1,0 +1,23 @@
+{
+  "name": "@repo/web",
+  "version": "1.0.0",
+  "description": "Web application for the Modul Ajar Generator",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "npx nodemon index.js"
+  },
+  "keywords": [],
+  "author": "NgodingCik",
+  "license": "Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)",
+  "type": "module",
+  "dependencies": {
+    "consola": "^3.4.2",
+    "dotenv": "^17.4.2",
+    "ejs": "^5.0.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.4.1",
+    "helmet": "^8.1.0",
+    "sweetalert2": "^11.26.24"
+  }
+}

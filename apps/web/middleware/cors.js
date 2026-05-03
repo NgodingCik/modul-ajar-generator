@@ -1,3 +1,5 @@
+import consola from 'consola'
+
 const APP_ORIGIN_URL = process.env.APP_ORIGIN_URL || 'http://localhost:3000'
 const APP_ORIGIN_HOST = new URL(APP_ORIGIN_URL).host
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -20,6 +22,7 @@ const isOriginAllowed = (origin) => {
 
 const cors = (req, res, next) => {
   const origin = req.headers.origin || req.headers.host || ''
+  consola.debug(`CORS check - Origin: ${origin}, Host: ${req.headers.host}`)
 
   res.header('Vary', 'Origin')
 
@@ -41,7 +44,7 @@ const cors = (req, res, next) => {
   }
 
   if (!isOriginAllowed(origin) && !isHostAllowed(req.headers.host)) {
-    console.warn(`CORS blocked - origin not allowed: ${origin}`)
+    consola.warn(`CORS blocked - origin not allowed: ${origin}`)
     return res.status(403).json({ status: false, message: '403 Forbidden', error: null })
   }
 

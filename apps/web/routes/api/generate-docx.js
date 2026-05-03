@@ -4,7 +4,7 @@
 
 import { AppRoute } from '../index.js'
 import consola from 'consola'
-import handleGenerateDocx from '../../../../handlers/handle-generate-docx.js'
+import handleGenerateDocx from '@repo/handlers/handle-generate-docx.js'
 
 export const route = new AppRoute('/generate-docx', 'post', async (req, res) => {
   const body = req.body

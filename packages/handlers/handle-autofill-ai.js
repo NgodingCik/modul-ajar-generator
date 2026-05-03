@@ -1,13 +1,22 @@
 import fs from 'fs'
 import path from 'path'
 import consola from 'consola'
-import { validateBodyParams } from '../utils/utils.js'
-import OpenAIWrapper from '../core/ai/openai-wrapper.js'
+import { validateBodyParams } from '@repo/utils/utils.js'
+import OpenAIWrapper from '@repo/core/ai/openai-wrapper.js'
+
+/**
+ * @typedef {Object} Message
+ * @property {'system' | 'user' | 'assistant' | 'tool'} role - The role of the message sender (excluding 'function' to avoid name requirement)
+ * @property {string} content - The content of the message
+ * @property {string} [name] - Optional name for tool/function messages
+ * @property {string} [tool_call_id] - Optional tool_call_id for tool messages
+ */
 
 const __dirname = import.meta.dirname
 
-const openai = new OpenAIWrapper(process.env.OPENAI_API_KEY, process.env.OPENAI_MODEL || 'gpt-4.1-2025-04-14', process.env.OPENAI_BASE_URL || null)
+const openai = new OpenAIWrapper(String(process.env.OPENAI_API_KEY), String(process.env.OPENAI_MODEL) || 'gpt-4.1-2025-04-14', String(process.env.OPENAI_BASE_URL) || null)
 
+/** @type {Message[]} */
 openai.context = [
   {
     role: 'system',
@@ -45,7 +54,7 @@ openai.context = [
 
 /**
  * Handles auto-filling AI functionality.
- * @param {Object} body - The request body containing text and field.
+ * @param {any} body - The request body containing text and field.
  *
  * @returns {Promise<{status: number, data?: string, message?: string}>} - The auto-filled text.
  */
@@ -62,7 +71,7 @@ const handleAutoFillAI = async (body) => {
     return { status: 400, message: 'Missing required parameters' }
   }
   if (validate.status === false) {
-    return { status: 400, message: validate.message }
+    return { status: 400, message: String(validate.message) }
   }
 
   try {

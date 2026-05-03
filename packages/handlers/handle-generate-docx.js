@@ -1,9 +1,9 @@
 import fs from 'fs'
 import path from 'path'
 import consola from 'consola'
-import { validateBodyParams, extractCodeFromMarkdownFence, removeImportRequire, convertNumToRoman } from '../utils/utils.js'
-import OpenAIWrapper from '../core/ai/openai-wrapper.js'
-import VMRunner from '../core/engine/vm-runner.js'
+import { validateBodyParams, extractCodeFromMarkdownFence, removeImportRequire, convertNumToRoman } from '@repo/utils/utils.js'
+import OpenAIWrapper from '@repo/core/ai/openai-wrapper.js'
+import VMRunner from '@repo/core/engine/vm-runner.js'
 
 import * as docx from 'docx'
 import * as docxConfig from '../scripts/docx/docx-config.js'
@@ -12,7 +12,7 @@ import * as docxCoverPage from '../scripts/docx/docx-cover-page.js'
 
 const __dirname = import.meta.dirname
 
-const openai = new OpenAIWrapper(process.env.OPENAI_API_KEY, process.env.OPENAI_MODEL || 'gpt-4.1-2025-04-14', process.env.OPENAI_BASE_URL || null)
+const openai = new OpenAIWrapper(String(process.env.OPENAI_API_KEY), String(process.env.OPENAI_MODEL) || 'gpt-4.1-2025-04-14', String(process.env.OPENAI_BASE_URL) || null)
 
 openai.loadContextsFromDir(path.join(__dirname, '../../context'))
 
@@ -48,6 +48,9 @@ const OPTIONAL_KEYS = [
  * Parse alokasiWaktu string into days and activities per day.
  * Format: 'N x M JP' → { totalHari: N, kegiatanPerHari: M }
  * Example: '5 x 3 JP' → { totalHari: 5, kegiatanPerHari: 3 }
+ *
+ * @param {string} alokasiWaktu - The alokasi waktu string to parse.
+ * @returns {{ totalHari: number, kegiatanPerHari: number }} - Parsed total days and activities per day.
  */
 function parseAlokasiWaktu (alokasiWaktu) {
   const match = String(alokasiWaktu).match(/(\d+)\s*x\s*(\d+)/i)
@@ -62,11 +65,16 @@ function parseAlokasiWaktu (alokasiWaktu) {
  * Build "Rencana Kegiatan" section dynamically from kegiatan keys.
  * Parses keys matching pattern: kegiatanHari{hari}Jp{kegiatan}
  * Groups activities by day in order, numbered as Kegiatan 1, Kegiatan 2, etc.
+ *
+ * @param {any} body - The request body containing kegiatan keys and values.
+ * @param {string[]} kegiatanKeys - The list of keys in the body that represent kegiatan.
+ * @returns {string} - The formatted "Rencana Kegiatan" section as a markdown string.
  */
 function buildRencanaKegiatan (body, kegiatanKeys) {
   const lines = ['# Rencana Kegiatan', '']
 
   // Parse activities and group by day and JP
+  /** @type {Record<number, Record<number, string>>} */
   const aktivitasByDay = {}
 
   kegiatanKeys.forEach(key => {
@@ -109,6 +117,12 @@ function buildRencanaKegiatan (body, kegiatanKeys) {
   return lines.join('\n')
 }
 
+/**
+ * Handles the generation of a DOCX document based on the provided body data.
+ *
+ * @param {any} body
+ * @returns {Promise<{status: number, data?: any, message?: string}>}
+ */
 const handleGenerateDocx = async (body) => {
   const template = 'original' // TODO: Make this dynamic based on request parameter if multiple templates are supported in the future'
   const kegiatanKeys = Object.keys(body).filter(key => !FILTER_KEYS.includes(key))
@@ -123,7 +137,7 @@ const handleGenerateDocx = async (body) => {
     return { status: 400, message: 'Missing required parameters' }
   }
   if (validate.status === false) {
-    return { status: 400, message: validate.message }
+    return { status: 400, message: String(validate.message) }
   }
 
   try {
@@ -163,10 +177,10 @@ ${body.identifikasiPesertaDidik}
 ${body.materiPembelajaran}
 
 ## Dimensi Profil Lulusan
-${body.dimensiProfilLulusan.split(',').map((dpl) => `- ${dpl.trim()}`).join('\n')}
+${body.dimensiProfilLulusan.split(',').map((/** @type {string} */ dpl) => `- ${dpl.trim()}`).join('\n')}
 
 ## Elemen Capaian Pembelajaran
-${body.elemenCp.split(',').map((cp) => `- ${cp.trim()}`).join('\n')}
+${body.elemenCp.split(',').map((/** @type {string} */ cp) => `- ${cp.trim()}`).join('\n')}
 
 ## Tujuan Pembelajaran
 ${body.tujuanPembelajaran}

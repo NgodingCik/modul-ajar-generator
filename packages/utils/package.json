@@ -1,0 +1,17 @@
+{
+  "name": "@repo/utils",
+  "version": "1.0.0",
+  "description": "Utility functions for the Modul Ajar Generator",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["modul-ajar", "generator", "utils"],
+  "author": "NgodingCik",
+  "license": "Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)",
+  "type": "module",
+  "dependencies": {
+    "@dqbd/tiktoken": "^1.0.22",
+    "consola": "^3.4.2"
+  }
+}

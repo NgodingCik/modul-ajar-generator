@@ -1,76 +1,11 @@
 /**
- * This file contains utility functions for handling some common operations in the application.
+ * This module contains utility functions for handling some common operations in the application.
  */
 
 import fs from 'fs'
 import path from 'path'
 import { encoding_for_model } from '@dqbd/tiktoken' // eslint-disable-line camelcase
 import consola from 'consola'
-
-/**
- * Parses a markdown string into an object with keys and values extracted from the markdown.
- *
- * @param {string} markdown - The markdown string to parse
- * @returns {Object} - The parsed object
- */
-export function parseMarkdownToObject (markdown) {
-  const lines = markdown.split('\n')
-  const result = {}
-  let currentKey = null
-  let currentValueLines = []
-
-  for (const line of lines) {
-    const keyMatch = line.match(/^\{([A-Z_]+)\}$/)
-    if (keyMatch) {
-      if (currentKey) {
-        result[currentKey] = currentValueLines.join('\n').trim()
-      }
-      currentKey = keyMatch[1].trim()
-      currentValueLines = []
-    } else if (currentKey) {
-      currentValueLines.push(line)
-    }
-  }
-
-  if (currentKey) {
-    result[currentKey] = currentValueLines.join('\n').trim()
-  }
-
-  return result
-}
-
-/**
- * Extracts keys and their descriptions from a markdown string.
- *
- * @example <!-- {KEY_NAME} This is the description for KEY_NAME --!> will return { KEY_NAME: "This is the description for KEY_NAME" }
- *
- * @param {string} markdown - The markdown string to parse
- * @returns {Object} - An object with keys and their descriptions
- */
-export function getKeysDescriptionFromMarkdown (markdown) {
-  const result = {}
-  const regex = /<!--\s*\{([A-Z_]+)\}\s+([\s\S]{0,2000}?)\s*-->/g
-
-  let match
-  while ((match = regex.exec(markdown)) !== null) {
-    result[match[1]] = match[2].trim()
-  }
-
-  return result
-}
-
-/**
- * Removes HTML comments from a markdown string.
- *
- * @param {string} markdown - The markdown string to parse
- * @returns {string} - The markdown string with comments removed
- */
-export function removeCommentsFromMarkdown (markdown) {
-  return markdown
-    .replace(/<!--(?!-?>)(?:(?!-->)[\s\S]){0,50000}?-->/g, '')
-    .replace(/\n\s*\n+/g, '\n')
-    .trim()
-}
 
 /**
  * Removes import require, and export statements from a string.
@@ -97,9 +32,10 @@ export function removeImportRequire (content) {
  * This function loads all Markdown files from a specified directory, reads their content, and constructs an object where each key is derived from the filename (converted to uppercase and underscores) and the value is the file's content. This allows for easy access to the content of multiple Markdown files in a structured format.
  *
  * @param {string} dir - Content directory path
- * @returns {Object{ [key: string]: string }} - An object where keys are derived from filenames and values are file contents
+ * @returns {{ [key: string]: string }} - An object where keys are derived from filenames and values are file contents
  */
 export function loadContexts (dir) {
+  /** @type {{[key: string]: string}} */
   const context = {}
   const files = fs.readdirSync(dir)
 
@@ -161,13 +97,14 @@ export function convertNumToRoman (num) {
   if (num >= 5) { return 'V' + convertNumToRoman(num - 5) }
   if (num >= 4) { return 'IV' + convertNumToRoman(num - 4) }
   if (num >= 1) { return 'I' + convertNumToRoman(num - 1) }
+  return ''
 }
 
 /**
  * Counts the number of tokens in a string using the specified model's tokenizer.
  *
  * @param {string} message - The string to count tokens for
- * @param {TiktokenModel} model - The OpenAI model to use for tokenization (e.g., "gpt-3.5-turbo")
+ * @param {import('@dqbd/tiktoken').TiktokenModel} model - The OpenAI model to use for tokenization (e.g., "gpt-3.5-turbo")
  * @returns {number} - The number of tokens in the string
  */
 export function numTokensFromString (message, model = 'gpt-5') {
@@ -181,8 +118,8 @@ export function numTokensFromString (message, model = 'gpt-5') {
 /**
  * Validates that all required parameters are present in the request body.
  *
- * @param {Object} body - The request body
- * @param  {...any} requiredParams - The required parameter names
+ * @param {Record<string, any>} body - The request body
+ * @param  {...string} requiredParams - The required parameter names
  * @returns {{ status: boolean, message: string | null }} - An object containing a boolean indicating validity and an error message (if applicable)
  */
 export function validateBodyParams (body, ...requiredParams) {
@@ -192,6 +129,7 @@ export function validateBodyParams (body, ...requiredParams) {
     return { status: false, message: 'Request body must be a valid JSON object' }
   }
 
+  /** @param {string} param */
   const isMissing = (param) => {
     const value = body[param]
     return !(param in body) || value === null || value === undefined || value === ''
@@ -218,4 +156,26 @@ export function validateBodyParams (body, ...requiredParams) {
   }
 
   return { status: true, message: null }
+}
+
+/**
+ * Gets the path to the .env file, checking both the current working directory and the project root. This allows for flexibility in where the .env file can be located, accommodating different deployment and development setups.
+ * 
+ * @param {string} [filename='.env'] - The name of the .env file to look for (default is '.env')
+ * @returns {string | null} - The path to the .env file, or null if not found
+ */
+export function getEnvPath (filename = '.env') {
+  // Check for .env in the current working directory first, then fallback to the project root
+  const cwdEnvPath = path.join(process.cwd(), filename)
+  const rootEnvPath = path.join(import.meta.dirname, `../../${filename}`)
+
+  if (fs.existsSync(cwdEnvPath)) {
+    return cwdEnvPath
+  }
+  if (fs.existsSync(rootEnvPath)) {
+    return rootEnvPath
+  }
+
+  consola.warn('No .env file found in either the current working directory or the project root.')
+  return null
 }

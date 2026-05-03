@@ -7,10 +7,10 @@
     "apps/*"
   ],
   "scripts": {
-    "test": "standard; jest",
+    "test": "standard; NODE_OPTIONS=--experimental-vm-modules jest",
     "tailwindcss": "npx @tailwindcss/cli -i ./resources/css/main.css -o ./public/css/main.css --watch",
     "tailwindcss:build": "npx @tailwindcss/cli -i ./resources/css/main.css -o ./public/css/main.css --minify",
-    "docs": "typedoc --tsconfig jsconfig.json --entryPointStrategy packages apps/* packages/* scripts/* --plugin typedoc-plugin-markdown --out docs/api-reference"
+    "docs": "typedoc"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.2.4",

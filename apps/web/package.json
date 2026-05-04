@@ -4,8 +4,8 @@
   "description": "Web application for the Modul Ajar Generator",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "npx nodemon index.js"
+    "start": "cross-env NODE_ENV=production node boot.js",
+    "dev": "cross-env NODE_ENV=development npx nodemon boot.js"
   },
   "keywords": [],
   "author": "NgodingCik",

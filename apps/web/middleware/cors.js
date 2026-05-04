@@ -1,37 +1,23 @@
 import consola from 'consola'
 
-const APP_ORIGIN_URL = process.env.APP_ORIGIN_URL || 'http://localhost:3000'
-const APP_ORIGIN_HOST = new URL(APP_ORIGIN_URL).host
+const APP_ORIGIN_HOSTS = process.env.APP_ORIGIN_HOSTS || 'localhost'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
-if (!APP_ORIGIN_URL) {
-  throw new Error('APP_ORIGIN_URL environment variable is required')
-}
+// Support wildcard '*' or comma-separated list of full origin URLs
+// e.g. APP_ORIGIN_HOSTS="modul-ajar.web.id,test.modul-ajar.web.id"
+const ALLOWED_ORIGINS = APP_ORIGIN_HOSTS === '*'
+  ? '*'
+  : APP_ORIGIN_HOSTS.split(',').map(o => o.trim())
 
 /**
- * Helper function to check if the request host is allowed based on the configured APP_ORIGIN_URL.
- * @param {string | undefined} host - The host from the request headers (e.g., 'localhost:3000')
- * @returns {boolean}
- */
-const isHostAllowed = (host) => {
-  if (!host) {
-    return isDevelopment
-  }
-
-  return host === APP_ORIGIN_HOST
-}
-
-/**
- * Helper function to check if the request origin is allowed based on the configured APP_ORIGIN_URL.
- * @param {string} origin - The origin from the request headers (e.g., 'http://localhost:3000')
+ * Helper function to check if the request origin is allowed.
+ * @param {string | undefined} origin - The origin from the request headers (e.g., 'https://modul-ajar.web.id')
  * @returns {boolean}
  */
 const isOriginAllowed = (origin) => {
-  if (!origin) {
-    return isDevelopment
-  }
-
-  return origin === APP_ORIGIN_HOST
+  if (!origin) return isDevelopment
+  if (ALLOWED_ORIGINS === '*') return true
+  return ALLOWED_ORIGINS.includes(origin)
 }
 
 /**
@@ -42,13 +28,38 @@ const isOriginAllowed = (origin) => {
  * @returns {import('express').Response | void}
  */
 const cors = (req, res, next) => {
-  const origin = req.headers.origin || req.headers.host || ''
-  consola.debug(`CORS check - Origin: ${origin}, Host: ${req.headers.host}`)
+  const originHeader = req.headers.origin || req.get('origin') || ''
+
+  let origin = ''
+  let fullUrl = ''
+
+  if (originHeader) {
+    try {
+      const urlObj = new URL(originHeader)
+      origin = urlObj.hostname
+      fullUrl = originHeader
+    } catch (e) {
+      origin = originHeader
+      fullUrl = originHeader
+    }
+  } else {
+    // Fallback if no origin is provided (e.g., direct API calls)
+    const hostHeader = String(req.get('host') || '')
+    origin = hostHeader.split(':')[0]
+    fullUrl = req.protocol + '://' + hostHeader
+  }
+
+  consola.debug(`CORS check - Origin Header: ${originHeader}, Extracted Origin: ${origin}, URL: ${fullUrl}`)
 
   res.header('Vary', 'Origin')
 
-  if (isOriginAllowed(origin)) {
-    res.header('Access-Control-Allow-Origin', origin)
+  const IS_ALLOWED = isOriginAllowed(origin)
+  consola.debug(`CORS allowed: ${IS_ALLOWED} for origin: ${origin}`)
+
+  if (ALLOWED_ORIGINS === '*') {
+    res.header('Access-Control-Allow-Origin', '*')
+  } else if (origin && IS_ALLOWED) {
+    res.header('Access-Control-Allow-Origin', fullUrl)
   }
 
   if (req.url.startsWith('/api/')) {
@@ -64,7 +75,7 @@ const cors = (req, res, next) => {
     return res.sendStatus(204)
   }
 
-  if (!isOriginAllowed(origin) && !isHostAllowed(req.headers.host)) {
+  if (!isOriginAllowed(origin)) {
     consola.warn(`CORS blocked - origin not allowed: ${origin}`)
     return res.status(403).json({ status: false, message: '403 Forbidden', error: null })
   }

@@ -4,14 +4,16 @@
   "description": "API for the Modul Ajar Generator",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "npx nodemon index.js"
+    "start": "cross-env NODE_ENV=production node boot.js",
+    "dev": "cross-env NODE_ENV=development npx nodemon boot.js"
   },
   "keywords": [],
   "author": "NgodingCik",
   "license": "Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)",
   "type": "module",
   "dependencies": {
+    "@repo/handlers": "^1.0.0",
+    "@repo/utils": "^1.0.0",
     "consola": "^3.4.2",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",

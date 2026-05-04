@@ -14,7 +14,7 @@ import OpenAIWrapper from '@repo/core/ai/openai-wrapper.js'
 
 const __dirname = import.meta.dirname
 
-const openai = new OpenAIWrapper(String(process.env.OPENAI_API_KEY), String(process.env.OPENAI_MODEL) || 'gpt-4.1-2025-04-14', String(process.env.OPENAI_BASE_URL) || null)
+const openai = new OpenAIWrapper(process.env.OPENAI_API_KEY || '', process.env.OPENAI_MODEL || 'gpt-4.1-2025-04-14', process.env.OPENAI_BASE_URL || null)
 
 /** @type {Message[]} */
 openai.context = [

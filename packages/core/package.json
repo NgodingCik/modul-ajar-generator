@@ -6,11 +6,16 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["modul-ajar", "generator", "core"],
+  "keywords": [
+    "modul-ajar",
+    "generator",
+    "core"
+  ],
   "author": "NgodingCik",
   "license": "Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)",
   "type": "module",
   "dependencies": {
+    "@repo/utils": "^1.0.0",
     "consola": "^3.4.2",
     "openai": "^6.35.0"
   }

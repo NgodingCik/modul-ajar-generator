@@ -1,0 +1,35 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "index.js",
+      "use": "@vercel/node",
+      "config": {
+        "bundle": false,
+        "includeFiles": [
+          "**",
+          "../../packages/**",
+          "../../context/**",
+          "../../public/**",
+          "../../assets/**",
+          "../../resources/**",
+          "../../node_modules/@repo/**",
+          "../../node_modules/openai/**",
+          "../../node_modules/consola/**",
+          "../../node_modules/dotenv/**",
+          "../../node_modules/express/**",
+          "../../node_modules/docx/**",
+          "../../node_modules/@dqbd/**",
+          "../../node_modules/express-rate-limit/**",
+          "../../node_modules/helmet/**"
+        ]
+      }
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.js"
+    }
+  ]
+}

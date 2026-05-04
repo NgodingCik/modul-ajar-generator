@@ -13,8 +13,8 @@ const helmetMiddleware = helmet({
 
       'upgrade-insecure-requests': isDevelopment ? null : [],
       'frame-ancestors': ["'self'", ...CORS_TRUSTED_HOSTS],
-      'script-src': ["'self'", "'unsafe-inline'", 'https://static.cloudflareinsights.com', ...CORS_TRUSTED_CDN_HOSTS],
-      'style-src': ["'self'", "'unsafe-inline'", ...CORS_TRUSTED_CDN_HOSTS],
+      'script-src': ["'self'", "'unsafe-inline'", 'https://static.cloudflareinsights.com', 'https://js.hcaptcha.com', 'https://newassets.hcaptcha.com', ...CORS_TRUSTED_CDN_HOSTS],
+      'style-src': ["'self'", "'unsafe-inline'", 'https://newassets.hcaptcha.com', ...CORS_TRUSTED_CDN_HOSTS],
       'img-src': ["'self'", 'data:', 'https://contrib.rocks', ...CORS_TRUSTED_CDN_HOSTS],
       'font-src': ["'self'", ...CORS_TRUSTED_CDN_HOSTS]
     }

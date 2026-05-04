@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import consola from 'consola'
 import { validateBodyParams, extractCodeFromMarkdownFence, removeImportRequire, convertNumToRoman } from '@repo/utils/utils.js'
+import handleHCaptchaValidation from './handle-hcaptcha-validation.js'
 import OpenAIWrapper from '@repo/core/ai/openai-wrapper.js'
 import VMRunner from '@repo/core/engine/vm-runner.js'
 
@@ -124,6 +125,14 @@ function buildRencanaKegiatan (body, kegiatanKeys) {
  * @returns {Promise<{status: number, data?: any, message?: string}>}
  */
 const handleGenerateDocx = async (body) => {
+  // Validate hCaptcha response before proceeding with document generation
+  if (!body['h-captcha-response']) {
+    return { status: 400, message: 'hCaptcha response token is missing' }
+  }
+  if (!await handleHCaptchaValidation(body)) {
+    return { status: 400, message: 'hCaptcha validation failed' }
+  }
+
   const template = 'original' // TODO: Make this dynamic based on request parameter if multiple templates are supported in the future'
   const kegiatanKeys = Object.keys(body).filter(key => !FILTER_KEYS.includes(key))
 

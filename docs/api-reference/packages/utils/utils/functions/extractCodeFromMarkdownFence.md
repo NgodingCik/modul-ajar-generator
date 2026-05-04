@@ -8,7 +8,7 @@
 
 > **extractCodeFromMarkdownFence**(`code`): `string`
 
-Defined in: [packages/utils/utils.js:79](https://github.com/GTPSHAX/modul-ajar-generator/blob/9db625383fe8ae8db846d4419c7c2eb1c653406a/packages/utils/utils.js#L79)
+Defined in: [packages/utils/utils.js:79](https://github.com/GTPSHAX/modul-ajar-generator/blob/d4b0e01a4a3d86231cbebd8dec7d9bc8aedf2a93/packages/utils/utils.js#L79)
 
 Cleans code extracted from markdown code blocks.
 Removes the enclosing backticks while preserving inner content.

@@ -18,7 +18,25 @@
 </head>
 <body class="">
   <%- include('../components/navbar.ejs', {APP_NAME}) %>
-  <%- include('../' + VIEW) %>
+  <%- include('../' + VIEW, {META}) %>
   <%- include('../components/footer.ejs', {APP_NAME}) %>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!localStorage.getItem('cookie_notice_accepted')) {
+        Swal.fire({
+          toast: true,
+          position: 'bottom-end',
+          icon: 'info',
+          title: 'Kami menggunakan cookie esensial untuk menjaga keamanan situs ini.',
+          showConfirmButton: true,
+          confirmButtonText: 'Mengerti',
+          timer: 10000,
+          timerProgressBar: true
+        }).then(() => {
+          localStorage.setItem('cookie_notice_accepted', 'true');
+        });
+      }
+    });
+  </script>
 </body>
 </html>

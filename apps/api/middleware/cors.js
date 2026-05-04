@@ -1,13 +1,13 @@
 import consola from 'consola'
 
-const APP_ORIGIN_URL = process.env.APP_ORIGIN_URL || 'http://localhost:3000'
+const APP_ORIGIN_HOST = process.env.APP_ORIGIN_HOST || 'localhost'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Support wildcard '*' or comma-separated list of full origin URLs
-// e.g. APP_ORIGIN_URL="https://modul-ajar.web.id,https://test.modul-ajar.web.id"
-const ALLOWED_ORIGINS = APP_ORIGIN_URL === '*'
+// e.g. APP_ORIGIN_HOST="modul-ajar.web.id,test.modul-ajar.web.id"
+const ALLOWED_ORIGINS = APP_ORIGIN_HOST === '*'
   ? '*'
-  : APP_ORIGIN_URL.split(',').map(o => o.trim())
+  : APP_ORIGIN_HOST.split(',').map(o => o.trim())
 
 /**
  * Helper function to check if the request origin is allowed.
@@ -28,7 +28,7 @@ const isOriginAllowed = (origin) => {
  * @returns {import('express').Response | void}
  */
 const cors = (req, res, next) => {
-  const origin = req.headers.origin || ''
+  const origin = (req.get('host') || req.get('origin') || req.headers.origin || '').split(':')[0] // Extract hostname without port
   consola.debug(`CORS check - Origin: ${origin}, Host: ${req.headers.host}`)
 
   res.header('Vary', 'Origin')

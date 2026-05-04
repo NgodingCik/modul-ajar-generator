@@ -8,6 +8,6 @@
 
 > **ContextObject** = `Record`\<`string`, `any`\>
 
-Defined in: [packages/core/engine/vm-runner.js:11](https://github.com/GTPSHAX/modul-ajar-generator/blob/4297ff4935987b650cede1000047210790531bd4/packages/core/engine/vm-runner.js#L11)
+Defined in: [packages/core/engine/vm-runner.js:11](https://github.com/GTPSHAX/modul-ajar-generator/blob/9db625383fe8ae8db846d4419c7c2eb1c653406a/packages/core/engine/vm-runner.js#L11)
 
 ## Type Parameters

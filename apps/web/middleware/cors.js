@@ -1,13 +1,13 @@
 import consola from 'consola'
 
-const APP_ORIGIN_HOST = process.env.APP_ORIGIN_HOST || 'localhost'
+const APP_ORIGIN_HOSTS = process.env.APP_ORIGIN_HOSTS || 'localhost'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Support wildcard '*' or comma-separated list of full origin URLs
-// e.g. APP_ORIGIN_HOST="modul-ajar.web.id,test.modul-ajar.web.id"
-const ALLOWED_ORIGINS = APP_ORIGIN_HOST === '*'
+// e.g. APP_ORIGIN_HOSTS="modul-ajar.web.id,test.modul-ajar.web.id"
+const ALLOWED_ORIGINS = APP_ORIGIN_HOSTS === '*'
   ? '*'
-  : APP_ORIGIN_HOST.split(',').map(o => o.trim())
+  : APP_ORIGIN_HOSTS.split(',').map(o => o.trim())
 
 /**
  * Helper function to check if the request origin is allowed.

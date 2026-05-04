@@ -296,7 +296,7 @@ form.addEventListener('submit', (e) => {
     }
   })
 
-  fetch('/api/generate', {
+  fetch(window.__APP__.APP_API_BASE_URL + '/generate-docx', { // eslint-disable-line no-undef
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

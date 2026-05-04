@@ -20,6 +20,12 @@ This repository is organized as a small monorepo with two applications, a set of
 - [packages/utils/index.js](../packages/utils/index.js)
 - [scripts/cli/index.js](../scripts/cli/index.js)
 
+## `@repo` Workspace Imports
+
+The codebase uses package-style imports such as `@repo/core`, `@repo/handlers`, `@repo/utils`, `@repo/api`, and `@repo/web` to share code across apps and packages without long relative paths.
+
+Use this convention when code needs to reach shared logic from another workspace package. Keep the documentation at the package level rather than listing every file unless a file has direct runtime significance.
+
 ## What Connects Everything
 
 The web app renders the UI and serves static assets from `public/` and `node_modules/sweetalert2/dist`. The handlers then orchestrate AI-assisted text generation and DOCX creation by calling the shared core and utility packages.

@@ -7,6 +7,22 @@ const CORS_TRUSTED_CDN_HOSTS = process.env.CORS_TRUSTED_CDN_HOSTS
 const APP_API_BASE_URL = process.env.APP_API_BASE_URL || null
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
+/**
+ * Helper function to remove path from a URL, leaving only the origin (scheme + host + port).
+ * @param {string} url
+ * @returns {string}
+ */
+const removePathFromUrl = (url) => {
+  try {
+    const parsedUrl = new URL(url)
+    parsedUrl.pathname = ''
+    return parsedUrl.toString().replace(/\/+$/, '') // Remove trailing slash if any
+  } catch (error) {
+    console.warn(`Invalid URL provided: ${url}`)
+    return url
+  }
+}
+
 const helmetMiddleware = helmet({
   contentSecurityPolicy: {
     directives: {
@@ -18,7 +34,7 @@ const helmetMiddleware = helmet({
       'style-src': ["'self'", "'unsafe-inline'", ...CORS_TRUSTED_CDN_HOSTS],
       'img-src': ["'self'", 'data:', 'https://contrib.rocks', ...CORS_TRUSTED_CDN_HOSTS],
       'font-src': ["'self'", ...CORS_TRUSTED_CDN_HOSTS],
-      'connect-src': ["'self'", ...(APP_API_BASE_URL ? [APP_API_BASE_URL] : [])]
+      'connect-src': ["'self'", ...(APP_API_BASE_URL ? [removePathFromUrl(APP_API_BASE_URL)] : [])]
     }
   },
   frameguard: false,

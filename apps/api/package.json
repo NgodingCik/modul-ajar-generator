@@ -1,0 +1,23 @@
+{
+  "name": "@repo/api",
+  "version": "1.0.0",
+  "description": "API for the Modul Ajar Generator",
+  "main": "index.js",
+  "scripts": {
+    "start": "cross-env NODE_ENV=production node boot.js",
+    "dev": "cross-env NODE_ENV=development npx nodemon boot.js"
+  },
+  "keywords": [],
+  "author": "NgodingCik",
+  "license": "Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)",
+  "type": "module",
+  "dependencies": {
+    "@repo/handlers": "^1.0.0",
+    "@repo/utils": "^1.0.0",
+    "consola": "^3.4.2",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.4.1",
+    "helmet": "^8.1.0"
+  }
+}

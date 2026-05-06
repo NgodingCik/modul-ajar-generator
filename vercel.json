@@ -2,15 +2,19 @@
   "version": 2,
   "builds": [
     {
-      "src": "src/index.js",
+      "src": "apps/web/index.js",
       "use": "@vercel/node",
       "config": {
         "bundle": false,
         "includeFiles": [
-          "src/**",
+          "apps/web/**",
+          "apps/api/**",
+          "packages/**",
           "context/**",
           "public/**",
           "assets/**",
+          "resources/**",
+          "node_modules/@repo/**",
           "node_modules/openai/**",
           "node_modules/consola/**",
           "node_modules/dotenv/**",
@@ -20,7 +24,8 @@
           "node_modules/@dqbd/**",
           "node_modules/express-rate-limit/**",
           "node_modules/helmet/**",
-          "node_modules/sweetalert2/**"
+          "node_modules/sweetalert2/**",
+          "node_modules/hcaptcha/**"
         ]
       }
     }
@@ -28,7 +33,7 @@
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/src/index.js"
+      "destination": "/apps/web/index.js"
     }
   ]
 }

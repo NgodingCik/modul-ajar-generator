@@ -1,0 +1,29 @@
+[**Modul Ajar Generator**](../../../../README.md)
+
+***
+
+[Modul Ajar Generator](../../../../README.md) / [packages/utils/utils](../README.md) / removeCodeBlocksFromMarkdown
+
+# Function: removeCodeBlocksFromMarkdown()
+
+> **removeCodeBlocksFromMarkdown**(`markdown`): `string`
+
+Defined in: [packages/utils/utils.js:63](https://github.com/GTPSHAX/modul-ajar-generator/blob/d4b0e01a4a3d86231cbebd8dec7d9bc8aedf2a93/packages/utils/utils.js#L63)
+
+Removes markdown code blocks and inline code from a markdown string.
+Note: This removes MARKDOWN code blocks (e.g., from markdown with embedded code),
+NOT pure code files. If the entire content is a code block, will return empty string.
+
+## Parameters
+
+### markdown
+
+`string`
+
+Markdown content with embedded code blocks
+
+## Returns
+
+`string`
+
+- Markdown with code blocks removed

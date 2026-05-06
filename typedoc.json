@@ -1,0 +1,25 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "Modul Ajar Generator",
+  "tsconfig": "jsconfig.json",
+  "entryPointStrategy": "resolve",
+  "entryPoints": [
+    "packages/core/index.js",
+    "packages/core/ai/openai-wrapper.js",
+    "packages/core/engine/vm-runner.js",
+
+    "packages/handlers/index.js",
+    "packages/handlers/handle-autofill-ai.js",
+    "packages/handlers/handle-generate-docx.js",
+
+    "packages/utils/index.js",
+    "packages/utils/utils.js",
+
+    "scripts/cli/index.js",
+    "scripts/cli/read-docx.js"
+  ],
+  "plugin": ["typedoc-plugin-markdown"],
+  "out": "docs/api-reference",
+  "skipErrorChecking": true,
+  "jsDocCompatibility": true
+}

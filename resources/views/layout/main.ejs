@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Prerequisite stylesheets -->
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/sweetalert2.min.css">
+
+  <!-- Prerequisite scripts -->
+  <script src="/sweetalert2.js"></script>
+
+  <%- include('../metadata', {APP_NAME, TITLE}) %>
+  <script>
+    window.__APP__ = <%- JSON.stringify(META || {}).replace(/</g, "\\u003c") %>
+  </script>
+</head>
+<body class="">
+  <%- include('../components/navbar.ejs', {APP_NAME}) %>
+  <%- include('../' + VIEW, {META}) %>
+  <%- include('../components/footer.ejs', {APP_NAME}) %>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!localStorage.getItem('cookie_notice_accepted')) {
+        Swal.fire({
+          toast: true,
+          position: 'bottom-end',
+          icon: 'info',
+          title: 'Kami menggunakan cookie esensial untuk menjaga keamanan situs ini.',
+          showConfirmButton: true,
+          confirmButtonText: 'Mengerti',
+          timer: 10000,
+          timerProgressBar: true
+        }).then(() => {
+          localStorage.setItem('cookie_notice_accepted', 'true');
+        });
+      }
+    });
+  </script>
+</body>
+</html>

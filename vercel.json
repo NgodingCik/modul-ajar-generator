@@ -24,7 +24,8 @@
           "node_modules/@dqbd/**",
           "node_modules/express-rate-limit/**",
           "node_modules/helmet/**",
-          "node_modules/sweetalert2/**"
+          "node_modules/sweetalert2/**",
+          "node_modules/hcaptcha/**"
         ]
       }
     }

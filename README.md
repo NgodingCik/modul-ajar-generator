@@ -149,7 +149,7 @@ Terimakasih untuk orang-orang hebat yang telah memberikan kontribusi, baik dalam
 - **Someone, S.Pd.** selaku Konsultan & Mediator
 - **Megawati Indah Sari, S.Pd.** selaku Penyedia Data
 
-## Developer
+### Developer
 
 Para pengembang yang telah berkontribusi dalam proyek ini:
 

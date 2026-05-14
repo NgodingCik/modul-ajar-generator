@@ -22,7 +22,7 @@
           "../../node_modules/@dqbd/**",
           "../../node_modules/express-rate-limit/**",
           "../../node_modules/helmet/**",
-          "node_modules/hcaptcha/**"
+          "../../node_modules/hcaptcha/**"
         ]
       }
     }

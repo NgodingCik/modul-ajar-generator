@@ -146,7 +146,8 @@ Terimakasih untuk orang-orang hebat yang telah memberikan kontribusi, baik dalam
 
 ### Konsultan & Auditor
 
-ASAP
+- **Someone, S.Pd.** selaku Konsultan & Mediator
+- **Megawati Indah Sari, S.Pd.** selaku Penyedia Data
 
 ## Developer
 

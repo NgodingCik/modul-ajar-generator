@@ -377,7 +377,9 @@
         </button>
       </div>
 
-      <% if (META.HCAPTCHA_SITE_KEY) { %>
+      <% if (META.CLOUDFLARE_TURNSTILE_SITE_KEY) { %>
+        <div class="cf-turnstile mt-4" data-sitekey="<%= META.CLOUDFLARE_TURNSTILE_SITE_KEY %>"></div>
+      <% } else if (META.HCAPTCHA_SITE_KEY) { %>
         <div class="h-captcha mt-4" data-sitekey="<%= META.HCAPTCHA_SITE_KEY %>"></div>
       <% } %>
       
@@ -394,7 +396,9 @@
     </div>
   </template>
 
-  <% if (META.HCAPTCHA_SITE_KEY) { %>
+  <% if (META.CLOUDFLARE_TURNSTILE_SITE_KEY) { %>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <% } else if (META.HCAPTCHA_SITE_KEY) { %>
     <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
   <% } %>
   <script src="/js/SwalWrapper.js"></script>

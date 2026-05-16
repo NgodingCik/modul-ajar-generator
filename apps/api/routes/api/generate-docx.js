@@ -10,7 +10,7 @@ export const route = new AppRoute('/generate-docx', 'post', async (req, res) => 
   const body = req.body
 
   try {
-    const result = await handleGenerateDocx(body)
+    const result = await handleGenerateDocx(body, req)
 
     if (result.status === 200) {
       const docxBuffer = result.data

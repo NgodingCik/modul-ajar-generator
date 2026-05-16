@@ -10,6 +10,7 @@ import * as docx from 'docx'
 import * as docxConfig from '../scripts/docx/docx-config.js'
 import * as docxApi from '../scripts/docx/docx-api.js'
 import * as docxCoverPage from '../scripts/docx/docx-cover-page.js'
+import handleCloudflareCaptchaValidation from './handle-cfcaptcha-validation.js'
 
 const __dirname = import.meta.dirname
 
@@ -122,12 +123,18 @@ function buildRencanaKegiatan (body, kegiatanKeys) {
  * Handles the generation of a DOCX document based on the provided body data.
  *
  * @param {any} body
+ * @param {any} req
  * @returns {Promise<{status: number, data?: any, message?: string}>}
  */
-const handleGenerateDocx = async (body) => {
+const handleGenerateDocx = async (body, req) => {
+  const remoteip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress
+
   // Validate hCaptcha response before proceeding with document generation
   if (!await handleHCaptchaValidation(body)) {
     return { status: 400, message: 'hCaptcha validation failed' }
+  }
+  if (!await handleCloudflareCaptchaValidation(body, remoteip)) {
+    return { status: 400, message: 'Cloudflare Captcha validation failed' }
   }
 
   const template = 'original' // TODO: Make this dynamic based on request parameter if multiple templates are supported in the future'

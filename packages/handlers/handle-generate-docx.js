@@ -130,11 +130,10 @@ const handleGenerateDocx = async (body, req) => {
   const remoteip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress
 
   // Validate hCaptcha response before proceeding with document generation
-  if (process.env.HCAPTCHA_SECRET_KEY && !await handleHCaptchaValidation(body)) {
-    return { status: 400, message: 'hCaptcha validation failed' }
-  }
   if (process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY && !await handleCloudflareCaptchaValidation(body, remoteip)) {
     return { status: 400, message: 'Cloudflare Captcha validation failed' }
+  } else if (process.env.HCAPTCHA_SECRET_KEY && !await handleHCaptchaValidation(body)) {
+    return { status: 400, message: 'hCaptcha validation failed' }
   }
 
   const template = 'original' // TODO: Make this dynamic based on request parameter if multiple templates are supported in the future'
